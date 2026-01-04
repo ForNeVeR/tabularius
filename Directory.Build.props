@@ -5,6 +5,10 @@ SPDX-License-Identifier: MIT
 -->
 
 <Project>
+    <PropertyGroup Label="Packaging">
+        <Version>0.0.0</Version>
+    </PropertyGroup>
+
     <PropertyGroup Label="Build">
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>

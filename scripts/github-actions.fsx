@@ -113,7 +113,7 @@ let workflows = [
         onPullRequestTo "main"
         onSchedule "0 0 * * 6"
         onWorkflowDispatch
-        dotNetJob "nuget" [
+        dotNetJob "publish" [
             jobPermission(PermissionKind.Contents, AccessKind.Write)
             runsOn "ubuntu-24.04"
             step(
