@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
+    <PropertyGroup>
+        <OutputPath>bin\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <HaskellSource Include="src/**/*.hs"/>
+        <HaskellSource Include="test/**/*.hs"/>
+        <HaskellConfig Include="*.cabal;*.def;*.yaml"/>
+    </ItemGroup>
+
+    <Target Name="StackBuild" BeforeTargets="Build"
+            Inputs="@(HaskellSource);@(HaskellConfig)"
+            Outputs="$(OutputPath)hledger-interop-shared.dll">
+        <Exec Command="stack build" />
+        <Exec Command="stack path --local-install-root" ConsoleToMsBuild="true">
+            <Output TaskParameter="ConsoleOutput" PropertyName="StackInstallRoot" />
+        </Exec>
+        <MakeDir Directories="$(OutputPath)" />
+        <Copy SourceFiles="$(StackInstallRoot.Trim())\lib\hledger-interop-shared.dll"
+              DestinationFolder="$(OutputPath)" />
+        <Message Importance="high" Text="Haskell DLL compiled successfully."/>
+    </Target>
+</Project>
