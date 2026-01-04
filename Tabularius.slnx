@@ -37,5 +37,8 @@
     <File Path="global.json.license" />
     <File Path="Tabularius.slnx.license" />
   </Folder>
-  <Project Path="Tabularius/Tabularius.csproj" Type="C#" />
+  <Project Path="Tabularius/Tabularius.csproj">
+    <BuildDependency Project="HledgerInterop/HledgerInterop.proj" />
+  </Project>
+  <Project Path="HledgerInterop/HledgerInterop.proj" Type="00000000-0000-0000-0000-000000000000" />
 </Solution>
