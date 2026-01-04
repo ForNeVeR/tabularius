@@ -1,0 +1,31 @@
+cabal-version:      2.2
+name:               hledger-interop
+version:            0.1.0.0
+build-type:         Simple
+extra-source-files: hledger-interop.def
+
+library
+  exposed-modules:     Lib
+  hs-source-dirs:      src
+  ghc-options:         -Wall
+  build-depends:       base >=4.7 && <5
+  default-language:    GHC2021
+
+test-suite hledger-interop-test
+  type:                exitcode-stdio-1.0
+  main-is:             Spec.hs
+  hs-source-dirs:      test
+  ghc-options:         -Wall -threaded
+  build-depends:       base >=4.7 && <5
+                     , hledger-interop
+  default-language:    GHC2021
+
+foreign-library hledger-interop-shared
+  type:                native-shared
+  if os(windows)
+    options:           standalone
+    mod-def-file:      hledger-interop.def
+  other-modules:       Lib
+  hs-source-dirs:      src
+  build-depends:       base >=4.7 && <5
+  default-language:    GHC2021
