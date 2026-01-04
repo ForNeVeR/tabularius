@@ -3,12 +3,9 @@
     <File Path=".config\dotnet-tools.json" />
     <File Path=".config\dotnet-tools.json.license" />
   </Folder>
-  <Folder Name="/.github/">
-    <File Path=".github\README.md" />
-  </Folder>
+  <Folder Name="/.github/" />
   <Folder Name="/.github/workflows/">
     <File Path=".github\workflows\main.yml" />
-    <File Path=".github\workflows\docs.yml" />
     <File Path=".github\workflows\release.yml" />
   </Folder>
   <Folder Name="/docs/">
@@ -27,7 +24,6 @@
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
     <File Path=".editorconfig" />
-    <File Path="FVNeverDotNetTemplate.slnx.license" />
     <File Path="renovate.json" />
     <File Path="renovate.json.license" />
     <File Path="Directory.Build.props" />
@@ -39,6 +35,7 @@
     <File Path="REUSE.toml" />
     <File Path="global.json" />
     <File Path="global.json.license" />
+    <File Path="Tabularius.slnx.license" />
   </Folder>
-  <Project Path="FVNeverDotNetTemplate\FVNeverDotNetTemplate.csproj" Type="Classic C#" />
+  <Project Path="Tabularius/Tabularius.csproj" Type="C#" />
 </Solution>

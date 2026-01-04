@@ -1,5 +1,5 @@
 let licenseHeader = """
-# SPDX-FileCopyrightText: 2024-2025 Friedrich von Never <friedrich@fornever.me>
+# SPDX-FileCopyrightText: 2024-2026 Friedrich von Never <friedrich@fornever.me>
 #
 # SPDX-License-Identifier: MIT
 
@@ -80,23 +80,6 @@ let workflows = [
             )
         ]
 
-        dotNetJob "check-docs" [
-            runsOn "ubuntu-24.04"
-            step(
-                name = "Restore dotnet tools",
-                run = "dotnet tool restore"
-            )
-            step(
-                name = "Validate docfx",
-                run = "dotnet docfx docs/docfx.json --warningsAsErrors"
-            )
-        ]
-
-        dotNetJob "check-all-warnings" [ // separate check not bothering the local compilation
-            runsOn "ubuntu-24.04"
-            step(name = "Verify with full warning check", run = "dotnet build -p:AllWarningsMode=true")
-        ]
-
         job "licenses" [
             runsOn "ubuntu-24.04"
             step(
@@ -140,7 +123,11 @@ let workflows = [
                 run = "echo \"version=$(scripts/Get-Version.ps1 -RefName $env:GITHUB_REF)\" >> $env:GITHUB_OUTPUT"
             )
             step(
-                run = "dotnet pack --configuration Release -p:Version=${{ steps.version.outputs.version }}"
+                run = "dotnet publish --configuration Release -p:Version=${{ steps.version.outputs.version }} --output=publish"
+            )
+            step(
+                shell = "pwsh",
+                run = "Compress-Archive -Path publish/* -DestinationPath tabularius-${{ steps.version.outputs.version }}.zip"
             )
             step(
                 name = "Read changelog",
@@ -153,7 +140,7 @@ let workflows = [
                 name = "Upload artifacts",
                 usesSpec = Auto "actions/upload-artifact",
                 options = Map.ofList [
-                    "path", "./release-notes.md\n./FVNeverDotNetTemplate/bin/Release/FVNeverDotNetTemplate.${{ steps.version.outputs.version }}.nupkg\n./FVNeverDotNetTemplate/bin/Release/FVNeverDotNetTemplate.${{ steps.version.outputs.version }}.snupkg"
+                    "path", "./release-notes.md\n./tabularius-${{ steps.version.outputs.version }}.zip"
                 ]
             )
             step(
@@ -162,52 +149,9 @@ let workflows = [
                 usesSpec = Auto "softprops/action-gh-release",
                 options = Map.ofList [
                     "body_path", "./release-notes.md"
-                    "files", "./FVNeverDotNetTemplate/bin/Release/FVNeverDotNetTemplate.${{ steps.version.outputs.version }}.nupkg\n./FVNeverDotNetTemplate/bin/Release/FVNeverDotNetTemplate.${{ steps.version.outputs.version }}.snupkg"
-                    "name", "FVNeverDotNetTemplate v${{ steps.version.outputs.version }}"
+                    "files", "./tabularius-${{ steps.version.outputs.version }}.zip"
+                    "name", "Tabularius v${{ steps.version.outputs.version }}"
                 ]
-            )
-            step(
-                condition = "startsWith(github.ref, 'refs/tags/v')",
-                name = "Push artifact to NuGet",
-                run = "dotnet nuget push ./FVNeverDotNetTemplate/bin/Release/FVNeverDotNetTemplate.${{ steps.version.outputs.version }}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_TOKEN }}"
-            )
-        ]
-    ]
-
-    workflow "docs" [
-        name "Docs"
-        onPushTo "main"
-        onWorkflowDispatch
-        workflowPermission(PermissionKind.Actions, AccessKind.Read)
-        workflowPermission(PermissionKind.Pages, AccessKind.Write)
-        workflowPermission(PermissionKind.IdToken, AccessKind.Write)
-        workflowConcurrency(
-            group = "pages",
-            cancelInProgress = false
-        )
-        dotNetJob "publish-docs" [
-            environment(name = "github-pages", url = "${{ steps.deployment.outputs.page_url }}")
-            runsOn "ubuntu-24.04"
-
-            step(
-                name = "Set up .NET tools",
-                run = "dotnet tool restore"
-            )
-            step(
-                name = "Build the documentation",
-                run = "dotnet docfx docs/docfx.json"
-            )
-            step(
-                name = "Upload artifact",
-                usesSpec = Auto "actions/upload-pages-artifact",
-                options = Map.ofList [
-                    "path", "docs/_site"
-                ]
-            )
-            step(
-                name = "Deploy to GitHub Pages",
-                id = "deployment",
-                usesSpec = Auto "actions/deploy-pages"
             )
         ]
     ]

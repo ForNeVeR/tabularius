@@ -1,14 +1,10 @@
-# SPDX-FileCopyrightText: 2024-2025 Friedrich von Never <friedrich@fornever.me>
-#
-# SPDX-License-Identifier: MIT
-
 version = 1
-SPDX-PackageName = "FVNeverDotNetTemplate"
+SPDX-PackageName = "Tabularius"
 SPDX-PackageSupplier = "Friedrich von Never <friedrich@fornever.me>"
-SPDX-PackageDownloadLocation = "https://github.com/ForNeVeR/dotnet-repo-template"
+SPDX-PackageDownloadLocation = "https://github.com/ForNeVeR/tabularius"
 
 [[annotations]]
-path = ".idea/**/**"
+path = "*.DotSettings"
 precedence = "aggregate"
-SPDX-FileCopyrightText = "2025 Friedrich von Never <friedrich@fornever.me>"
+SPDX-FileCopyrightText = "2025-2026 Friedrich von Never <friedrich@fornever.me>"
 SPDX-License-Identifier = "MIT"
