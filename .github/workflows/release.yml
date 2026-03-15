@@ -41,6 +41,11 @@ jobs:
       with:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.*proj', '**/*.props') }}
         path: ${{ env.NUGET_PACKAGES }}
+    - name: Set up Haskell Stack
+      uses: haskell-actions/setup@v2
+      with:
+        enable-stack: true
+        stack-no-global: true
     - id: version
       name: Get version
       shell: pwsh
@@ -76,6 +81,11 @@ jobs:
       with:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.*proj', '**/*.props') }}
         path: ${{ env.NUGET_PACKAGES }}
+    - name: Set up Haskell Stack
+      uses: haskell-actions/setup@v2
+      with:
+        enable-stack: true
+        stack-no-global: true
     - id: version
       name: Get version
       shell: pwsh

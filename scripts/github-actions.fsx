@@ -41,6 +41,14 @@ let workflows = [
                     "path", "${{ env.NUGET_PACKAGES }}"
                 ]
             )
+            step(
+                name = "Set up Haskell Stack",
+                usesSpec = Auto "haskell-actions/setup",
+                options = Map.ofList [
+                    "enable-stack", "true"
+                    "stack-no-global", "true"
+                ]
+            )
 
             yield! steps
         ]

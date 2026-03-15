@@ -19,14 +19,18 @@ SPDX-License-Identifier: MIT
 
     <Target Name="StackBuild" BeforeTargets="Build"
             Inputs="@(HaskellSource);@(HaskellConfig)"
-            Outputs="$(OutputPath)hledger-interop-shared.dll">
-        <Exec Command="stack build" />
+            Outputs="$(OutputPath)$(SharedLibName)">
+        <Exec Command="stack build --ghc-options=&quot;-pgmc clang -pgml clang&quot;"
+              Condition="!$([MSBuild]::IsOSPlatform('Windows'))"
+              EnvironmentVariables="CC=clang" />
+        <Exec Command="stack build"
+              Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
         <Exec Command="stack path --local-install-root" ConsoleToMsBuild="true">
             <Output TaskParameter="ConsoleOutput" PropertyName="StackInstallRoot" />
         </Exec>
         <MakeDir Directories="$(OutputPath)" />
-        <Copy SourceFiles="$(StackInstallRoot.Trim())\lib\hledger-interop-shared.dll"
+        <Copy SourceFiles="$(StackInstallRoot.Trim())\lib\$(SharedLibName)"
               DestinationFolder="$(OutputPath)" />
-        <Message Importance="high" Text="Haskell DLL compiled successfully."/>
+        <Message Importance="high" Text="Haskell shared library compiled successfully."/>
     </Target>
 </Project>

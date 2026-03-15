@@ -20,6 +20,12 @@ SPDX-License-Identifier: MIT
         <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     </PropertyGroup>
 
+    <PropertyGroup Label="Haskell FFI">
+        <SharedLibName Condition="$([MSBuild]::IsOSPlatform('Windows'))">hledger-interop-shared.dll</SharedLibName>
+        <SharedLibName Condition="$([MSBuild]::IsOSPlatform('Linux'))">libhledger-interop-shared.so</SharedLibName>
+        <SharedLibName Condition="$([MSBuild]::IsOSPlatform('OSX'))">libhledger-interop-shared.dylib</SharedLibName>
+    </PropertyGroup>
+
     <ItemGroup Condition="$(IsPackable) == 'true'">
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.201" PrivateAssets="All" />
         <PackageReference Include="ChangelogAutomation.MSBuild" Version="3.0.5" PrivateAssets="All" />

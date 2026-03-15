@@ -14,9 +14,9 @@ SPDX-License-Identifier: MIT
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\HledgerInterop\bin\hledger-interop-shared.dll"
+        <None Include="..\HledgerInterop\bin\$(SharedLibName)"
               CopyToOutputDirectory="PreserveNewest"
-              Link="hledger-interop-shared.dll" />
+              Link="$(SharedLibName)" />
     </ItemGroup>
 
 </Project>
