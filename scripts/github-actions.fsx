@@ -137,12 +137,12 @@ let workflows = [
             step(
                 name = "Publish the project",
                 shell = "pwsh",
-                run = "dotnet publish Tabularius/Tabularius.csproj --configuration Release -p:Version=${{ steps.version.outputs.version }} --output=publish"
+                run = "dotnet publish --configuration Release -p:Version=${{ steps.version.outputs.version }}"
             )
             step(
                 name = "Pack the publication result",
                 shell = "pwsh",
-                run = "Compress-Archive -Path publish/* -DestinationPath tabularius-${{ steps.version.outputs.version }}-${{ matrix.image }}.zip"
+                run = "Compress-Archive -Path Tabularius/bin/publish/* -DestinationPath tabularius-${{ steps.version.outputs.version }}-${{ matrix.image }}.zip"
             )
             step(
                 name = "Upload the publication result",

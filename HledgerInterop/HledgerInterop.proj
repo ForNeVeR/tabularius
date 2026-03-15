@@ -8,6 +8,7 @@ SPDX-License-Identifier: MIT
     <PropertyGroup>
         <OutputPath>bin\</OutputPath>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <IsPublishable>false</IsPublishable>
     </PropertyGroup>
 
     <ItemGroup>
