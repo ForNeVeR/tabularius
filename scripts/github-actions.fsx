@@ -142,7 +142,7 @@ let workflows = [
             step(
                 name = "Publish the project",
                 shell = "pwsh",
-                run = "dotnet publish --configuration Release -p:Version=${{ steps.version.outputs.version }}"
+                run = "dotnet publish --configuration Release --self-contained -p:Version=${{ steps.version.outputs.version }}"
             )
             step(
                 name = "Pack the publication result",

@@ -55,7 +55,7 @@ jobs:
       run: dotnet build --configuration Release -p:Version=${{ steps.version.outputs.version }}
     - name: Publish the project
       shell: pwsh
-      run: dotnet publish --configuration Release -p:Version=${{ steps.version.outputs.version }}
+      run: dotnet publish --configuration Release --self-contained -p:Version=${{ steps.version.outputs.version }}
     - name: Pack the publication result
       shell: pwsh
       run: Compress-Archive -Path Tabularius/bin/publish/* -DestinationPath tabularius-${{ steps.version.outputs.version }}-${{ matrix.image }}.zip
