@@ -137,7 +137,7 @@ let workflows = [
             step(
                 name = "Publish the project",
                 shell = "pwsh",
-                run = "dotnet publish --project Tabularius --configuration Release -p:Version=${{ steps.version.outputs.version }} --output=publish"
+                run = "dotnet publish Tabularius/Tabularius.csproj --configuration Release -p:Version=${{ steps.version.outputs.version }} --output=publish"
             )
             step(
                 name = "Pack the publication result",
