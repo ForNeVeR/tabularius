@@ -30,4 +30,3 @@ public static partial class HledgerInterop
     [LibraryImport("hledger-interop-shared.dll")]
     public static partial void someFunc();
 }
-

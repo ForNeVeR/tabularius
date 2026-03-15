@@ -45,6 +45,13 @@ let workflows = [
             yield! steps
         ]
 
+    let images = [
+        "macos-15"
+        "ubuntu-24.04"
+        "ubuntu-24.04-arm"
+        "windows-2025"
+    ]
+
     workflow "main" [
         name "Main"
         onPushTo "main"
@@ -59,13 +66,7 @@ let workflows = [
 
         dotNetJob "check" [
             strategy(failFast = false, matrix = [
-                "image", [
-                    "macos-15"
-                    "ubuntu-24.04"
-                    "ubuntu-24.04-arm"
-                    "windows-11-arm"
-                    "windows-2025"
-                ]
+                "image", images
             ])
             runsOn "${{ matrix.image }}"
 
@@ -114,6 +115,39 @@ let workflows = [
         onSchedule "0 0 * * 6"
         onWorkflowDispatch
         dotNetJob "publish" [
+            strategy(failFast = false, matrix = [
+                "image", images
+            ])
+            runsOn "${{ matrix.image }}"
+
+            step(
+                id = "version",
+                name = "Get version",
+                shell = "pwsh",
+                run = "echo \"version=$(scripts/Get-Version.ps1 -RefName $env:GITHUB_REF)\" >> $env:GITHUB_OUTPUT"
+            )
+            step(
+                name = "Publish the project",
+                shell = "pwsh",
+                run = "dotnet publish --project Tabularius --configuration Release -p:Version=${{ steps.version.outputs.version }} --output=publish"
+            )
+            step(
+                name = "Pack the publication result",
+                shell = "pwsh",
+                run = "Compress-Archive -Path publish/* -DestinationPath tabularius-${{ steps.version.outputs.version }}-${{ matrix.image }}.zip"
+            )
+            step(
+                name = "Upload the publication result",
+                usesSpec = Auto "actions/upload-artifact",
+                options = Map.ofList [
+                    "name", "tabularius-${{ matrix.image }}"
+                    "path", "./tabularius-${{ steps.version.outputs.version }}-${{ matrix.image }}.zip"
+                ]
+            )
+        ]
+
+        dotNetJob "release" [
+            needs "publish"
             jobPermission(PermissionKind.Contents, AccessKind.Write)
             runsOn "ubuntu-24.04"
             step(
@@ -123,11 +157,12 @@ let workflows = [
                 run = "echo \"version=$(scripts/Get-Version.ps1 -RefName $env:GITHUB_REF)\" >> $env:GITHUB_OUTPUT"
             )
             step(
-                run = "dotnet publish --configuration Release -p:Version=${{ steps.version.outputs.version }} --output=publish"
-            )
-            step(
-                shell = "pwsh",
-                run = "Compress-Archive -Path publish/* -DestinationPath tabularius-${{ steps.version.outputs.version }}.zip"
+                name = "Download artifacts",
+                usesSpec = Auto "actions/download-artifact",
+                options = Map.ofList [
+                    "merge-multiple", "true"
+                    "pattern", "tabularius-*"
+                ]
             )
             step(
                 name = "Read changelog",
@@ -140,7 +175,7 @@ let workflows = [
                 name = "Upload artifacts",
                 usesSpec = Auto "actions/upload-artifact",
                 options = Map.ofList [
-                    "path", "./release-notes.md\n./tabularius-${{ steps.version.outputs.version }}.zip"
+                    "path", "./release-notes.md\n./tabularius-*.zip"
                 ]
             )
             step(
@@ -149,7 +184,7 @@ let workflows = [
                 usesSpec = Auto "softprops/action-gh-release",
                 options = Map.ofList [
                     "body_path", "./release-notes.md"
-                    "files", "./tabularius-${{ steps.version.outputs.version }}.zip"
+                    "files", "./tabularius-*.zip"
                     "name", "Tabularius v${{ steps.version.outputs.version }}"
                 ]
             )
