@@ -26,8 +26,8 @@ test-suite hledger-interop-test
 
 foreign-library hledger-interop-shared
   type:                native-shared
+  options:             standalone
   if os(windows)
-    options:           standalone
     mod-def-file:      hledger-interop.def
   other-modules:       Lib
   hs-source-dirs:      src
