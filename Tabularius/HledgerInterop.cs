@@ -18,15 +18,15 @@ finally
 
 public static partial class HledgerInterop
 {
-    [LibraryImport("hledger-interop-shared.dll", EntryPoint = "hs_init")]
+    [LibraryImport("hledger-interop-shared", EntryPoint = "hs_init")]
     private static unsafe partial void HsInit(nint* argc, nint* argv);
 
-    [LibraryImport("hledger-interop-shared.dll", EntryPoint = "hs_exit")]
+    [LibraryImport("hledger-interop-shared", EntryPoint = "hs_exit")]
     private static partial void HsExit();
 
     public static unsafe void Initialize() => HsInit(null, null);
     public static void Shutdown() => HsExit();
 
-    [LibraryImport("hledger-interop-shared.dll")]
+    [LibraryImport("hledger-interop-shared")]
     public static partial void someFunc();
 }
