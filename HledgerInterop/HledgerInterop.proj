@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
+
+SPDX-License-Identifier: MIT
+-->
+
 <Project Sdk="Microsoft.Build.NoTargets/3.7.0">
     <PropertyGroup>
         <OutputPath>bin\</OutputPath>
@@ -7,7 +13,8 @@
     <ItemGroup>
         <HaskellSource Include="src/**/*.hs"/>
         <HaskellSource Include="test/**/*.hs"/>
-        <HaskellConfig Include="*.cabal;*.def;*.yaml"/>
+        <HaskellConfig Include="*.cabal;*.def;*.yaml;*.yaml.lock"/>
+        <None Include="*.license"/>
     </ItemGroup>
 
     <Target Name="StackBuild" BeforeTargets="Build"

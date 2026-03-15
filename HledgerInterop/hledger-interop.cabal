@@ -4,6 +4,10 @@ version:            0.1.0.0
 build-type:         Simple
 extra-source-files: hledger-interop.def
 
+-- SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
+--
+-- SPDX-License-Identifier: MIT
+
 library
   exposed-modules:     Lib
   hs-source-dirs:      src
