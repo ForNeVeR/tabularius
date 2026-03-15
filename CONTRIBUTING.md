@@ -9,7 +9,16 @@ Contributor Guide
 
 Prerequisites
 -------------
-To work with the project, you'll need [.NET SDK 9][dotnet-sdk] or later.
+To work with the project, you'll need:
+- [.NET SDK 9][dotnet-sdk] or later.
+- [Haskell Stack][haskell-stack] 3.x or later.
+- **(Linux only)** Clang — install via your package manager (e.g. `sudo apt install clang`).
+
+  This is required because stack might have problems installing witout clang. Last observed issue:
+
+  > ```
+  > gcc : error : unrecognized command-line option '--target=x86_64-unknown-linux'
+  > ```
 
 Build
 -----
@@ -73,5 +82,6 @@ $ dotnet fsi scripts/github-actions.fsx
 ```
 
 [dotnet-sdk]: https://dotnet.microsoft.com/en-us/download
+[haskell-stack]: https://docs.haskellstack.org/en/stable/install_and_upgrade/
 [powershell]: https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell
 [reuse]: https://reuse.software/
