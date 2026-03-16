@@ -42,15 +42,14 @@ Use the following shell command:
 $ dotnet test
 ```
 
-Test Documentation
-------------------
-To open the project documentation site locally, use the following shell commands:
+Publish
+-------
+First, build the application (see the previous section). Then, run the following shell command:
 ```console
-$ dotnet tool restore
-$ dotnet docfx docs/docfx.json --serve
+$ dotnet publish --configuration Release --self-contained
 ```
 
-Then, open http://localhost:8080/ and browse the documentation.
+This will generate the package for the current OS in the `Tabularius/bin/publish` folder.
 
 License Automation
 ------------------
