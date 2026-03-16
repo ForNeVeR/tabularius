@@ -22,6 +22,7 @@ test-suite hledger-interop-test
   ghc-options:         -Wall -threaded
   build-depends:       base >=4.7 && <5
                      , hledger-interop
+                     , hspec
   default-language:    GHC2021
 
 foreign-library hledger-interop-shared

@@ -30,8 +30,14 @@ $ dotnet build
 
 Test
 ----
+### HledgerInterop
 Use the following shell command:
+```console
+$ cd HledgerInterop && stack test
+```
 
+### Tabularius
+Use the following shell command:
 ```console
 $ dotnet test
 ```

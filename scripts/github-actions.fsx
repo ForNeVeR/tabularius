@@ -84,6 +84,13 @@ let workflows = [
             yield! setUpHaskellEnvironment
 
             step(
+                name = "Test HledgerInterop",
+                shell = "pwsh",
+                workingDirectory = "HledgerInterop",
+                run = "stack test"
+            )
+
+            step(
                 name = "Build",
                 run = "dotnet build"
             )

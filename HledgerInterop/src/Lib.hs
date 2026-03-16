@@ -4,9 +4,11 @@
 
 {-# LANGUAGE ForeignFunctionInterface #-}
 
-module Lib (someFunc) where
+module Lib (adder) where
 
-foreign export ccall someFunc :: IO ()
+import Data.Int (Int32)
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+foreign export ccall adder :: Int32 -> Int32 -> Int32
+
+adder :: Int32 -> Int32 -> Int32
+adder a b = a + b

@@ -61,6 +61,10 @@ jobs:
       with:
         enable-stack: true
         stack-version: 3.9.1
+    - name: Test HledgerInterop
+      shell: pwsh
+      run: stack test
+      working-directory: HledgerInterop
     - name: Build
       run: dotnet build
     - name: Test
