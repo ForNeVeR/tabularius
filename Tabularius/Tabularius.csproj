@@ -22,4 +22,11 @@ SPDX-License-Identifier: MIT
               Link="$(SharedLibName)" />
     </ItemGroup>
 
+    <!-- On Linux: also include bundled GHC runtime .so files -->
+    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+        <None Include="..\HledgerInterop\bin\libHS*.so"
+              CopyToOutputDirectory="PreserveNewest"
+              LinkBase="." />
+    </ItemGroup>
+
 </Project>

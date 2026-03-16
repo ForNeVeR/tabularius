@@ -11,10 +11,7 @@ Prerequisites
 -------------
 To work with the project, you'll need:
 - [.NET SDK 9][dotnet-sdk] or later,
-- [Haskell Stack][haskell-stack] 3.x or later,
-- **(Linux-specific)** GHC: install via your package manager (e.g. `sudo apt install ghc`).
-
-  This is necessary because system-provided GHC might have better compatibility options for linking. See [this post][reddit.haskell-foreign-fpic] for explanation.
+- [Haskell Stack][haskell-stack] 3.x or later.
 
 Build
 -----
@@ -80,5 +77,4 @@ $ dotnet fsi scripts/github-actions.fsx
 [dotnet-sdk]: https://dotnet.microsoft.com/en-us/download
 [haskell-stack]: https://docs.haskellstack.org/en/stable/install_and_upgrade/
 [powershell]: https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell
-[reddit.haskell-foreign-fpic]: https://www.reddit.com/r/haskell/comments/1ar2hlh/building_standalone_shared_lib_with_stack/
 [reuse]: https://reuse.software/

@@ -18,26 +18,22 @@ SPDX-License-Identifier: MIT
         <None Include="*.license"/>
     </ItemGroup>
 
-    <PropertyGroup>
-        <!-- NOTE:
-            Use system GHC on Linux, otherwise we'll have problems with -fPIC:
-            https://www.reddit.com/r/haskell/comments/1ar2hlh/building_standalone_shared_lib_with_stack/
-        -->
-<!--        <StackFlags Condition="$([MSBuild]::IsOSPlatform('Linux'))">$(StackFlags)&#45;&#45;system-ghc &#45;&#45;no-install-ghc </StackFlags>-->
-    </PropertyGroup>
-
     <Target Name="StackBuild" BeforeTargets="Build"
             Inputs="@(HaskellSource);@(HaskellConfig)"
             Outputs="$(OutputPath)$(SharedLibName)">
 
-        <Message Importance="high" Text="Stack flags: &quot;$(StackFlags)&quot;."/>
-        <Exec Command="stack $(StackFlags) build" />
-        <Exec Command="stack $(StackFlags) path --local-install-root" ConsoleToMsBuild="true">
+        <Exec Command="stack build" />
+        <Exec Command="stack path --local-install-root" ConsoleToMsBuild="true">
             <Output TaskParameter="ConsoleOutput" PropertyName="StackInstallRoot" />
         </Exec>
         <MakeDir Directories="$(OutputPath)" />
         <Copy SourceFiles="$(StackInstallRoot.Trim())\lib\$(SharedLibName)"
               DestinationFolder="$(OutputPath)" />
+
+        <!-- On Linux: copy GHC runtime .so dependencies alongside the shared library -->
+        <Exec Condition="$([MSBuild]::IsOSPlatform('Linux'))"
+              Command="ldd $(StackInstallRoot.Trim())/lib/$(SharedLibName) | grep -oP '/\S+libHS\S+\.so\S*' | xargs -I{} cp {} $(OutputPath)" />
+
         <Message Importance="high" Text="Haskell shared library compiled successfully."/>
     </Target>
 </Project>
