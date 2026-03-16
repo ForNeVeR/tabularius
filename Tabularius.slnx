@@ -33,6 +33,10 @@
     <File Path="global.json.license" />
     <File Path="Tabularius.slnx.license" />
   </Folder>
+  <Project Path="Tabularius.Interop/Tabularius.Interop.csproj" />
+  <Project Path="Tabularius.Tests/Tabularius.Tests.fsproj">
+    <BuildDependency Project="HledgerInterop/HledgerInterop.proj" />
+  </Project>
   <Project Path="Tabularius/Tabularius.csproj">
     <BuildDependency Project="HledgerInterop/HledgerInterop.proj" />
   </Project>

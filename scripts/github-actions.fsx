@@ -51,7 +51,11 @@ let workflows = [
             usesSpec = Auto "actions/cache",
             options = Map.ofList [
                 "key", "${{ runner.os }}.stack.${{ hashFiles('HledgerInterop/stack.yaml', 'HledgerInterop/stack.yaml.lock', 'HledgerInterop/*.cabal') }}"
-                "path", "~/.stack\nHledgerInterop/.stack-work"
+                "path", String.concat "\n" [
+                  "HledgerInterop/.stack-work"
+                  "~/.ghcup"
+                  "~/.stack"
+                ]
             ]
         )
         step(
