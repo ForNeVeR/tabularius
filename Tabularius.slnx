@@ -1,8 +1,4 @@
 <Solution>
-  <Folder Name="/.config/">
-    <File Path=".config\dotnet-tools.json" />
-    <File Path=".config\dotnet-tools.json.license" />
-  </Folder>
   <Folder Name="/.github/" />
   <Folder Name="/.github/workflows/">
     <File Path=".github\workflows\main.yml" />
