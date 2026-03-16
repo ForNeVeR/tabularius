@@ -51,7 +51,6 @@ let workflows = [
             usesSpec = Auto "haskell-actions/setup",
             options = Map.ofList [
                 "enable-stack", "true"
-                "stack-setup-ghc", "true"
                 "stack-version", "3.9.1"
             ]
         )

@@ -60,7 +60,6 @@ jobs:
       uses: haskell-actions/setup@v2
       with:
         enable-stack: true
-        stack-setup-ghc: true
         stack-version: 3.9.1
     - name: Build
       run: dotnet build
