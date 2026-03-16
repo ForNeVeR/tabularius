@@ -21,7 +21,7 @@ SPDX-License-Identifier: MIT
     <Target Name="StackBuild" BeforeTargets="Build"
             Inputs="@(HaskellSource);@(HaskellConfig)"
             Outputs="$(OutputPath)$(SharedLibName)">
-        <Exec Command="stack build --ghc-options=&quot;-pgmc clang -pgml clang&quot;"
+        <Exec Command="stack build"
               Condition="!$([MSBuild]::IsOSPlatform('Windows'))"
               EnvironmentVariables="CC=clang" />
         <Exec Command="stack build"
