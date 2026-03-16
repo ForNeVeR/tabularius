@@ -31,11 +31,6 @@ jobs:
       with:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.*proj', '**/*.props') }}
         path: ${{ env.NUGET_PACKAGES }}
-    - name: Set up Haskell Stack
-      uses: haskell-actions/setup@v2
-      with:
-        enable-stack: true
-        stack-no-global: true
     - run: dotnet fsi ./scripts/github-actions.fsx verify
   check:
     strategy:
@@ -61,11 +56,24 @@ jobs:
       with:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.*proj', '**/*.props') }}
         path: ${{ env.NUGET_PACKAGES }}
-    - name: Set up Haskell Stack
+    - if: runner.os == 'Linux'
+      name: Set up Haskell Stack (Linux)
       uses: haskell-actions/setup@v2
       with:
         enable-stack: true
-        stack-no-global: true
+        stack-version: 3.9.1
+    - if: runner.os == 'Linux'
+      name: Set up GHC
+      shell: pwsh
+      run: sudo apt-get install ghc
+    - if: runner.os != 'Linux'
+      name: Set up Haskell Stack (Generic)
+      uses: haskell-actions/setup@v2
+      with:
+        enable-stack: true
+        ghc-version: 9.4.3
+        stack-setup-ghc: true
+        stack-version: 3.9.1
     - name: Build
       run: dotnet build
     - name: Test

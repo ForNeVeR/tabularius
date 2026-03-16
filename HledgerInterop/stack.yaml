@@ -2,8 +2,10 @@
 #
 # SPDX-License-Identifier: MIT
 
-snapshot:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/24/26.yaml
+snapshot: lts-24.34
+compiler: ghc-9.4.3
 
+ghc-options:
+  "$everything": -fPIC
 packages:
-- .
+  - .

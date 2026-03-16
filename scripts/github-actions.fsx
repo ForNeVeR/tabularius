@@ -41,17 +41,40 @@ let workflows = [
                     "path", "${{ env.NUGET_PACKAGES }}"
                 ]
             )
-            step(
-                name = "Set up Haskell Stack",
-                usesSpec = Auto "haskell-actions/setup",
-                options = Map.ofList [
-                    "enable-stack", "true"
-                    "stack-no-global", "true"
-                ]
-            )
 
             yield! steps
         ]
+
+    let setUpHaskellEnvironment = [
+        step(
+            condition = "runner.os == 'Linux'",
+            name = "Set up Haskell Stack (Linux)",
+            usesSpec = Auto "haskell-actions/setup",
+            options = Map.ofList [
+                "enable-stack", "true"
+                "stack-version", "3.9.1"
+            ]
+        )
+
+        step(
+            condition = "runner.os == 'Linux'",
+            name = "Set up GHC",
+            shell = "pwsh",
+            run = "sudo apt-get install ghc"
+        )
+
+        step(
+            condition = "runner.os != 'Linux'",
+            name = "Set up Haskell Stack (Generic)",
+            usesSpec = Auto "haskell-actions/setup",
+            options = Map.ofList [
+                "enable-stack", "true"
+                "stack-setup-ghc", "true"
+                "ghc-version", "9.4.3"
+                "stack-version", "3.9.1"
+            ]
+        )
+    ]
 
     let images = [
         "macos-15"
@@ -77,6 +100,8 @@ let workflows = [
                 "image", images
             ])
             runsOn "${{ matrix.image }}"
+
+            yield! setUpHaskellEnvironment
 
             step(
                 name = "Build",
@@ -127,6 +152,8 @@ let workflows = [
                 "image", images
             ])
             runsOn "${{ matrix.image }}"
+
+            yield! setUpHaskellEnvironment
 
             step(
                 id = "version",
