@@ -47,6 +47,14 @@ let workflows = [
 
     let setUpHaskellEnvironment = [
         step(
+            name = "Cache Stack dependencies",
+            usesSpec = Auto "actions/cache",
+            options = Map.ofList [
+                "key", "${{ runner.os }}.stack.${{ hashFiles('HledgerInterop/stack.yaml', 'HledgerInterop/stack.yaml.lock', 'HledgerInterop/*.cabal') }}"
+                "path", "~/.stack\nHledgerInterop/.stack-work"
+            ]
+        )
+        step(
             name = "Set up Haskell Stack",
             usesSpec = Auto "haskell-actions/setup",
             options = Map.ofList [

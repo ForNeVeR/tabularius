@@ -41,6 +41,13 @@ jobs:
       with:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.*proj', '**/*.props') }}
         path: ${{ env.NUGET_PACKAGES }}
+    - name: Cache Stack dependencies
+      uses: actions/cache@v5
+      with:
+        key: ${{ runner.os }}.stack.${{ hashFiles('HledgerInterop/stack.yaml', 'HledgerInterop/stack.yaml.lock', 'HledgerInterop/*.cabal') }}
+        path: |-
+          ~/.stack
+          HledgerInterop/.stack-work
     - name: Set up Haskell Stack
       uses: haskell-actions/setup@v2
       with:
