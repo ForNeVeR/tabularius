@@ -45,23 +45,34 @@ let workflows = [
             yield! steps
         ]
 
-    let setUpHaskellEnvironment = [
-        step(
-            name = "Cache Stack dependencies",
-            usesSpec = Auto "actions/cache",
-            options = Map.ofList [
-                "key", "${{ matrix.image }}.stack.${{ hashFiles('HledgerInterop/stack.yaml', 'HledgerInterop/stack.yaml.lock', 'HledgerInterop/*.cabal') }}"
-                "path", String.concat "\n" [
-                  "~/.stack"
-                ]
-            ]
-        )
+    let setUpHaskellEnvironment name = [
         step(
             name = "Set up Haskell Stack",
             usesSpec = Auto "haskell-actions/setup",
             options = Map.ofList [
                 "enable-stack", "true"
                 "stack-version", "3.9.1"
+            ]
+        )
+
+        step(
+            name = "Determine the Stack root directory",
+            id = "stack",
+            shell = "pwsh",
+            run = """$stackRoot = stack path --stack-root
+if (!$?) { throw "Stack exit code: $LASTEXITCODE" }
+else {
+    Write-Host "stack-root=$stackRoot"
+    "stack-root=$stackRoot" >> $env:GITHUB_OUTPUT
+}"""
+        )
+
+        step(
+            name = "Cache Stack dependencies",
+            usesSpec = Auto "actions/cache",
+            options = Map.ofList [
+                "key", name + ".${{ matrix.image }}.stack.${{ hashFiles('HledgerInterop/stack.yaml', 'HledgerInterop/stack.yaml.lock', 'HledgerInterop/*.cabal') }}"
+                "path", "${{ steps.stack.outputs.stack-root }}"
             ]
         )
     ]
@@ -92,7 +103,7 @@ let workflows = [
             ])
             runsOn "${{ matrix.image }}"
 
-            yield! setUpHaskellEnvironment
+            yield! setUpHaskellEnvironment "main"
 
             step(
                 name = "Test HledgerInterop",
@@ -152,7 +163,7 @@ let workflows = [
             ])
             runsOn "${{ matrix.image }}"
 
-            yield! setUpHaskellEnvironment
+            yield! setUpHaskellEnvironment "release"
 
             step(
                 id = "version",

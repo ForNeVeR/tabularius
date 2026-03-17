@@ -42,16 +42,26 @@ jobs:
       with:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.*proj', '**/*.props') }}
         path: ${{ env.NUGET_PACKAGES }}
-    - name: Cache Stack dependencies
-      uses: actions/cache@v5
-      with:
-        key: ${{ matrix.image }}.stack.${{ hashFiles('HledgerInterop/stack.yaml', 'HledgerInterop/stack.yaml.lock', 'HledgerInterop/*.cabal') }}
-        path: ~/.stack
     - name: Set up Haskell Stack
       uses: haskell-actions/setup@v2
       with:
         enable-stack: true
         stack-version: 3.9.1
+    - id: stack
+      name: Determine the Stack root directory
+      shell: pwsh
+      run: |-
+        $stackRoot = stack path --stack-root
+        if (!$?) { throw "Stack exit code: $LASTEXITCODE" }
+        else {
+            Write-Host "stack-root=$stackRoot"
+            "stack-root=$stackRoot" >> $env:GITHUB_OUTPUT
+        }
+    - name: Cache Stack dependencies
+      uses: actions/cache@v5
+      with:
+        key: release.${{ matrix.image }}.stack.${{ hashFiles('HledgerInterop/stack.yaml', 'HledgerInterop/stack.yaml.lock', 'HledgerInterop/*.cabal') }}
+        path: ${{ steps.stack.outputs.stack-root }}
     - id: version
       name: Get version
       shell: pwsh
