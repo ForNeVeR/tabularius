@@ -47,7 +47,7 @@ jobs:
         key: ${{ runner.os }}.stack.${{ hashFiles('HledgerInterop/stack.yaml', 'HledgerInterop/stack.yaml.lock', 'HledgerInterop/*.cabal') }}
         path: |-
           HledgerInterop/.stack-work
-          ~/.ghcup
+          ~/.ghcup/ghc
           ~/.stack
     - name: Set up Haskell Stack
       uses: haskell-actions/setup@v2

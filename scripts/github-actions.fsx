@@ -53,7 +53,7 @@ let workflows = [
                 "key", "${{ runner.os }}.stack.${{ hashFiles('HledgerInterop/stack.yaml', 'HledgerInterop/stack.yaml.lock', 'HledgerInterop/*.cabal') }}"
                 "path", String.concat "\n" [
                   "HledgerInterop/.stack-work"
-                  "~/.ghcup"
+                  "~/.ghcup/ghc"
                   "~/.stack"
                 ]
             ]
