@@ -37,7 +37,7 @@
   <Project Path="Tabularius.Tests/Tabularius.Tests.fsproj">
     <BuildDependency Project="HledgerInterop/HledgerInterop.proj" />
   </Project>
-  <Project Path="Tabularius/Tabularius.csproj">
+  <Project Path="Tabularius/Tabularius.fsproj">
     <BuildDependency Project="HledgerInterop/HledgerInterop.proj" />
   </Project>
   <Project Path="HledgerInterop/HledgerInterop.proj" Type="00000000-0000-0000-0000-000000000000" />
