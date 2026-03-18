@@ -21,6 +21,12 @@ Download the archive for your platform from the [Releases][releases] page and un
 - Linux (x64, ARM64)
 - macOS (ARM64)
 
+Files
+-----
+Tabularius stores its log files in the following location:
+- **Windows**: `%TEMP%\tabularius\tabularius.log`
+- **Linux/macOS**: `$TMPDIR/tabularius/tabularius.log` (typically `/tmp/tabularius/tabularius.log`)
+
 Documentation
 -------------
 - [Changelog][docs.changelog]

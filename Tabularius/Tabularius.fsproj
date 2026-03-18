@@ -14,22 +14,25 @@ SPDX-License-Identifier: MIT
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\HledgerInterop\bin\$(SharedLibName)"
-              CopyToOutputDirectory="PreserveNewest"
-              Link="$(SharedLibName)" />
+        <None Include="..\HledgerInterop\bin\$(SharedLibName)" CopyToOutputDirectory="PreserveNewest" Link="$(SharedLibName)" />
     </ItemGroup>
 
     <!-- On Linux: also include bundled GHC runtime .so files -->
     <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
-        <None Include="..\HledgerInterop\bin\libHS*.so"
-              CopyToOutputDirectory="PreserveNewest"
-              LinkBase="." />
+        <None Include="..\HledgerInterop\bin\libHS*.so" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Tabularius.Interop\Tabularius.Interop.csproj" />
     </ItemGroup>
     <ItemGroup>
       <Compile Include="Program.fs" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.5" />
+      <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
+      <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+      <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+      <PackageReference Include="TruePath" Version="1.12.0" />
     </ItemGroup>
 
 </Project>
