@@ -5,36 +5,55 @@
 module Tabularius.Program
 
 open System
+open System.IO
 open Microsoft.Extensions.Logging
 open Serilog
 open Tabularius.Interop
-open TruePath
 
 [<EntryPoint>]
-let main (_args: string[]): int =
-    let logDir = Temporary.SystemTempDirectory() / "tabularius"
-    let logFilePath = logDir / "tabularius.log"
+let main(args: string[]) : int =
+    match Configuration.TryGetConfigPath args with
+    | Error msg ->
+        eprintfn $"%s{msg}"
+        ExitCodes.ConfigArgMissing
+    | Ok configPath ->
+        let config =
+            match configPath with
+            | Some path ->
+                try
+                    let cfg = Configuration.ReadConfiguration(path).GetAwaiter().GetResult()
+                    Some cfg
+                with
+                | :? FileNotFoundException as ex ->
+                    eprintfn $"Configuration file not found: %s{ex.FileName}"
+                    None
+                | :? FormatException as ex ->
+                    eprintfn $"Invalid configuration file: %s{ex.Message}"
+                    None
+            | None -> None
 
-    let serilogLogger =
-        LoggerConfiguration()
-            .WriteTo.Console()
-            .WriteTo.File(logFilePath.Value)
-            .CreateLogger()
+        match configPath, config with
+        | Some _, None ->
+            // Config was requested but failed to load.
+            ExitCodes.ConfigFileNotFound
+        | _ ->
+            let serilogLogger = Configuration.CreateSerilogLogger config
 
-    use loggerFactory =
-        LoggerFactory.Create(fun builder ->
-            builder.AddSerilog(serilogLogger, dispose = true) |> ignore)
+            use loggerFactory =
+                LoggerFactory.Create(fun builder ->
+                    builder.AddSerilog(serilogLogger, dispose = true) |> ignore)
 
-    let logger = loggerFactory.CreateLogger("Tabularius.Program")
+            let logger = loggerFactory.CreateLogger("Tabularius.Program")
 
-    logger.LogInformation("Tabularius is starting. Log directory: {LogDir}", logDir)
+            logger.LogInformation("Tabularius is starting.")
 
-    Hledger.Initialize()
-    try
-        let result = Hledger.Adder(2, 3)
-        Console.WriteLine(result)
-    finally
-        logger.LogInformation("Tabularius is shutting down.")
-        Hledger.Shutdown()
+            Hledger.Initialize()
 
-    0
+            try
+                let result = Hledger.Adder(2, 3)
+                Console.WriteLine(result)
+            finally
+                logger.LogInformation("Tabularius is shutting down.")
+                Hledger.Shutdown()
+
+            ExitCodes.Success
