@@ -6,9 +6,16 @@ module Tabularius.Program
 
 open System
 open System.IO
+open Avalonia
 open Microsoft.Extensions.Logging
 open Serilog
-open Tabularius.Interop
+
+let BuildAvaloniaApp() =
+    AppBuilder
+        .Configure<App>()
+        .UsePlatformDetect()
+        .WithInterFont()
+        .LogToTrace(areas = Array.empty)
 
 [<EntryPoint>]
 let main(args: string[]) : int =
@@ -47,13 +54,7 @@ let main(args: string[]) : int =
 
             logger.LogInformation("Tabularius is starting.")
 
-            Hledger.Initialize()
-
             try
-                let result = Hledger.Adder(2, 3)
-                Console.WriteLine(result)
+                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args)
             finally
                 logger.LogInformation("Tabularius is shutting down.")
-                Hledger.Shutdown()
-
-            ExitCodes.Success
