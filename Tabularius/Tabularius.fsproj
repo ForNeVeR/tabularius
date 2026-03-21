@@ -30,8 +30,10 @@ SPDX-License-Identifier: MIT
     <ItemGroup>
         <Compile Include="ExitCodes.fs"/>
         <Compile Include="Configuration.fs"/>
-        <Compile Include="ViewModels\MainWindowViewModel.fs"/>
+        <Compile Include="ViewModels\StatusViewModel.fs" />
+        <Compile Include="ViewModels\MainViewModel.fs" />
         <Compile Include="Views\MainWindow.axaml.fs"/>
+        <Compile Include="Views\StatusBar.axaml.fs" />
         <Compile Include="App.axaml.fs"/>
         <Compile Include="Program.fs"/>
     </ItemGroup>

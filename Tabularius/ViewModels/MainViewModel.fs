@@ -5,8 +5,7 @@
 namespace Tabularius.ViewModels
 
 open CommunityToolkit.Mvvm.ComponentModel
-open Tabularius.Resources
 
-type MainWindowViewModel() =
+type MainViewModel() =
     inherit ObservableObject()
-    member this.Greeting = Localization.Welcome
+    member this.Status = StatusViewModel()

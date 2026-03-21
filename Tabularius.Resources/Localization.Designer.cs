@@ -60,15 +60,6 @@ namespace Tabularius.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Welcome to Tabularius!.
-        /// </summary>
-        public static string Welcome {
-            get {
-                return ResourceManager.GetString("Welcome", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Tabularius.
         /// </summary>
         public static string WindowTitle {

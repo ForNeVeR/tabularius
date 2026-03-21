@@ -25,7 +25,7 @@ type App() =
 
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->
-            desktop.MainWindow <- MainWindow(DataContext = MainWindowViewModel())
+            desktop.MainWindow <- MainWindow(DataContext = MainViewModel())
         | _ -> ()
 
         base.OnFrameworkInitializationCompleted()
