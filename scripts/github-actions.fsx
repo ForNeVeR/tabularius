@@ -77,6 +77,15 @@ else {
         )
     ]
 
+    // See https://github.com/mono/SkiaSharp/issues/3272
+    let setUpSkiaSharpWorkarounds = [
+        step(
+            name = "Work around a SkiaSharp issue on ARM64 Linux",
+            condition = "runner.os == 'Linux' && runner.arch == 'ARM64'",
+            run = "echo \"LD_PRELOAD=/lib/aarch64-linux-gnu/libuuid.so.1\" >> $GITHUB_ENV"
+        )
+    ]
+
     let images = [
         "macos-15"
         "ubuntu-24.04"
@@ -111,6 +120,8 @@ else {
                 workingDirectory = "HledgerInterop",
                 run = "stack test"
             )
+
+            yield! setUpSkiaSharpWorkarounds
 
             step(
                 name = "Build",
@@ -171,6 +182,8 @@ else {
                 shell = "pwsh",
                 run = "echo \"version=$(scripts/Get-Version.ps1 -RefName $env:GITHUB_REF)\" >> $env:GITHUB_OUTPUT"
             )
+            yield! setUpSkiaSharpWorkarounds
+
             step(
                 name = "Build the project",
                 shell = "pwsh",

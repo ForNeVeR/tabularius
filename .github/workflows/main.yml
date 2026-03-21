@@ -81,6 +81,9 @@ jobs:
       shell: pwsh
       run: stack test
       working-directory: HledgerInterop
+    - if: runner.os == 'Linux' && runner.arch == 'ARM64'
+      name: Work around a SkiaSharp issue on ARM64 Linux
+      run: echo "LD_PRELOAD=/lib/aarch64-linux-gnu/libuuid.so.1" >> $GITHUB_ENV
     - name: Build
       run: dotnet build
     - name: Test
