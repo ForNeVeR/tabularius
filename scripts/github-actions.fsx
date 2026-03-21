@@ -19,16 +19,18 @@ let workflows = [
             yield! steps
         ]
 
+    let checkOut = step(
+        name = "Check out the sources",
+        usesSpec = Auto "actions/checkout"
+    )
+
     let dotNetJob id steps =
         job id [
             setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
             setEnv "DOTNET_NOLOGO" "1"
             setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
 
-            step(
-                name = "Check out the sources",
-                usesSpec = Auto "actions/checkout"
-            )
+            checkOut
             step(
                 name = "Set up .NET SDK",
                 usesSpec = Auto "actions/setup-dotnet"
@@ -137,10 +139,7 @@ else {
 
         job "licenses" [
             runsOn "ubuntu-24.04"
-            step(
-                name = "Check out the sources",
-                usesSpec = Auto "actions/checkout"
-            )
+            checkOut
             step(
                 name = "REUSE license check",
                 usesSpec = Auto "fsfe/reuse-action"
@@ -149,14 +148,24 @@ else {
 
         job "encoding" [
             runsOn "ubuntu-24.04"
-            step(
-                name = "Check out the sources",
-                usesSpec = Auto "actions/checkout"
-            )
+            checkOut
             step(
                 name = "Verify encoding",
                 shell = "pwsh",
                 run = "Install-Module VerifyEncoding -Repository PSGallery -RequiredVersion 2.2.1 -Force && Test-Encoding"
+            )
+        ]
+
+        job "todos" [
+            runsOn "ubuntu-24.04"
+            checkOut
+            step(
+                name = "Check TODOs",
+                usesSpec = Auto "ForNeVeR/Todosaurus/action",
+                options = Map.ofList [
+                    "strict", "true"
+                    "github-token", "${{ secrets.GITHUB_TOKEN }}"
+                ]
             )
         ]
     ]
