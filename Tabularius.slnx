@@ -42,6 +42,7 @@
     <File Path="Tabularius.slnx.license" />
   </Folder>
   <Project Path="Tabularius.Interop/Tabularius.Interop.csproj" />
+  <Project Path="Tabularius.Resources/Tabularius.Resources.csproj" />
   <Project Path="Tabularius.Tests/Tabularius.Tests.fsproj">
     <BuildDependency Project="HledgerInterop/HledgerInterop.proj" />
   </Project>
