@@ -68,7 +68,7 @@ jobs:
       run: echo "version=$(scripts/Get-Version.ps1 -RefName $env:GITHUB_REF)" >> $env:GITHUB_OUTPUT
     - if: runner.os == 'Linux' && runner.arch == 'ARM64'
       name: Work around a SkiaSharp issue on ARM64 Linux
-      run: echo "LD_PRELOAD=/lib/aarch64-linux-gnu/libuuid.so.1" >> $GITHUB_ENV
+      run: echo "LD_PRELOAD=/lib/aarch64-linux-gnu/libuuid.so.1:/lib/aarch64-linux-gnu/libfreetype.so.6" >> $GITHUB_ENV
     - name: Build the project
       shell: pwsh
       run: dotnet build --configuration Release -p:Version=${{ steps.version.outputs.version }}

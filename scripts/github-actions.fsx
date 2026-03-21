@@ -82,7 +82,7 @@ else {
         step(
             name = "Work around a SkiaSharp issue on ARM64 Linux",
             condition = "runner.os == 'Linux' && runner.arch == 'ARM64'",
-            run = "echo \"LD_PRELOAD=/lib/aarch64-linux-gnu/libuuid.so.1\" >> $GITHUB_ENV"
+            run = "echo \"LD_PRELOAD=/lib/aarch64-linux-gnu/libuuid.so.1:/lib/aarch64-linux-gnu/libfreetype.so.6\" >> $GITHUB_ENV"
         )
     ]
 
