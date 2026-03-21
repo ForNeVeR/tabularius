@@ -79,6 +79,8 @@ using (var bw = new System.IO.BinaryWriter(fs))
     <Target Name="ProcessSvgFiles" BeforeTargets="CreateIcoFile" DependsOnTargets="DotNetToolRestore"
             Inputs="@(Svg)"
             Outputs="$(IntermediateOutputPath)Resources\icon.ico">
+        <MakeDir Directories="$(IntermediateOutputPath)Resources"/>
+
         <!-- Sized PNGs for ICO -->
         <Exec Command='dotnet tool run Svg.Skia.Converter --inputFiles "@(Svg)" --outputFiles "$(IntermediateOutputPath)Resources/%(Svg.FileName)-48.png" --scale 0.09375' />
         <Exec Command='dotnet tool run Svg.Skia.Converter --inputFiles "@(Svg)" --outputFiles "$(IntermediateOutputPath)Resources/%(Svg.FileName)-256.png" --scale 0.5' />
