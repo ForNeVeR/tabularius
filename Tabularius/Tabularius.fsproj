@@ -29,15 +29,18 @@ SPDX-License-Identifier: MIT
     </ItemGroup>
     <ItemGroup>
         <Compile Include="ExitCodes.fs"/>
+        <Compile Include="ErrorCollector.fs"/>
         <Compile Include="Configuration.fs"/>
         <Compile Include="ViewModels\StatusViewModel.fs" />
         <Compile Include="ViewModels\MainViewModel.fs" />
         <Compile Include="Views\MainWindow.axaml.fs"/>
         <Compile Include="Views\StatusBar.axaml.fs" />
         <Compile Include="App.axaml.fs"/>
+        <Compile Include="AvaloniaScheduler.fs" />
         <Compile Include="Program.fs"/>
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="JetBrains.Lifetimes" Version="2026.1.3" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5"/>
         <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.5"/>
         <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0"/>

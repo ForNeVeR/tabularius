@@ -4,4 +4,10 @@
 
 namespace Tabularius.ViewModels
 
-type StatusViewModel() = class end
+open System.Collections.ObjectModel
+open CommunityToolkit.Mvvm.ComponentModel
+open Tabularius
+
+type StatusViewModel(errorCollector: ErrorCollector) =
+    inherit ObservableObject()
+    member _.Errors: ObservableCollection<ErrorEntry> = errorCollector.Errors

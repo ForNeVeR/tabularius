@@ -32,17 +32,20 @@ let ReadConfiguration(configPath: AbsolutePath): Task<IConfigurationRoot> =
                 .Build()
     }
 
-let CreateSerilogLogger(config: IConfigurationRoot option) : Serilog.Core.Logger =
+let CreateSerilogLogger(config: IConfigurationRoot option, sink: Serilog.Core.ILogEventSink option) : Serilog.Core.Logger =
+    let addSink (lc: LoggerConfiguration) =
+        match sink with
+        | Some s -> lc.WriteTo.Sink(s, restrictedToMinimumLevel = Serilog.Events.LogEventLevel.Error) |> ignore
+        | None -> ()
+
     match config with
     | Some cfg when cfg.GetSection("Serilog").Exists() ->
-        LoggerConfiguration()
-            .ReadFrom.Configuration(cfg)
-            .CreateLogger()
+        let lc = LoggerConfiguration().ReadFrom.Configuration(cfg)
+        addSink lc
+        lc.CreateLogger()
     | _ ->
         let logDir = Temporary.SystemTempDirectory() / "tabularius"
         let logFilePath = logDir / "tabularius.log"
-
-        LoggerConfiguration()
-            .WriteTo.Console()
-            .WriteTo.File(logFilePath.Value)
-            .CreateLogger()
+        let lc = LoggerConfiguration().WriteTo.Console().WriteTo.File(logFilePath.Value)
+        addSink lc
+        lc.CreateLogger()

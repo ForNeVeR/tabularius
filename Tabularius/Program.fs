@@ -6,7 +6,9 @@ module Tabularius.Program
 
 open System
 open System.IO
+open System.Threading.Tasks
 open Avalonia
+open JetBrains.Lifetimes
 open Microsoft.Extensions.Logging
 open Serilog
 
@@ -44,13 +46,27 @@ let main(args: string[]) : int =
             // Config was requested but failed to load.
             ExitCodes.ConfigFileNotFound
         | _ ->
-            let serilogLogger = Configuration.CreateSerilogLogger config
+            let errorCollector = ErrorCollector(Lifetime.Eternal, AvaloniaScheduler())
+
+            let serilogLogger = Configuration.CreateSerilogLogger(config, Some(errorCollector :> Serilog.Core.ILogEventSink))
+            Log.Logger <- serilogLogger
 
             use loggerFactory =
                 LoggerFactory.Create(fun builder ->
                     builder.AddSerilog(serilogLogger, dispose = true) |> ignore)
 
             let logger = loggerFactory.CreateLogger("Tabularius.Program")
+
+            AppDomain.CurrentDomain.UnhandledException.Add(fun args ->
+                match args.ExceptionObject with
+                | :? Exception as ex -> logger.LogError(ex, "Unhandled AppDomain exception")
+                | obj -> logger.LogError("Unhandled non-exception AppDomain object: {Object}", obj))
+
+            TaskScheduler.UnobservedTaskException.Add(fun args ->
+                logger.LogError(args.Exception, "Unobserved task exception")
+                args.SetObserved())
+
+            App.SetErrorCollector(errorCollector)
 
             logger.LogInformation("Tabularius is starting.")
 

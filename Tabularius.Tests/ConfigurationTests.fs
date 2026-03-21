@@ -51,10 +51,10 @@ let ``CreateSerilogLogger returns logger with config``(): unit =
     let testDataDir = AbsolutePath.CurrentWorkingDirectory / "testdata"
     let configPath = testDataDir / "valid-config.json"
     let config = ReadConfiguration(configPath).GetAwaiter().GetResult()
-    use logger = CreateSerilogLogger(Some config)
+    use logger = CreateSerilogLogger(Some config, None)
     Assert.NotNull(logger)
 
 [<Fact>]
 let ``CreateSerilogLogger returns default logger without config``(): unit =
-    use logger = CreateSerilogLogger None
+    use logger = CreateSerilogLogger(None, None)
     Assert.NotNull(logger)

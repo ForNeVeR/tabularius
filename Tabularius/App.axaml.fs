@@ -8,11 +8,17 @@ open Avalonia
 open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.Data.Core.Plugins
 open Avalonia.Markup.Xaml
+open JetBrains.Collections.Viewable
+open JetBrains.Lifetimes
 open Tabularius.ViewModels
 open Tabularius.Views
 
 type App() =
     inherit Application()
+
+    static let mutable errorCollector: ErrorCollector option = None
+
+    static member SetErrorCollector(collector: ErrorCollector) = errorCollector <- Some collector
 
     override this.Initialize() =
         AvaloniaXamlLoader.Load(this)
@@ -25,7 +31,11 @@ type App() =
 
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->
-            desktop.MainWindow <- MainWindow(DataContext = MainViewModel())
+            let collector =
+                errorCollector
+                |> Option.defaultWith(fun () -> ErrorCollector(Lifetime.Eternal, SynchronousScheduler.Instance))
+
+            desktop.MainWindow <- MainWindow(DataContext = MainViewModel(collector))
         | _ -> ()
 
         base.OnFrameworkInitializationCompleted()
