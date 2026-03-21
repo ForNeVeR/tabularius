@@ -77,7 +77,8 @@ else {
         )
     ]
 
-    // See https://github.com/mono/SkiaSharp/issues/3272
+    // TODO[#40]: Remove this later, after some future upgrade of Svg.Skia.Converter incorporating an update of SkiaSharp.
+    //            See https://github.com/mono/SkiaSharp/issues/3272
     let setUpSkiaSharpWorkarounds = [
         step(
             name = "Work around a SkiaSharp issue on ARM64 Linux",

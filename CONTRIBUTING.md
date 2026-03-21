@@ -14,7 +14,7 @@ To work with the project, you'll need:
 - [Haskell Stack][haskell-stack] 3.x or later,
 - **(Linux only)** Clang — install via your package manager (e.g. `sudo apt install clang`).
 
-  This is required because stack might have problems installing witout clang. Last observed issue:
+  This is required because stack might have problems installing without clang. Last observed issue:
 
   > ```
   > gcc : error : unrecognized command-line option '--target=x86_64-unknown-linux'
@@ -22,6 +22,13 @@ To work with the project, you'll need:
 
 Build
 -----
+<!-- TODO[#40]: Get rid of this block in the future, after some future upgrade of Svg.Skia.Converter incorporating an update of SkiaSharp. -->
+On AArch64 Linux, you might need to set up the following environment if you experience the issue [SkiaSharp#3272][skia-sharp.3272]:
+
+```
+LD_PRELOAD=/lib/aarch64-linux-gnu/libuuid.so.1:/lib/aarch64-linux-gnu/libfreetype.so.6
+```
+
 Use the following shell command:
 
 ```console
@@ -90,3 +97,4 @@ $ dotnet fsi scripts/github-actions.fsx
 [haskell-stack]: https://docs.haskellstack.org/en/stable/install_and_upgrade/
 [powershell]: https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell
 [reuse]: https://reuse.software/
+[skia-sharp.3272]: https://github.com/mono/SkiaSharp/issues/3272
