@@ -10,6 +10,7 @@
   </Folder>
   <Folder Name="/art/">
     <File Path="art/icon.svg" />
+    <File Path="art/icon.svg.license" />
   </Folder>
   <Folder Name="/docs/">
     <File Path="docs\toc.yml" />
