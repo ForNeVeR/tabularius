@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2024-2026 Friedrich von Never <friedrich@fornever.me>
 SPDX-License-Identifier: MIT
 -->
 
-Tabularius [![Status Zero][status-zero]][andivionian-status-classifier]
+Tabularius <img src="art/icon.svg" width="24" height="24"/> [![Status Zero][status-zero]][andivionian-status-classifier]
 ========
 Tabularius is an ongoing implementation of UI for [hledger][].
 

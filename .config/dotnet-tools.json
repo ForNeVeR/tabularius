@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "svg.skia.converter": {
+      "version": "3.4.1",
+      "commands": [
+        "Svg.Skia.Converter"
+      ]
+    }
+  }
+}

@@ -1,0 +1,100 @@
+<!--
+SPDX-FileCopyrightText: 2023-2025 O21 contributors <https://github.com/ForNeVeR/O21>
+SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
+
+SPDX-License-Identifier: MIT
+-->
+
+<Project>
+    <UsingTask TaskName="CreateIcoFromPngs"
+               TaskFactory="RoslynCodeTaskFactory"
+               AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <PngFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+            <OutputFile ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Fragment" Language="cs">
+<![CDATA[
+var pngEntries = new System.Collections.Generic.List<(byte w, byte h, byte[] data)>();
+foreach (var item in PngFiles)
+{
+    var path = item.GetMetadata("FullPath");
+    if (string.IsNullOrEmpty(path)) path = item.ItemSpec;
+    var data = System.IO.File.ReadAllBytes(path);
+
+    // Read width/height from PNG IHDR chunk (bytes 16..23, big-endian uint32)
+    int width = (data[16] << 24) | (data[17] << 16) | (data[18] << 8) | data[19];
+    int height = (data[20] << 24) | (data[21] << 16) | (data[22] << 8) | data[23];
+
+    // ICODIRENTRY uses 0 to represent 256:
+    pngEntries.Add(((byte)(width >= 256 ? 0 : width), (byte)(height >= 256 ? 0 : height), data));
+}
+
+int count = pngEntries.Count;
+int dataOffset = 6 + count * 16;
+
+using (var fs = new System.IO.FileStream(OutputFile, System.IO.FileMode.Create))
+using (var bw = new System.IO.BinaryWriter(fs))
+{
+    // ICONDIR:
+    bw.Write((ushort)0);      // Reserved
+    bw.Write((ushort)1);      // Type: 1 = ICO
+    bw.Write((ushort)count);  // Image count
+
+    // ICONDIRENTRY records:
+    int offset = dataOffset;
+    foreach (var (w, h, data) in pngEntries)
+    {
+        bw.Write(w);             // Width
+        bw.Write(h);             // Height
+        bw.Write((byte)0);       // Color count
+        bw.Write((byte)0);       // Reserved
+        bw.Write((ushort)1);     // Color planes
+        bw.Write((ushort)32);    // Bits per pixel
+        bw.Write((uint)data.Length);
+        bw.Write((uint)offset);
+        offset += data.Length;
+    }
+
+    // Image data
+    foreach (var (_, _, data) in pngEntries)
+    {
+        bw.Write(data);
+    }
+}
+]]>
+            </Code>
+        </Task>
+    </UsingTask>
+
+    <Target Name="DotNetToolRestore"
+            BeforeTargets="ProcessSvgFiles"
+            Inputs="..\.config\dotnet-tools.json"
+            Outputs="$(IntermediateOutputPath)\dotnet-tool-restore.timestamp">
+        <Exec Command="dotnet tool restore" WorkingDirectory=".." />
+        <Touch Files="$(IntermediateOutputPath)\dotnet-tool-restore.timestamp" AlwaysCreate="true" />
+    </Target>
+
+    <Target Name="ProcessSvgFiles" BeforeTargets="CreateIcoFile" DependsOnTargets="DotNetToolRestore"
+            Inputs="@(Svg)"
+            Outputs="$(IntermediateOutputPath)Resources\icon.ico">
+        <!-- Sized PNGs for ICO -->
+        <Exec Command='dotnet tool run Svg.Skia.Converter --inputFiles "@(Svg)" --outputFiles "$(IntermediateOutputPath)Resources/%(Svg.FileName)-48.png" --scale 0.09375' />
+        <Exec Command='dotnet tool run Svg.Skia.Converter --inputFiles "@(Svg)" --outputFiles "$(IntermediateOutputPath)Resources/%(Svg.FileName)-256.png" --scale 0.5' />
+    </Target>
+
+    <Target Name="CreateIcoFile" BeforeTargets="AssignTargetPaths"
+            Inputs="$(IntermediateOutputPath)Resources\icon-48.png;
+                    $(IntermediateOutputPath)Resources\icon-256.png"
+            Outputs="$(IntermediateOutputPath)Resources\icon.ico">
+        <ItemGroup>
+            <IcoPngSource Include="$(IntermediateOutputPath)Resources\icon-48.png" />
+            <IcoPngSource Include="$(IntermediateOutputPath)Resources\icon-256.png" />
+        </ItemGroup>
+        <CreateIcoFromPngs PngFiles="@(IcoPngSource)" OutputFile="$(IntermediateOutputPath)Resources\icon.ico" />
+        <ItemGroup>
+            <AvaloniaResource Include="$(IntermediateOutputPath)Resources\icon.ico" Link="icon.ico"/>
+        </ItemGroup>
+    </Target>
+</Project>
