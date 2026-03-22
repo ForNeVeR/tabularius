@@ -10,7 +10,8 @@ SPDX-License-Identifier: MIT
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:Tabularius.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Tabularius.Views.StatusBar">
+             x:Class="Tabularius.Views.StatusBar"
+             x:DataType="viewModels:StatusViewModel">
     <Design.DataContext>
         <viewModels:StatusViewModel/>
     </Design.DataContext>

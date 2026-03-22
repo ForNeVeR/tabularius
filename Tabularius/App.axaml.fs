@@ -8,8 +8,10 @@ open Avalonia
 open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.Data.Core.Plugins
 open Avalonia.Markup.Xaml
+open Avalonia.Threading
 open JetBrains.Collections.Viewable
 open JetBrains.Lifetimes
+open Serilog
 open Tabularius.ViewModels
 open Tabularius.Views
 
@@ -24,6 +26,11 @@ type App() =
         AvaloniaXamlLoader.Load(this)
 
     override this.OnFrameworkInitializationCompleted() =
+
+        Dispatcher.UIThread.UnhandledException.Subscribe(fun e ->
+            Log.Logger.Error(e.Exception, "Unhandled exception")
+            e.Handled <- true
+        ) |> ignore
 
         // Line below is needed to remove Avalonia data validation.
         // Without this line you will get duplicate validations from both Avalonia and CT

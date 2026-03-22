@@ -10,4 +10,6 @@ open Tabularius
 
 type StatusViewModel(errorCollector: ErrorCollector) =
     inherit ObservableObject()
+    new() = StatusViewModel(ErrorCollector.DesignTime)
+
     member _.Errors: ObservableCollection<ErrorEntry> = errorCollector.Errors
