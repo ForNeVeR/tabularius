@@ -32,6 +32,27 @@ let ReadConfiguration(configPath: AbsolutePath): Task<IConfigurationRoot> =
                 .Build()
     }
 
+type TabulariusConfiguration = {
+    ErrorDiagnosticMode: bool
+}
+
+module TabulariusConfiguration =
+    let Default = { ErrorDiagnosticMode = false }
+
+let ReadTabulariusConfiguration(config: IConfigurationRoot option): TabulariusConfiguration =
+    match config with
+    | Some cfg ->
+        let errorDiagnosticMode =
+            match cfg.["ErrorDiagnosticMode"] with
+            | null -> false
+            | value ->
+                match System.Boolean.TryParse(value) with
+                | true, v -> v
+                | false, _ -> false
+        { ErrorDiagnosticMode = errorDiagnosticMode }
+    | None ->
+        TabulariusConfiguration.Default
+
 let CreateSerilogLogger(config: IConfigurationRoot option, sink: Serilog.Core.ILogEventSink option) : Serilog.Core.Logger =
     let addSink (lc: LoggerConfiguration) =
         match sink with

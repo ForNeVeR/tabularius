@@ -1,0 +1,10 @@
+{
+  "ErrorDiagnosticMode": true,
+  "Serilog": {
+    "Using": ["Serilog.Sinks.Console"],
+    "MinimumLevel": "Warning",
+    "WriteTo": [
+      { "Name": "Console" }
+    ]
+  }
+}

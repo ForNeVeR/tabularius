@@ -19,8 +19,10 @@ type App() =
     inherit Application()
 
     static let mutable errorCollector: ErrorCollector option = None
+    static let mutable configuration: Configuration.TabulariusConfiguration option = None
 
     static member SetErrorCollector(collector: ErrorCollector) = errorCollector <- Some collector
+    static member SetConfiguration(config: Configuration.TabulariusConfiguration) = configuration <- Some config
 
     override this.Initialize() =
         AvaloniaXamlLoader.Load(this)
@@ -42,7 +44,11 @@ type App() =
                 errorCollector
                 |> Option.defaultWith(fun () -> ErrorCollector(Lifetime.Eternal, SynchronousScheduler.Instance))
 
-            desktop.MainWindow <- MainWindow(DataContext = MainViewModel(collector))
+            let config =
+                configuration
+                |> Option.defaultValue Configuration.TabulariusConfiguration.Default
+
+            desktop.MainWindow <- MainWindow(DataContext = MainViewModel(collector, config))
         | _ -> ()
 
         base.OnFrameworkInitializationCompleted()

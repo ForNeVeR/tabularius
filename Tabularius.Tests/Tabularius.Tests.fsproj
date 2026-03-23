@@ -19,6 +19,7 @@ SPDX-License-Identifier: MIT
 
     <ItemGroup>
         <Content Include="testdata\valid-config.json" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="testdata\config-with-diagnostic-mode.json" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <ItemGroup>

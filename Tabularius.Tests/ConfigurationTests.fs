@@ -58,3 +58,24 @@ let ``CreateSerilogLogger returns logger with config``(): unit =
 let ``CreateSerilogLogger returns default logger without config``(): unit =
     use logger = CreateSerilogLogger(None, None)
     Assert.NotNull(logger)
+
+[<Fact>]
+let ``ReadTabulariusConfiguration returns defaults when config is None``(): unit =
+    let result = ReadTabulariusConfiguration(None)
+    Assert.False(result.ErrorDiagnosticMode)
+
+[<Fact>]
+let ``ReadTabulariusConfiguration returns defaults when key is absent``(): unit =
+    let testDataDir = AbsolutePath.CurrentWorkingDirectory / "testdata"
+    let configPath = testDataDir / "valid-config.json"
+    let config = ReadConfiguration(configPath).GetAwaiter().GetResult()
+    let result = ReadTabulariusConfiguration(Some config)
+    Assert.False(result.ErrorDiagnosticMode)
+
+[<Fact>]
+let ``ReadTabulariusConfiguration reads ErrorDiagnosticMode when set to true``(): unit =
+    let testDataDir = AbsolutePath.CurrentWorkingDirectory / "testdata"
+    let configPath = testDataDir / "config-with-diagnostic-mode.json"
+    let config = ReadConfiguration(configPath).GetAwaiter().GetResult()
+    let result = ReadTabulariusConfiguration(Some config)
+    Assert.True(result.ErrorDiagnosticMode)

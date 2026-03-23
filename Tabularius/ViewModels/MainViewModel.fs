@@ -7,9 +7,9 @@ namespace Tabularius.ViewModels
 open CommunityToolkit.Mvvm.ComponentModel
 open Tabularius
 
-type MainViewModel(errorCollector: ErrorCollector) =
+type MainViewModel(errorCollector: ErrorCollector, config: Configuration.TabulariusConfiguration) =
     inherit ObservableObject()
 
-    new() = MainViewModel(ErrorCollector.DesignTime)
+    new() = MainViewModel(ErrorCollector.DesignTime, Configuration.TabulariusConfiguration.Default)
 
-    member this.Status = StatusViewModel(errorCollector)
+    member this.Status = StatusViewModel(errorCollector, config)

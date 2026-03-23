@@ -46,6 +46,7 @@ let main(args: string[]) : int =
             // Config was requested but failed to load.
             ExitCodes.ConfigFileNotFound
         | _ ->
+            let appConfig = Configuration.ReadTabulariusConfiguration(config)
             let errorCollector = ErrorCollector(Lifetime.Eternal, AvaloniaScheduler())
 
             let serilogLogger = Configuration.CreateSerilogLogger(config, Some(errorCollector :> Serilog.Core.ILogEventSink))
@@ -67,6 +68,7 @@ let main(args: string[]) : int =
                 args.SetObserved())
 
             App.SetErrorCollector(errorCollector)
+            App.SetConfiguration(appConfig)
 
             logger.LogInformation("Tabularius is starting.")
 

@@ -61,7 +61,32 @@ The configuration file uses the standard [Serilog.Settings.Configuration][serilo
 }
 ```
 
-See the [Serilog.Settings.Configuration documentation][serilog.settings.configuration] for the full list of available options.
+See the [Serilog.Settings.Configuration documentation][serilog.settings.configuration] for the full list of available Serilog options.
+
+### Application Settings
+
+| Key                   | Type   | Default | Description                                                                           |
+|-----------------------|--------|---------|---------------------------------------------------------------------------------------|
+| `ErrorDiagnosticMode` | `bool` | `false` | When `true`, shows the "Test Error" button in the status bar for diagnostic purposes. |
+
+Example configuration with application settings:
+
+```json
+{
+  "ErrorDiagnosticMode": true,
+  "Serilog": {
+    "Using": ["Serilog.Sinks.Console", "Serilog.Sinks.File"],
+    "MinimumLevel": "Information",
+    "WriteTo": [
+      { "Name": "Console" },
+      {
+        "Name": "File",
+        "Args": { "path": "/tmp/tabularius/tabularius.log" }
+      }
+    ]
+  }
+}
+```
 
 Files
 -----
