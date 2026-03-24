@@ -9,19 +9,20 @@ open System.Collections.ObjectModel
 open CommunityToolkit.Mvvm.ComponentModel
 open Tabularius
 
-type StatusViewModel(errorCollector: ErrorCollector, config: Configuration.TabulariusConfiguration) as this =
+type StatusViewModel(errorCollector: ErrorCollector, config: Configuration.TabulariusConfiguration, windowService: IWindowService) as this =
     inherit ObservableObject()
 
     do errorCollector.Errors.CollectionChanged.Add(fun _ ->
         this.NotifyErrorCountChanged()
     )
 
-    new() = StatusViewModel(ErrorCollector.DesignTime, Configuration.TabulariusConfiguration.Default)
+    new() = StatusViewModel(ErrorCollector.DesignTime, Configuration.TabulariusConfiguration.Default, DesignTimeWindowService())
 
     member _.IsErrorDiagnosticMode: bool = config.ErrorDiagnosticMode
     member _.Errors: ObservableCollection<ErrorEntry> = errorCollector.Errors
     member _.ErrorCount: int = errorCollector.Errors.Count
     member _.ThrowError(): unit = raise <| Exception("This is an error")
+    member _.ShowErrorList(): unit = windowService.ShowErrorList(errorCollector.Errors)
 
     member private this.NotifyErrorCountChanged() =
         this.OnPropertyChanged(nameof this.ErrorCount)

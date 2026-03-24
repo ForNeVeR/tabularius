@@ -48,7 +48,8 @@ type App() =
                 configuration
                 |> Option.defaultValue Configuration.TabulariusConfiguration.Default
 
-            desktop.MainWindow <- MainWindow(DataContext = MainViewModel(collector, config))
+            let windowService = WindowService()
+            desktop.MainWindow <- MainWindow(DataContext = MainViewModel(collector, config, windowService))
         | _ -> ()
 
         base.OnFrameworkInitializationCompleted()

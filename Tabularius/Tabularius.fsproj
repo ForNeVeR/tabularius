@@ -31,6 +31,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="ExitCodes.fs"/>
         <Compile Include="ErrorCollector.fs"/>
         <Compile Include="Configuration.fs"/>
+        <Compile Include="IWindowService.fs"/>
         <Compile Include="Converters\IntGreaterThanZeroConverter.fs"/>
         <Compile Include="Converters\ErrorMessageDisplayConverter.fs"/>
         <Compile Include="ViewModels\StatusViewModel.fs" />
@@ -40,6 +41,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="Views\ErrorListWindow.axaml.fs"/>
         <Compile Include="Views\ErrorCounterIndicator.axaml.fs"/>
         <Compile Include="Views\StatusBar.axaml.fs" />
+        <Compile Include="WindowService.fs"/>
         <Compile Include="App.axaml.fs"/>
         <Compile Include="AvaloniaScheduler.fs" />
         <Compile Include="Program.fs"/>
