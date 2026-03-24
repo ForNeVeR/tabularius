@@ -28,11 +28,6 @@ let addError(collector: ErrorCollector, message: string, stackTrace: string opti
         LogEvent(time, LogEventLevel.Error, ex, parser.Parse(message), Array.empty)
     )
 
-let waitForErrors(collector: ErrorCollector, count: int): Task = task {
-    while collector.Errors.Count < count do
-        do! Task.Delay(5)
-}
-
 let addErrorNow(collector: ErrorCollector, message: string, stackTrace: string option) =
     addError(collector, message, stackTrace, DateTimeOffset.UtcNow)
 
@@ -40,7 +35,7 @@ let addErrorNow(collector: ErrorCollector, message: string, stackTrace: string o
 let ``AddError creates a new entry for a unique error``(): Task = task {
     let collector = createCollector()
     addErrorNow(collector, "Something failed", None)
-    do! waitForErrors(collector, 1)
+    do! collector.WaitForSettle()
     Assert.Equal(1, collector.Errors.Count)
     Assert.Equal("Something failed", collector.Errors[0].Message)
     Assert.Equal(1, collector.Errors[0].Count)
@@ -51,8 +46,7 @@ let ``AddError deduplicates errors with same message and stack trace``(): Task =
     let collector = createCollector ()
     addErrorNow(collector, "Something failed", Some "at Foo.Bar()")
     addErrorNow(collector, "Something failed", Some "at Foo.Bar()")
-    addErrorNow(collector, "Stop signal", None)
-    do! waitForErrors(collector, 2)
+    do! collector.WaitForSettle()
     Assert.Equal(2, collector.Errors[0].Count)
 }
 
@@ -61,7 +55,7 @@ let ``AddError does not deduplicate errors with different messages``(): Task = t
     let collector = createCollector ()
     addErrorNow(collector, "Error A", None)
     addErrorNow(collector, "Error B", None)
-    do! waitForErrors(collector, 2)
+    do! collector.WaitForSettle()
     Assert.Equal(2, collector.Errors.Count)
 }
 
@@ -70,7 +64,7 @@ let ``AddError does not deduplicate errors with same message but different stack
     let collector = createCollector ()
     addErrorNow(collector, "Something failed", Some "at Foo.Bar()")
     addErrorNow(collector, "Something failed", Some "at Baz.Qux()")
-    do! waitForErrors(collector, 2)
+    do! collector.WaitForSettle()
     Assert.Equal(2, collector.Errors.Count)
 }
 
@@ -79,7 +73,7 @@ let ``AddError does not deduplicate errors with same stack trace but different m
     let collector = createCollector ()
     addErrorNow(collector, "Error A", Some "at Foo.Bar()")
     addErrorNow(collector, "Error B", Some "at Foo.Bar()")
-    do! waitForErrors(collector, 2)
+    do! collector.WaitForSettle()
     Assert.Equal(2, collector.Errors.Count)
 }
 
@@ -90,8 +84,7 @@ let ``AddError updates LastOccurrence on duplicate``(): Task = task {
     let t2 = DateTimeOffset(2026, 1, 1, 0, 1, 0, TimeSpan.Zero)
     addError(collector, "Error", None, t1)
     addError(collector, "Error", None, t2)
-    addErrorNow(collector, "Stop signal", None)
-    do! waitForErrors(collector, 2)
+    do! collector.WaitForSettle()
     Assert.Equal(t1, collector.Errors[0].FirstOccurrence)
     Assert.Equal(t2, collector.Errors[0].LastOccurrence)
 }
@@ -103,8 +96,7 @@ let ``AddError preserves FirstOccurrence on duplicate``(): Task = task {
     let t2 = DateTimeOffset(2026, 1, 2, 0, 0, 0, TimeSpan.Zero)
     addError(collector, "Error", None, t1)
     addError(collector, "Error", None, t2)
-    addErrorNow(collector, "Stop signal", None)
-    do! waitForErrors(collector, 2)
+    do! collector.WaitForSettle()
     Assert.Equal(t1, collector.Errors[0].FirstOccurrence)
 }
 
@@ -114,8 +106,7 @@ let ``AddError deduplicates no-exception errors correctly``(): Task = task {
     addErrorNow(collector, "Timeout", None)
     addErrorNow(collector, "Timeout", None)
     addErrorNow(collector, "Timeout", None)
-    addErrorNow(collector, "Stop signal", None)
-    do! waitForErrors(collector, 2)
+    do! collector.WaitForSettle()
     Assert.Equal(3, collector.Errors[0].Count)
 }
 
@@ -131,7 +122,7 @@ let ``Emit via ILogEventSink collects Error-level events``(): Task = task {
             parser.Parse("Test error"),
             Array.empty)
     sink.Emit(logEvent)
-    do! waitForErrors(collector, 1)
+    do! collector.WaitForSettle()
     Assert.Equal(1, collector.Errors.Count)
     Assert.Equal("Test error", collector.Errors[0].Message)
 }
@@ -148,18 +139,8 @@ let ``Emit via ILogEventSink ignores events below Error level``(): Task = task {
             parser.Parse("Just a warning"),
             Array.empty)
     sink.Emit(warningEvent)
-    // Emit an Error after the Warning so we can wait for it, proving the Warning was skipped.
-    let errorEvent =
-        LogEvent(
-            DateTimeOffset.UtcNow,
-            LogEventLevel.Error,
-            null,
-            parser.Parse("An error"),
-            Array.empty)
-    sink.Emit(errorEvent)
-    do! waitForErrors(collector, 1)
-    Assert.Equal(1, collector.Errors.Count)
-    Assert.Equal("An error", collector.Errors[0].Message)
+    do! collector.WaitForSettle()
+    Assert.Equal(0, collector.Errors.Count)
 }
 
 [<Fact>]
@@ -187,7 +168,7 @@ let ``Emit deduplicates same error logged twice``(): Task = task {
             Array.empty)
     sink.Emit(event1)
     sink.Emit(event2)
-    do! waitForErrors(collector, 1)
+    do! collector.WaitForSettle()
     Assert.Equal(1, collector.Errors.Count)
     Assert.Equal(2, collector.Errors[0].Count)
 }

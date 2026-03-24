@@ -5,9 +5,8 @@
 namespace Tabularius
 
 open System
-open System.Collections.Concurrent
+open System.Collections.Generic
 open System.Collections.ObjectModel
-open System.Threading.Channels
 open System.Threading.Tasks
 open CommunityToolkit.Mvvm.ComponentModel
 open JetBrains.Collections.Viewable
@@ -15,7 +14,7 @@ open JetBrains.Lifetimes
 open Serilog.Core
 open Serilog.Events
 
-type ErrorEntry(message: string, stackTrace: string, firstOccurrence: DateTimeOffset) =
+type ErrorEntry(message: string, stackTrace: string, firstOccurrence: DateTimeOffset, scheduler: IScheduler) =
     inherit ObservableObject()
 
     let mutable count = 1
@@ -26,54 +25,77 @@ type ErrorEntry(message: string, stackTrace: string, firstOccurrence: DateTimeOf
     member _.FirstOccurrence: DateTimeOffset = firstOccurrence
 
     member this.Count
-        with get () = count
+        with get () =
+            scheduler.AssertThread()
+            count
         and set value =
+            scheduler.AssertThread()
             count <- value
             this.OnPropertyChanged(nameof this.Count)
 
     member this.LastOccurrence
-        with get () = lastOccurrence
+        with get () =
+            scheduler.AssertThread()
+            lastOccurrence
         and set value =
+            scheduler.AssertThread()
             lastOccurrence <- value
             this.OnPropertyChanged(nameof this.LastOccurrence)
 
+type private Message =
+    | Add of ErrorEntry
+    | WaitForSettle of AsyncReplyChannel<unit>
+
 type ErrorCollector(lifetime: Lifetime, scheduler: IScheduler) =
-    let errors = Channel.CreateUnbounded<ErrorEntry>()
-    let index = ConcurrentDictionary<string, ErrorEntry>()
+    // Only accessed in the processor flow:
+    let index = Dictionary<_, ErrorEntry>()
+    // Only accessed from the scheduler:
     let observableErrors = ObservableCollection<ErrorEntry>()
 
-    let addError(entryToAdd: ErrorEntry) =
-        let key = ErrorCollector.MakeKey(entryToAdd.Message, entryToAdd.StackTrace)
+    let addError(entryToAdd: ErrorEntry, ct) =
+        let key = struct(entryToAdd.Message, entryToAdd.StackTrace)
 
-        let entry = index.GetOrAdd(key, fun _ -> entryToAdd)
-        let addedNew = Object.ReferenceEquals(entry, entryToAdd)
-        scheduler.InvokeOrQueue(lifetime, fun () ->
-            if addedNew then
-                observableErrors.Add(entry)
-            else
-                entry.Count <- entry.Count + 1
-                if entryToAdd.LastOccurrence > entry.LastOccurrence then
-                    entry.LastOccurrence <- entryToAdd.LastOccurrence
+        let entry, addedNew =
+            match index.TryGetValue key with
+            | true, entry -> entry, false
+            | false, _ ->
+                index.Add(key, entryToAdd)
+                entryToAdd, true
+
+        Task.Factory.StartNew(
+            action = (fun () ->
+                if addedNew then
+                    observableErrors.Add(entry)
+                else
+                    entry.Count <- entry.Count + 1
+                    if entryToAdd.LastOccurrence > entry.LastOccurrence then
+                        entry.LastOccurrence <- entryToAdd.LastOccurrence
+            ),
+            cancellationToken = ct,
+            creationOptions = TaskCreationOptions.RunContinuationsAsynchronously,
+            scheduler = scheduler.AsTaskScheduler()
         )
 
-    do (
-        lifetime.StartAsync(TaskScheduler.Default, fun() -> task {
-            let ct = lifetime.ToCancellationToken()
-            while not ct.IsCancellationRequested do
-                let! entry = errors.Reader.ReadAsync(ct)
-                addError entry
-
-            return ()
-        }) |> ignore
+    let processor = MailboxProcessor.Start(
+        body = (fun inbox ->
+            async {
+                let! ct = Async.CancellationToken
+                while lifetime.IsAlive do
+                    match! inbox.Receive() with
+                    | Add error ->
+                        do! Async.AwaitTask(addError(error, ct))
+                    | WaitForSettle replyChannel ->
+                        replyChannel.Reply()
+            }),
+        cancellationToken = lifetime.ToCancellationToken()
     )
 
-    [<ThreadStatic; DefaultValue>]
-    static val mutable private processing: bool
-
-    static member private MakeKey(message: string, stackTrace: string) =
-        message + "\x00" + stackTrace
-
     member _.Errors: ObservableCollection<ErrorEntry> = observableErrors
+
+    member _.WaitForSettle(): Task =
+        processor.PostAndAsyncReply WaitForSettle
+        |> Async.StartAsTask
+        :> Task
 
     static member DesignTime: ErrorCollector = ErrorCollector(Lifetime.Eternal, SynchronousScheduler.Instance)
 
@@ -90,5 +112,5 @@ type ErrorCollector(lifetime: Lifetime, scheduler: IScheduler) =
                     |> Option.bind Option.ofObj
                     |> Option.defaultWith(fun() -> Environment.StackTrace)
 
-                let entry = ErrorEntry(message, stackTrace, logEvent.Timestamp)
-                errors.Writer.TryWrite entry |> ignore
+                let entry = ErrorEntry(message, stackTrace, logEvent.Timestamp, scheduler)
+                processor.Post(Add entry)
