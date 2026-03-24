@@ -12,7 +12,8 @@ open Tabularius
 type ErrorListViewModel(errors: ObservableCollection<ErrorEntry>) =
     inherit ObservableObject()
 
-    let mutable selectedError: ErrorEntry voption = ValueNone
+    let mutable selectedError: ErrorEntry voption =
+        errors |> Seq.tryHead |> Option.toValueOption
 
     new() = ErrorListViewModel(ErrorCollector.DesignTime.Errors)
 
