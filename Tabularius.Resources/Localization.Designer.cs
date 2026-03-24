@@ -60,6 +60,33 @@ namespace Tabularius.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error List.
+        /// </summary>
+        public static string ErrorList_WindowTitle {
+            get {
+                return ResourceManager.GetString("ErrorList_WindowTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to [NO MESSAGE].
+        /// </summary>
+        public static string ErrorList_NoMessage {
+            get {
+                return ResourceManager.GetString("ErrorList_NoMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to These are exceptions happened during the current section of Tabularius. Please report them at:.
+        /// </summary>
+        public static string ErrorList_Disclaimer {
+            get {
+                return ResourceManager.GetString("ErrorList_Disclaimer", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Tabularius.
         /// </summary>
         public static string WindowTitle {

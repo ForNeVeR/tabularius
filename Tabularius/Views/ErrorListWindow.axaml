@@ -1,0 +1,60 @@
+<!--
+SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
+
+SPDX-License-Identifier: MIT
+-->
+
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:Tabularius.ViewModels"
+        xmlns:local="clr-namespace:Tabularius"
+        xmlns:converters="clr-namespace:Tabularius.Converters"
+        xmlns:resources="clr-namespace:Tabularius.Resources;assembly=Tabularius.Resources"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+        x:Class="Tabularius.Views.ErrorListWindow"
+        x:DataType="viewModels:ErrorListViewModel"
+        Width="800" Height="500"
+        WindowStartupLocation="CenterOwner"
+        Title="{x:Static resources:Localization.ErrorList_WindowTitle}">
+    <Design.DataContext>
+        <viewModels:ErrorListViewModel/>
+    </Design.DataContext>
+
+    <Window.Resources>
+        <converters:ErrorMessageDisplayConverter x:Key="ErrorMessageDisplayConverter"/>
+    </Window.Resources>
+
+    <DockPanel Margin="8">
+        <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,8,0,0">
+            <TextBlock Text="{x:Static resources:Localization.ErrorList_Disclaimer}"
+                       HorizontalAlignment="Center"/>
+            <HyperlinkButton NavigateUri="https://github.com/ForNeVeR/tabularius/issues"
+                             Content="https://github.com/ForNeVeR/tabularius/issues"
+                             HorizontalAlignment="Center"
+                             Padding="0"/>
+        </StackPanel>
+
+        <Grid ColumnDefinitions="250,8,*">
+            <ListBox Grid.Column="0"
+                     ItemsSource="{Binding Errors}"
+                     SelectedItem="{Binding SelectedError}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="local:ErrorEntry">
+                        <TextBlock Text="{Binding Message, Converter={StaticResource ErrorMessageDisplayConverter}}"
+                                   TextTrimming="CharacterEllipsis"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <GridSplitter Grid.Column="1" ResizeDirection="Columns"/>
+
+            <TextBox Grid.Column="2"
+                     Text="{Binding DetailText, Mode=OneWay}"
+                     IsReadOnly="True"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"/>
+        </Grid>
+    </DockPanel>
+</Window>

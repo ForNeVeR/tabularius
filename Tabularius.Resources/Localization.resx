@@ -27,4 +27,13 @@ SPDX-License-Identifier: MIT
     <data name="WindowTitle" xml:space="preserve">
         <value>Tabularius</value>
     </data>
+    <data name="ErrorList_WindowTitle" xml:space="preserve">
+        <value>Error List</value>
+    </data>
+    <data name="ErrorList_NoMessage" xml:space="preserve">
+        <value>[NO MESSAGE]</value>
+    </data>
+    <data name="ErrorList_Disclaimer" xml:space="preserve">
+        <value>These are exceptions happened during the current section of Tabularius. Please report them at:</value>
+    </data>
 </root>
