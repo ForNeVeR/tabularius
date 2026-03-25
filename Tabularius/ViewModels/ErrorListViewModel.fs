@@ -8,6 +8,7 @@ open System
 open System.Collections.ObjectModel
 open CommunityToolkit.Mvvm.ComponentModel
 open Tabularius
+open Tabularius.Resources
 
 type ErrorListViewModel(errorCollector: ErrorCollector) =
     inherit ObservableObject()
@@ -37,10 +38,13 @@ type ErrorListViewModel(errorCollector: ErrorCollector) =
         match selectedError with
         | ValueNone -> ""
         | ValueSome entry ->
+            let header =
+                $"{Localization.ErrorList_Occurrences} {entry.Count}\n{Localization.ErrorList_LastOccurrence} {entry.LastOccurrence}"
             let msg = if String.IsNullOrWhiteSpace(entry.Message) then "" else entry.Message
-            match entry.ExceptionInfo with
-            | ValueSome info ->
-                msg + "\n\n" + ExceptionInfo.formatAsText info
-            | ValueNone ->
-                if String.IsNullOrWhiteSpace(entry.EnvironmentStackTrace) then msg
-                else msg + "\n\n" + entry.EnvironmentStackTrace
+            let body =
+                match entry.ExceptionInfo with
+                | ValueSome info -> msg + "\n\n" + ExceptionInfo.formatAsText info
+                | ValueNone ->
+                    if String.IsNullOrWhiteSpace(entry.EnvironmentStackTrace) then msg
+                    else msg + "\n\n" + entry.EnvironmentStackTrace
+            header + "\n\n" + body
