@@ -1,5 +1,5 @@
 {
-  "ErrorDiagnosticMode": true,
+  "DiagnosticMode": true,
   "Serilog": {
     "Using": ["Serilog.Sinks.Console"],
     "MinimumLevel": "Warning",

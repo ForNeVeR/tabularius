@@ -62,7 +62,7 @@ let ``CreateSerilogLogger returns default logger without config``(): unit =
 [<Fact>]
 let ``ReadTabulariusConfiguration returns defaults when config is None``(): unit =
     let result = ReadTabulariusConfiguration(None)
-    Assert.False(result.ErrorDiagnosticMode)
+    Assert.False(result.DiagnosticMode)
 
 [<Fact>]
 let ``ReadTabulariusConfiguration returns defaults when key is absent``(): unit =
@@ -70,12 +70,12 @@ let ``ReadTabulariusConfiguration returns defaults when key is absent``(): unit 
     let configPath = testDataDir / "valid-config.json"
     let config = ReadConfiguration(configPath).GetAwaiter().GetResult()
     let result = ReadTabulariusConfiguration(Some config)
-    Assert.False(result.ErrorDiagnosticMode)
+    Assert.False(result.DiagnosticMode)
 
 [<Fact>]
-let ``ReadTabulariusConfiguration reads ErrorDiagnosticMode when set to true``(): unit =
+let ``ReadTabulariusConfiguration reads DiagnosticMode when set to true``(): unit =
     let testDataDir = AbsolutePath.CurrentWorkingDirectory / "testdata"
     let configPath = testDataDir / "config-with-diagnostic-mode.json"
     let config = ReadConfiguration(configPath).GetAwaiter().GetResult()
     let result = ReadTabulariusConfiguration(Some config)
-    Assert.True(result.ErrorDiagnosticMode)
+    Assert.True(result.DiagnosticMode)
