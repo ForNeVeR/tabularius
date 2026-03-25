@@ -8,6 +8,7 @@ open System
 open System.IO
 open System.Threading.Tasks
 open Avalonia
+open Avalonia.Logging
 open JetBrains.Diagnostics
 open JetBrains.Lifetimes
 open Microsoft.Extensions.Logging
@@ -51,6 +52,26 @@ let private SetUpLogger(logger: Microsoft.Extensions.Logging.ILogger) =
                         logger.Log(convertLevel level, message, ``exception``)
                     member this.Category = category
                 }
+    }
+
+    let convertLevel(level: LogEventLevel) =
+        match level with
+        | LogEventLevel.Fatal -> LogLevel.Critical
+        | LogEventLevel.Error -> LogLevel.Error
+        | LogEventLevel.Warning -> LogLevel.Warning
+        | LogEventLevel.Information -> LogLevel.Information
+        | LogEventLevel.Debug -> LogLevel.Debug
+        | LogEventLevel.Verbose -> LogLevel.Trace
+        | _ -> LogLevel.Critical
+    Logger.Sink <- {
+        new ILogSink with
+            member this.IsEnabled(level, area) =
+                logger.IsEnabled(convertLevel level)
+
+            member this.Log(level, area, source, messageTemplate) =
+                logger.Log(convertLevel level, messageTemplate, null)
+            member this.Log(level, area, source, messageTemplate, propertyValues) =
+                logger.Log(convertLevel level, messageTemplate, propertyValues)
     }
 
 [<EntryPoint; STAThread>]
