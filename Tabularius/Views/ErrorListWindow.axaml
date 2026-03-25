@@ -27,7 +27,7 @@ SPDX-License-Identifier: MIT
     </Window.Resources>
 
     <DockPanel Margin="8">
-        <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,8,0,0">
+        <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0" Spacing="4">
             <TextBlock Text="{x:Static resources:Localization.ErrorList_Disclaimer}"
                        HorizontalAlignment="Center"/>
             <HyperlinkButton NavigateUri="https://github.com/ForNeVeR/tabularius/issues"
@@ -37,16 +37,23 @@ SPDX-License-Identifier: MIT
         </StackPanel>
 
         <Grid ColumnDefinitions="250,8,*">
-            <ListBox Grid.Column="0"
-                     ItemsSource="{Binding Errors}"
-                     SelectedItem="{Binding SelectedError}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="local:ErrorEntry">
-                        <TextBlock Text="{Binding Message, Converter={StaticResource ErrorMessageDisplayConverter}}"
-                                   TextTrimming="CharacterEllipsis"/>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+            <DockPanel Grid.Column="0">
+                <Button DockPanel.Dock="Bottom"
+                        Command="{Binding ClearErrors}"
+                        Content="{x:Static resources:Localization.ErrorList_Clear}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Margin="0,4,0,0"/>
+                <ListBox ItemsSource="{Binding Errors}"
+                         SelectedItem="{Binding SelectedError}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="local:ErrorEntry">
+                            <TextBlock Text="{Binding Message, Converter={StaticResource ErrorMessageDisplayConverter}}"
+                                       TextTrimming="CharacterEllipsis"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
 
             <GridSplitter Grid.Column="1" ResizeDirection="Columns"/>
 

@@ -144,6 +144,33 @@ let ``Emit via ILogEventSink ignores events below Error level``(): Task = task {
 }
 
 [<Fact>]
+let ``Clear removes all errors``(): Task = task {
+    let collector = createCollector()
+    addErrorNow(collector, "Error A", None)
+    addErrorNow(collector, "Error B", Some "at Foo.Bar()")
+    do! collector.WaitForSettle()
+    Assert.Equal(2, collector.Errors.Count)
+    collector.Clear()
+    do! collector.WaitForSettle()
+    Assert.Equal(0, collector.Errors.Count)
+}
+
+[<Fact>]
+let ``Clear resets deduplication index``(): Task = task {
+    let collector = createCollector()
+    addErrorNow(collector, "Same error", Some "at Foo.Bar()")
+    do! collector.WaitForSettle()
+    Assert.Equal(1, collector.Errors.Count)
+    Assert.Equal(1, collector.Errors[0].Count)
+    collector.Clear()
+    do! collector.WaitForSettle()
+    addErrorNow(collector, "Same error", Some "at Foo.Bar()")
+    do! collector.WaitForSettle()
+    Assert.Equal(1, collector.Errors.Count)
+    Assert.Equal(1, collector.Errors[0].Count)
+}
+
+[<Fact>]
 let ``Emit deduplicates same error logged twice``(): Task = task {
     let collector = createCollector ()
     let sink = collector :> ILogEventSink

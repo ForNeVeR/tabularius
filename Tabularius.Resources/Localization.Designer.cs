@@ -62,6 +62,15 @@ namespace Tabularius.Resources {
         /// <summary>
         ///   Looks up a localized string similar to These are exceptions happened during the current session of Tabularius. Please report them at:.
         /// </summary>
+        public static string ErrorList_Clear {
+            get {
+                return ResourceManager.GetString("ErrorList_Clear", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to These are exceptions happened during the current session of Tabularius. Please report them at:.
+        /// </summary>
         public static string ErrorList_Disclaimer {
             get {
                 return ResourceManager.GetString("ErrorList_Disclaimer", resourceCulture);

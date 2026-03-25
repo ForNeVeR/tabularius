@@ -22,7 +22,7 @@ type StatusViewModel(errorCollector: ErrorCollector, config: Configuration.Tabul
     member _.Errors: ObservableCollection<ErrorEntry> = errorCollector.Errors
     member _.ErrorCount: int = errorCollector.Errors.Count
     member _.ThrowError(): unit = raise <| Exception("This is an error")
-    member _.ShowErrorList(): unit = windowService.ShowErrorList(errorCollector.Errors)
+    member _.ShowErrorList(): unit = windowService.ShowErrorList(errorCollector)
 
     member private this.NotifyErrorCountChanged() =
         this.OnPropertyChanged(nameof this.ErrorCount)

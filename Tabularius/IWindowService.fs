@@ -4,11 +4,9 @@
 
 namespace Tabularius
 
-open System.Collections.ObjectModel
-
 type IWindowService =
-    abstract ShowErrorList: errors: ObservableCollection<ErrorEntry> -> unit
+    abstract ShowErrorList: collector: ErrorCollector -> unit
 
 type DesignTimeWindowService() =
     interface IWindowService with
-        member _.ShowErrorList(_: ObservableCollection<ErrorEntry>) = ()
+        member _.ShowErrorList(_: ErrorCollector) = ()

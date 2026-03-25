@@ -36,4 +36,7 @@ SPDX-License-Identifier: MIT
     <data name="ErrorList_Disclaimer" xml:space="preserve">
         <value>These are exceptions happened during the current session of Tabularius. Please report them at:</value>
     </data>
+    <data name="ErrorList_Clear" xml:space="preserve">
+        <value>Clear</value>
+    </data>
 </root>

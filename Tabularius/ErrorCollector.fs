@@ -44,6 +44,7 @@ type ErrorEntry(message: string, stackTrace: string, firstOccurrence: DateTimeOf
 
 type private Message =
     | Add of ErrorEntry
+    | Clear
     | WaitForSettle of AsyncReplyChannel<unit>
 
 type ErrorCollector(lifetime: Lifetime, scheduler: IScheduler) =
@@ -51,6 +52,18 @@ type ErrorCollector(lifetime: Lifetime, scheduler: IScheduler) =
     let index = Dictionary<_, ErrorEntry>()
     // Only accessed from the scheduler:
     let observableErrors = ObservableCollection<ErrorEntry>()
+
+    let scheduleOnUiThread(ct, action) =
+        Task.Factory.StartNew(
+            action = Action(action),
+            cancellationToken = ct,
+            creationOptions = TaskCreationOptions.RunContinuationsAsynchronously,
+            scheduler = scheduler.AsTaskScheduler()
+        )
+
+    let clearErrors ct =
+        index.Clear()
+        scheduleOnUiThread(ct, observableErrors.Clear)
 
     let addError(entryToAdd: ErrorEntry, ct) =
         let key = struct(entryToAdd.Message, entryToAdd.StackTrace)
@@ -62,18 +75,13 @@ type ErrorCollector(lifetime: Lifetime, scheduler: IScheduler) =
                 index.Add(key, entryToAdd)
                 entryToAdd, true
 
-        Task.Factory.StartNew(
-            action = (fun () ->
-                if addedNew then
-                    observableErrors.Add(entry)
-                else
-                    entry.Count <- entry.Count + 1
-                    if entryToAdd.LastOccurrence > entry.LastOccurrence then
-                        entry.LastOccurrence <- entryToAdd.LastOccurrence
-            ),
-            cancellationToken = ct,
-            creationOptions = TaskCreationOptions.RunContinuationsAsynchronously,
-            scheduler = scheduler.AsTaskScheduler()
+        scheduleOnUiThread(ct, fun () ->
+            if addedNew then
+                observableErrors.Add(entry)
+            else
+                entry.Count <- entry.Count + 1
+                if entryToAdd.LastOccurrence > entry.LastOccurrence then
+                    entry.LastOccurrence <- entryToAdd.LastOccurrence
         )
 
     let processor = MailboxProcessor.Start(
@@ -84,6 +92,8 @@ type ErrorCollector(lifetime: Lifetime, scheduler: IScheduler) =
                     match! inbox.Receive() with
                     | Add error ->
                         do! Async.AwaitTask(addError(error, ct))
+                    | Clear ->
+                        do! Async.AwaitTask(clearErrors(ct))
                     | WaitForSettle replyChannel ->
                         replyChannel.Reply()
             }),
@@ -91,6 +101,8 @@ type ErrorCollector(lifetime: Lifetime, scheduler: IScheduler) =
     )
 
     member _.Errors: ObservableCollection<ErrorEntry> = observableErrors
+
+    member _.Clear(): unit = processor.Post(Clear)
 
     member _.WaitForSettle(): Task =
         processor.PostAndAsyncReply WaitForSettle

@@ -9,15 +9,16 @@ open System.Collections.ObjectModel
 open CommunityToolkit.Mvvm.ComponentModel
 open Tabularius
 
-type ErrorListViewModel(errors: ObservableCollection<ErrorEntry>) =
+type ErrorListViewModel(errorCollector: ErrorCollector) =
     inherit ObservableObject()
 
     let mutable selectedError: ErrorEntry voption =
-        errors |> Seq.tryHead |> Option.toValueOption
+        errorCollector.Errors |> Seq.tryHead |> Option.toValueOption
 
-    new() = ErrorListViewModel(ErrorCollector.DesignTime.Errors)
+    new() = ErrorListViewModel(ErrorCollector.DesignTime)
 
-    member _.Errors: ObservableCollection<ErrorEntry> = errors
+    member _.Errors: ObservableCollection<ErrorEntry> = errorCollector.Errors
+    member _.ClearErrors(): unit = errorCollector.Clear()
 
     member this.SelectedError
         with get(): ErrorEntry | null =
