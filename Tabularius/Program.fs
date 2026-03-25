@@ -19,7 +19,7 @@ let BuildAvaloniaApp() =
         .WithInterFont()
         .LogToTrace(areas = Array.empty)
 
-[<EntryPoint>]
+[<EntryPoint; STAThread>]
 let main(args: string[]) : int =
     match Configuration.TryGetConfigPath args with
     | Error msg ->
