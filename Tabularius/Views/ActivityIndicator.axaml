@@ -1,0 +1,36 @@
+<!--
+SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
+
+SPDX-License-Identifier: MIT
+-->
+
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tabularius="clr-namespace:Tabularius"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="30"
+             x:Class="Tabularius.Views.ActivityIndicator"
+             x:DataType="tabularius:BackgroundActivityEntry">
+
+    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+        <TextBlock Text="{Binding Text}" VerticalAlignment="Center"/>
+        <ProgressBar Value="{Binding Percentage}"
+                     Minimum="0" Maximum="100"
+                     Width="80" Height="6"
+                     VerticalAlignment="Center"/>
+        <TextBlock Text="{Binding PercentageText}"
+                   VerticalAlignment="Center"
+                   FontSize="11"/>
+        <Button Command="{Binding Cancel}"
+                Width="16" Height="16"
+                Padding="0"
+                CornerRadius="8"
+                Background="Transparent"
+                BorderThickness="0"
+                Content="✕"
+                FontSize="10"
+                Cursor="Hand"
+                ToolTip.Tip="Cancel"/>
+    </StackPanel>
+</UserControl>

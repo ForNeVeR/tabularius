@@ -20,9 +20,11 @@ type App() =
 
     static let mutable errorCollector: ErrorCollector option = None
     static let mutable configuration: Configuration.TabulariusConfiguration option = None
+    static let mutable backgroundActivityHost: BackgroundActivityHost option = None
 
     static member SetErrorCollector(collector: ErrorCollector) = errorCollector <- Some collector
     static member SetConfiguration(config: Configuration.TabulariusConfiguration) = configuration <- Some config
+    static member SetBackgroundActivityHost(host: BackgroundActivityHost) = backgroundActivityHost <- Some host
 
     override this.Initialize() =
         AvaloniaXamlLoader.Load(this)
@@ -49,7 +51,10 @@ type App() =
                 |> Option.defaultValue Configuration.TabulariusConfiguration.Default
 
             let windowService = WindowService()
-            desktop.MainWindow <- MainWindow(DataContext = MainViewModel(collector, config, windowService))
+            let activityHost =
+                backgroundActivityHost
+                |> Option.defaultWith(fun () -> BackgroundActivityHost(SynchronousScheduler.Instance))
+            desktop.MainWindow <- MainWindow(DataContext = MainViewModel(collector, config, windowService, activityHost))
         | _ -> ()
 
         base.OnFrameworkInitializationCompleted()
