@@ -7,9 +7,9 @@ namespace Tabularius.ViewModels
 open CommunityToolkit.Mvvm.ComponentModel
 open Tabularius
 
-type MainViewModel(errorCollector: ErrorCollector, config: Configuration.TabulariusConfiguration, windowService: IWindowService) =
+type MainViewModel(errorCollector: ErrorCollector, config: Configuration.TabulariusConfiguration, windowService: IWindowService, activityHost: IBackgroundActivityHost) =
     inherit ObservableObject()
 
-    new() = MainViewModel(ErrorCollector.DesignTime, Configuration.TabulariusConfiguration.Default, DesignTimeWindowService())
+    new() = MainViewModel(ErrorCollector.DesignTime, Configuration.TabulariusConfiguration.Default, DesignTimeWindowService(), DesignTimeBackgroundActivityHost())
 
-    member this.Status = StatusViewModel(errorCollector, config, windowService)
+    member this.Status = StatusViewModel(errorCollector, config, windowService, activityHost)
