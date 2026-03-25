@@ -39,4 +39,7 @@ SPDX-License-Identifier: MIT
     <data name="ErrorList_Clear" xml:space="preserve">
         <value>Clear</value>
     </data>
+    <data name="StatusBar_TestError" xml:space="preserve">
+        <value>Test Error</value>
+    </data>
 </root>

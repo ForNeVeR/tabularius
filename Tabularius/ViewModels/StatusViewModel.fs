@@ -21,7 +21,8 @@ type StatusViewModel(errorCollector: ErrorCollector, config: Configuration.Tabul
     member _.IsErrorDiagnosticMode: bool = config.ErrorDiagnosticMode
     member _.Errors: ObservableCollection<ErrorEntry> = errorCollector.Errors
     member _.ErrorCount: int = errorCollector.Errors.Count
-    member _.ThrowError(): unit = raise <| Exception("This is an error")
+    member _.ThrowError(): unit =
+        raise <| Exception("This is an error", InvalidOperationException("Inner exception"))
     member _.ShowErrorList(): unit = windowService.ShowErrorList(errorCollector)
 
     member private this.NotifyErrorCountChanged() =

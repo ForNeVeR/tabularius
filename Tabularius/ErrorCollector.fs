@@ -14,14 +14,52 @@ open JetBrains.Lifetimes
 open Serilog.Core
 open Serilog.Events
 
-type ErrorEntry(message: string, stackTrace: string, firstOccurrence: DateTimeOffset, scheduler: IScheduler) =
+type ExceptionInfo = {
+    TypeName: string
+    Message: string
+    StackTrace: string
+    InnerExceptions: ExceptionInfo list
+}
+
+module ExceptionInfo =
+    let rec fromException (ex: Exception) : ExceptionInfo =
+        let inners =
+            match ex with
+            | :? AggregateException as agg ->
+                agg.InnerExceptions |> Seq.map fromException |> Seq.toList
+            | _ ->
+                ex.InnerException
+                |> Option.ofObj
+                |> Option.map(fun inner -> [fromException inner])
+                |> Option.defaultValue []
+        { TypeName = ex.GetType().FullName |> Option.ofObj |> Option.defaultValue (ex.GetType().Name)
+          Message = ex.Message
+          StackTrace = ex.StackTrace |> Option.ofObj |> Option.defaultValue ""
+          InnerExceptions = inners }
+
+    let rec formatAsText (info: ExceptionInfo) : string =
+        let header = $"{info.TypeName}: {info.Message}"
+        let parts = [
+            header
+            if not(String.IsNullOrWhiteSpace info.StackTrace) then info.StackTrace
+            for i, inner in info.InnerExceptions |> List.indexed do
+                let label =
+                    if info.InnerExceptions.Length > 1 then $"--- Inner Exception [{i + 1}] ---"
+                    else "--- Inner Exception ---"
+                label
+                formatAsText inner
+        ]
+        String.concat "\n" parts
+
+type ErrorEntry(message: string, exceptionInfo: ExceptionInfo voption, environmentStackTrace: string, firstOccurrence: DateTimeOffset, scheduler: IScheduler) =
     inherit ObservableObject()
 
     let mutable count = 1
     let mutable lastOccurrence = firstOccurrence
 
     member _.Message: string = message
-    member _.StackTrace: string = stackTrace
+    member _.ExceptionInfo: ExceptionInfo voption = exceptionInfo
+    member _.EnvironmentStackTrace: string = environmentStackTrace
     member _.FirstOccurrence: DateTimeOffset = firstOccurrence
 
     member this.Count
@@ -66,7 +104,7 @@ type ErrorCollector(lifetime: Lifetime, scheduler: IScheduler) =
         scheduleOnUiThread(ct, observableErrors.Clear)
 
     let addError(entryToAdd: ErrorEntry, ct) =
-        let key = struct(entryToAdd.Message, entryToAdd.StackTrace)
+        let key = struct(entryToAdd.Message, entryToAdd.ExceptionInfo)
 
         let entry, addedNew =
             match index.TryGetValue key with
@@ -117,12 +155,12 @@ type ErrorCollector(lifetime: Lifetime, scheduler: IScheduler) =
                 ()
             else
                 let message = logEvent.RenderMessage()
-                let stackTrace =
+                let exceptionInfo =
                     logEvent.Exception
                     |> Option.ofObj
-                    |> Option.map _.StackTrace
-                    |> Option.bind Option.ofObj
-                    |> Option.defaultWith(fun() -> Environment.StackTrace)
+                    |> Option.map ExceptionInfo.fromException
+                    |> Option.toValueOption
+                let environmentStackTrace = Environment.StackTrace
 
-                let entry = ErrorEntry(message, stackTrace, logEvent.Timestamp, scheduler)
+                let entry = ErrorEntry(message, exceptionInfo, environmentStackTrace, logEvent.Timestamp, scheduler)
                 processor.Post(Add entry)

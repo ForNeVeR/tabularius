@@ -61,7 +61,7 @@ SPDX-License-Identifier: MIT
                      Text="{Binding DetailText, Mode=OneWay}"
                      IsReadOnly="True"
                      AcceptsReturn="True"
-                     TextWrapping="Wrap"/>
+                     TextWrapping="NoWrap"/>
         </Grid>
     </DockPanel>
 </Window>

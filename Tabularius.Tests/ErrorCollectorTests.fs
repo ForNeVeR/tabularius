@@ -23,13 +23,17 @@ let addError(collector: ErrorCollector, message: string, stackTrace: string opti
         new Exception() with
             member _.StackTrace = defaultArg stackTrace ""
     }
-
     (collector :> ILogEventSink).Emit(
         LogEvent(time, LogEventLevel.Error, ex, parser.Parse(message), Array.empty)
     )
 
 let addErrorNow(collector: ErrorCollector, message: string, stackTrace: string option) =
     addError(collector, message, stackTrace, DateTimeOffset.UtcNow)
+
+let addErrorWithException(collector: ErrorCollector, message: string, ex: Exception) =
+    (collector :> ILogEventSink).Emit(
+        LogEvent(DateTimeOffset.UtcNow, LogEventLevel.Error, ex, parser.Parse(message), Array.empty)
+    )
 
 [<Fact>]
 let ``AddError creates a new entry for a unique error``(): Task = task {

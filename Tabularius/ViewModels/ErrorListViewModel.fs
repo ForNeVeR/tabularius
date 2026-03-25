@@ -38,6 +38,9 @@ type ErrorListViewModel(errorCollector: ErrorCollector) =
         | ValueNone -> ""
         | ValueSome entry ->
             let msg = if String.IsNullOrWhiteSpace(entry.Message) then "" else entry.Message
-            let trace = entry.StackTrace
-            if String.IsNullOrWhiteSpace(trace) then msg
-            else msg + "\n\n" + trace
+            match entry.ExceptionInfo with
+            | ValueSome info ->
+                msg + "\n\n" + ExceptionInfo.formatAsText info
+            | ValueNone ->
+                if String.IsNullOrWhiteSpace(entry.EnvironmentStackTrace) then msg
+                else msg + "\n\n" + entry.EnvironmentStackTrace

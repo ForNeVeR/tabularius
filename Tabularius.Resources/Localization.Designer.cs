@@ -98,6 +98,15 @@ namespace Tabularius.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Tabularius.
         /// </summary>
+        public static string StatusBar_TestError {
+            get {
+                return ResourceManager.GetString("StatusBar_TestError", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Tabularius.
+        /// </summary>
         public static string WindowTitle {
             get {
                 return ResourceManager.GetString("WindowTitle", resourceCulture);
