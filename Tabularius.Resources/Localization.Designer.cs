@@ -60,38 +60,29 @@ namespace Tabularius.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to These are exceptions happened during the current session of Tabularius. Please report them at:.
+        ///   Looks up a localized string similar to Clear.
         /// </summary>
         public static string ErrorList_Clear {
             get {
                 return ResourceManager.GetString("ErrorList_Clear", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to These are exceptions happened during the current session of Tabularius. Please report them at:.
-        /// </summary>
-        public static string ErrorList_LastOccurrence {
-            get {
-                return ResourceManager.GetString("ErrorList_LastOccurrence", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to [NO MESSAGE].
-        /// </summary>
-        public static string ErrorList_Occurrences {
-            get {
-                return ResourceManager.GetString("ErrorList_Occurrences", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to These are exceptions happened during the current session of Tabularius. Please report them at:.
         /// </summary>
         public static string ErrorList_Disclaimer {
             get {
                 return ResourceManager.GetString("ErrorList_Disclaimer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last occurrence:.
+        /// </summary>
+        public static string ErrorList_LastOccurrence {
+            get {
+                return ResourceManager.GetString("ErrorList_LastOccurrence", resourceCulture);
             }
         }
         
@@ -105,6 +96,15 @@ namespace Tabularius.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Occurrences:.
+        /// </summary>
+        public static string ErrorList_Occurrences {
+            get {
+                return ResourceManager.GetString("ErrorList_Occurrences", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error List.
         /// </summary>
         public static string ErrorList_WindowTitle {
@@ -114,14 +114,23 @@ namespace Tabularius.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tabularius.
+        ///   Looks up a localized string similar to Activity.
+        /// </summary>
+        public static string StatusBar_Activity {
+            get {
+                return ResourceManager.GetString("StatusBar_Activity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test Error.
         /// </summary>
         public static string StatusBar_TestError {
             get {
                 return ResourceManager.GetString("StatusBar_TestError", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Tabularius.
         /// </summary>

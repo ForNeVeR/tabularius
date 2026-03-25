@@ -48,4 +48,7 @@ SPDX-License-Identifier: MIT
     <data name="ErrorList_LastOccurrence" xml:space="preserve">
         <value>Last occurrence:</value>
     </data>
+    <data name="StatusBar_Activity" xml:space="preserve">
+        <value>Activity</value>
+    </data>
 </root>
