@@ -33,23 +33,23 @@ let ReadConfiguration(configPath: AbsolutePath): Task<IConfigurationRoot> =
     }
 
 type TabulariusConfiguration = {
-    ErrorDiagnosticMode: bool
+    DiagnosticMode: bool
 }
 
 module TabulariusConfiguration =
-    let Default = { ErrorDiagnosticMode = false }
+    let Default = { DiagnosticMode = false }
 
 let ReadTabulariusConfiguration(config: IConfigurationRoot option): TabulariusConfiguration =
     match config with
     | Some cfg ->
-        let errorDiagnosticMode =
-            match cfg.["ErrorDiagnosticMode"] with
+        let diagnosticMode =
+            match cfg.["DiagnosticMode"] with
             | null -> false
             | value ->
                 match System.Boolean.TryParse(value) with
                 | true, v -> v
                 | false, _ -> false
-        { ErrorDiagnosticMode = errorDiagnosticMode }
+        { DiagnosticMode = diagnosticMode }
     | None ->
         TabulariusConfiguration.Default
 

@@ -18,7 +18,7 @@ type StatusViewModel(errorCollector: ErrorCollector, config: Configuration.Tabul
 
     new() = StatusViewModel(ErrorCollector.DesignTime, Configuration.TabulariusConfiguration.Default, DesignTimeWindowService(), DesignTimeBackgroundActivityHost())
 
-    member _.IsErrorDiagnosticMode: bool = config.ErrorDiagnosticMode
+    member _.IsDiagnosticMode: bool = config.DiagnosticMode
     member _.Errors: ObservableCollection<ErrorEntry> = errorCollector.Errors
     member _.ErrorCount: int = errorCollector.Errors.Count
     member _.Activities = activityHost.Activities

@@ -65,15 +65,15 @@ See the [Serilog.Settings.Configuration documentation][serilog.settings.configur
 
 ### Application Settings
 
-| Key                   | Type   | Default | Description                                                                           |
-|-----------------------|--------|---------|---------------------------------------------------------------------------------------|
-| `ErrorDiagnosticMode` | `bool` | `false` | When `true`, shows the "Test Error" button in the status bar for diagnostic purposes. |
+| Key              | Type   | Default | Description                                                                         |
+|------------------|--------|---------|-------------------------------------------------------------------------------------|
+| `DiagnosticMode` | `bool` | `false` | When `true`, shows various test controls in the status bar for diagnostic purposes. |
 
 Example configuration with application settings:
 
 ```json
 {
-  "ErrorDiagnosticMode": true,
+  "DiagnosticMode": true,
   "Serilog": {
     "Using": ["Serilog.Sinks.Console", "Serilog.Sinks.File"],
     "MinimumLevel": "Information",
