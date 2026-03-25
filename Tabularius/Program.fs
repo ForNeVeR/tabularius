@@ -8,6 +8,7 @@ open System
 open System.IO
 open System.Threading.Tasks
 open Avalonia
+open JetBrains.Diagnostics
 open JetBrains.Lifetimes
 open Microsoft.Extensions.Logging
 open Serilog
@@ -18,6 +19,39 @@ let BuildAvaloniaApp() =
         .UsePlatformDetect()
         .WithInterFont()
         .LogToTrace(areas = Array.empty)
+
+let private SetUpLogger(logger: Microsoft.Extensions.Logging.ILogger) =
+    AppDomain.CurrentDomain.UnhandledException.Add(fun args ->
+        match args.ExceptionObject with
+        | :? Exception as ex -> logger.LogError(ex, "Unhandled AppDomain exception")
+        | obj -> logger.LogError("Unhandled non-exception AppDomain object: {Object}", obj))
+
+    TaskScheduler.UnobservedTaskException.Add(fun args ->
+        logger.LogError(args.Exception, "Unobserved task exception")
+        args.SetObserved())
+
+    JetBrains.Diagnostics.Log.DefaultFactory <- {
+        new ILogFactory with
+            member this.GetLog(category) =
+                let convertLevel (level: LoggingLevel) =
+                    match level with
+                    | LoggingLevel.OFF -> LogLevel.None
+                    | LoggingLevel.FATAL -> LogLevel.Critical
+                    | LoggingLevel.ERROR -> LogLevel.Error
+                    | LoggingLevel.WARN -> LogLevel.Warning
+                    | LoggingLevel.INFO -> LogLevel.Information
+                    | LoggingLevel.VERBOSE -> LogLevel.Debug
+                    | LoggingLevel.TRACE -> LogLevel.Trace
+                    | _ -> LogLevel.Critical
+
+                {
+                    new ILog with
+                    member this.IsEnabled(level) = logger.IsEnabled(convertLevel level)
+                    member this.Log(level, message, ``exception``) =
+                        logger.Log(convertLevel level, message, ``exception``)
+                    member this.Category = category
+                }
+    }
 
 [<EntryPoint; STAThread>]
 let main(args: string[]) : int =
@@ -59,14 +93,7 @@ let main(args: string[]) : int =
 
             let logger = loggerFactory.CreateLogger("Tabularius.Program")
 
-            AppDomain.CurrentDomain.UnhandledException.Add(fun args ->
-                match args.ExceptionObject with
-                | :? Exception as ex -> logger.LogError(ex, "Unhandled AppDomain exception")
-                | obj -> logger.LogError("Unhandled non-exception AppDomain object: {Object}", obj))
-
-            TaskScheduler.UnobservedTaskException.Add(fun args ->
-                logger.LogError(args.Exception, "Unobserved task exception")
-                args.SetObserved())
+            SetUpLogger logger
 
             App.SetErrorCollector(errorCollector)
             App.SetConfiguration(appConfig)
