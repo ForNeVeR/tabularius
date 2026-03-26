@@ -2,15 +2,15 @@
 //
 // SPDX-License-Identifier: MIT
 
-module Tests
+module InteropTests
 
 open Tabularius.Interop
 open Xunit
 
 [<Fact>]
-let ``Adder adds the numbers`` () =
+let ``Journal gets properly verified``(): unit =
     Hledger.Initialize()
     try
-        Assert.Equal(5, Hledger.Adder(2, 3))
+        Hledger.VerifyJournal(@"T:\Temp\привет\медвед.txt")
     finally
         Hledger.Shutdown()
