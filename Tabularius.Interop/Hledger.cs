@@ -17,6 +17,6 @@ public partial class Hledger
     public static unsafe void Initialize() => HsInit(null, null);
     public static void Shutdown() => HsExit();
 
-    [LibraryImport("hledger-interop-shared", EntryPoint = "adder")]
-    public static partial int Adder(int a, int b);
+    [LibraryImport("hledger-interop-shared", EntryPoint = "verifyJournal", StringMarshalling = StringMarshalling.Utf8)]
+    public static partial void VerifyJournal(string journalPath);
 }

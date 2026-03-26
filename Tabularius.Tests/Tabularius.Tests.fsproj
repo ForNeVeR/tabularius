@@ -17,7 +17,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="ErrorCollectorTests.fs" />
         <Compile Include="ErrorListViewModelTests.fs" />
         <Compile Include="BackgroundActivityHostTests.fs" />
-        <Compile Include="Tests.fs" />
+        <Compile Include="InteropTests.fs" />
     </ItemGroup>
 
     <ItemGroup>
