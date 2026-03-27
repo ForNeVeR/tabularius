@@ -6,17 +6,19 @@
 
 module Interop where
 
-import Foreign.C.String (CString, peekCString)
+import Control.Exception (bracket)
+import Foreign (Ptr)
+import Foreign.C.Types (CChar)
+import GHC.Foreign (peekCString)
+import GHC.IO.Encoding (utf8)
+import System.IO (readFile')
 
 import qualified Tabularius (verifyJournal)
 
-foreign export ccall verifyJournal :: CString -> IO ()
+foreign export ccall verifyJournal :: Ptr CChar -> IO ()
 
-verifyJournal :: CString -> IO ()
+verifyJournal :: Ptr CChar -> IO ()
 verifyJournal path = do
-    hPath <- peekCString path
-    putStrLn $ "Verifying journal at path: " ++ hPath
-    contents <- readFile hPath
-    putStrLn $ "Journal contents:\n" ++ contents
+    hPath <- peekCString utf8 path
+    contents <- readFile' hPath
     return ()
-    -- Tabularius.verifyJournal hPath

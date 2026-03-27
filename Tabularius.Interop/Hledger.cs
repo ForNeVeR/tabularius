@@ -2,21 +2,24 @@
 //
 // SPDX-License-Identifier: MIT
 
-using System.Runtime.InteropServices;
+using JetBrains.Annotations;
+using JetBrains.Lifetimes;
+using TruePath;
 
 namespace Tabularius.Interop;
 
-public partial class Hledger
+[PublicAPI]
+public static class Hledger
 {
-    [LibraryImport("hledger-interop-shared", EntryPoint = "hs_init")]
-    private static unsafe partial void HsInit(nint* argc, nint* argv);
+    public static unsafe void Initialize(Lifetime lifetime)
+    {
+        lifetime.Bracket(
+            () => HledgerInterop.HsInit(null, null),
+            () => HledgerInterop.HsExit());
+    }
 
-    [LibraryImport("hledger-interop-shared", EntryPoint = "hs_exit")]
-    private static partial void HsExit();
-
-    public static unsafe void Initialize() => HsInit(null, null);
-    public static void Shutdown() => HsExit();
-
-    [LibraryImport("hledger-interop-shared", EntryPoint = "verifyJournal", StringMarshalling = StringMarshalling.Utf8)]
-    public static partial void VerifyJournal(string journalPath);
+    public static void VerifyJournal(AbsolutePath journalPath)
+    {
+        HledgerInterop.VerifyJournal(journalPath.Value);
+    }
 }

@@ -5,12 +5,14 @@
 module Tabularius.Program
 
 open System
+open System.IO
 open System.Threading.Tasks
 open Avalonia
 open Avalonia.Logging
 open JetBrains.Diagnostics
+open JetBrains.Lifetimes
 open Microsoft.Extensions.Logging
-open Tabularius.Interop
+open Serilog
 
 let BuildAvaloniaApp() =
     AppBuilder
@@ -74,59 +76,53 @@ let private SetUpLogger(logger: Microsoft.Extensions.Logging.ILogger) =
 
 [<EntryPoint; STAThread>]
 let main(args: string[]) : int =
-    Hledger.Initialize()
-    Hledger.VerifyJournal(@"T:\Temp\привет\медвед.txt")
-    // Hledger.VerifyJournal(@"T:\Temp\privet\medved\medved.txt")
-    Hledger.Shutdown()
-    0
+    match Configuration.TryGetConfigPath args with
+    | Error msg ->
+        eprintfn $"%s{msg}"
+        ExitCodes.ConfigArgMissing
+    | Ok configPath ->
+        let config =
+            match configPath with
+            | Some path ->
+                try
+                    let cfg = Configuration.ReadConfiguration(path).GetAwaiter().GetResult()
+                    Some cfg
+                with
+                | :? FileNotFoundException as ex ->
+                    eprintfn $"Configuration file not found: %s{ex.FileName}"
+                    None
+                | :? FormatException as ex ->
+                    eprintfn $"Invalid configuration file: %s{ex.Message}"
+                    None
+            | None -> None
 
-    // match Configuration.TryGetConfigPath args with
-    // | Error msg ->
-    //     eprintfn $"%s{msg}"
-    //     ExitCodes.ConfigArgMissing
-    // | Ok configPath ->
-    //     let config =
-    //         match configPath with
-    //         | Some path ->
-    //             try
-    //                 let cfg = Configuration.ReadConfiguration(path).GetAwaiter().GetResult()
-    //                 Some cfg
-    //             with
-    //             | :? FileNotFoundException as ex ->
-    //                 eprintfn $"Configuration file not found: %s{ex.FileName}"
-    //                 None
-    //             | :? FormatException as ex ->
-    //                 eprintfn $"Invalid configuration file: %s{ex.Message}"
-    //                 None
-    //         | None -> None
-    //
-    //     match configPath, config with
-    //     | Some _, None ->
-    //         // Config was requested but failed to load.
-    //         ExitCodes.ConfigFileNotFound
-    //     | _ ->
-    //         let appConfig = Configuration.ReadTabulariusConfiguration(config)
-    //         let errorCollector = ErrorCollector(Lifetime.Eternal, AvaloniaScheduler())
-    //         let activityHost = BackgroundActivityHost(AvaloniaScheduler())
-    //
-    //         let serilogLogger = Configuration.CreateSerilogLogger(config, Some(errorCollector :> Serilog.Core.ILogEventSink))
-    //         Log.Logger <- serilogLogger
-    //
-    //         use loggerFactory =
-    //             LoggerFactory.Create(fun builder ->
-    //                 builder.AddSerilog(serilogLogger, dispose = true) |> ignore)
-    //
-    //         let logger = loggerFactory.CreateLogger("Tabularius.Program")
-    //
-    //         SetUpLogger logger
-    //
-    //         App.SetErrorCollector(errorCollector)
-    //         App.SetConfiguration(appConfig)
-    //         App.SetBackgroundActivityHost(activityHost)
-    //
-    //         logger.LogInformation("Tabularius is starting.")
-    //
-    //         try
-    //             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args)
-    //         finally
-    //             logger.LogInformation("Tabularius is shutting down.")
+        match configPath, config with
+        | Some _, None ->
+            // Config was requested but failed to load.
+            ExitCodes.ConfigFileNotFound
+        | _ ->
+            let appConfig = Configuration.ReadTabulariusConfiguration(config)
+            let errorCollector = ErrorCollector(Lifetime.Eternal, AvaloniaScheduler())
+            let activityHost = BackgroundActivityHost(AvaloniaScheduler())
+
+            let serilogLogger = Configuration.CreateSerilogLogger(config, Some(errorCollector :> Serilog.Core.ILogEventSink))
+            Serilog.Log.Logger <- serilogLogger
+
+            use loggerFactory =
+                LoggerFactory.Create(fun builder ->
+                    builder.AddSerilog(serilogLogger, dispose = true) |> ignore)
+
+            let logger = loggerFactory.CreateLogger("Tabularius.Program")
+
+            SetUpLogger logger
+
+            App.SetErrorCollector(errorCollector)
+            App.SetConfiguration(appConfig)
+            App.SetBackgroundActivityHost(activityHost)
+
+            logger.LogInformation("Tabularius is starting.")
+
+            try
+                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args)
+            finally
+                logger.LogInformation("Tabularius is shutting down.")
