@@ -2,13 +2,41 @@
 --
 -- SPDX-License-Identifier: MIT
 
-import Lib (adder)
+import Control.Exception (bracket)
+import Data.Int (Int32)
+import System.Directory (getTemporaryDirectory, removeFile)
+import System.IO (hClose, hPutStr, hSetEncoding, openTempFile, utf8)
 import Test.Hspec
+
+import qualified Tabularius
+
+exampleJournal :: String
+exampleJournal = unlines
+    [ "2026-01-01 Opening balances"
+    , "    assets:ing  10000 BTC"
+    , "    equity:opening/closing balances"
+    , ""
+    , "2026-01-02 Tabularius"
+    , "    assets:ing     -100 BTC = 9900 BTC"
+    , "    expenses:goods  100 BTC"
+    ]
+
+withTempJournal :: String -> (FilePath -> IO a) -> IO a
+withTempJournal content action =
+    bracket acquire removeFile action
+  where
+    acquire = do
+        tmpDir <- getTemporaryDirectory
+        (path, h) <- openTempFile tmpDir "tabularius.journal"
+        hSetEncoding h utf8
+        hPutStr h content
+        hClose h
+        return path
 
 main :: IO ()
 main = hspec $ do
-  describe "adder" $ do
-    it "adds two positive numbers" $
-      adder 1 2 `shouldBe` 3
-    it "adds zeros" $
-      adder 0 0 `shouldBe` 0
+    describe "Tabularius.verifyJournal" $ do
+        it "returns the correct number of transactions" $
+            withTempJournal exampleJournal $ \path -> do
+                count <- Tabularius.verifyJournal path
+                count `shouldBe` (2 :: Int32)
