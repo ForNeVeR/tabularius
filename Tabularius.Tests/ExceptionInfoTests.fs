@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-module ExceptionInfoTests
+module Tabularius.Tests.ExceptionInfoTests
 
 open System
 open Tabularius

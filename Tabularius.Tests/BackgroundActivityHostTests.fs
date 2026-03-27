@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-module BackgroundActivityHostTests
+module Tabularius.Tests.BackgroundActivityHostTests
 
 open System
 open System.Threading

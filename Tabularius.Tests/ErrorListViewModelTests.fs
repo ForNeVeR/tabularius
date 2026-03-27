@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-module ErrorListViewModelTests
+module Tabularius.Tests.ErrorListViewModelTests
 
 open System
 open System.Threading.Tasks
