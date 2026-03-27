@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-module ConfigurationTests
+module Tabularius.Tests.ConfigurationTests
 
 open System.IO
 open Microsoft.Extensions.Configuration
