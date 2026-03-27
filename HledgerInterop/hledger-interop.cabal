@@ -22,8 +22,7 @@ test-suite hledger-interop-test
   main-is:             Spec.hs
   hs-source-dirs:      test
   ghc-options:         -Wall -threaded
-  build-depends:       base >=4.7 && <5
-                     , hledger-interop
+  build-depends:       hledger-interop
                      , hspec
   default-language:    GHC2021
 
@@ -37,6 +36,5 @@ foreign-library hledger-interop-shared
   if os(linux)
     ghc-options:       -optl-Wl,-rpath,$ORIGIN
   hs-source-dirs:      src
-  build-depends:       base >=4.7 && <5
-                     , hledger-interop
+  build-depends:       hledger-interop
   default-language:    GHC2021
