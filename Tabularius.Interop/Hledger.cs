@@ -18,8 +18,6 @@ public static class Hledger
             () => HledgerInterop.HsExit());
     }
 
-    public static void VerifyJournal(AbsolutePath journalPath)
-    {
+    public static int VerifyJournal(AbsolutePath journalPath) =>
         HledgerInterop.VerifyJournal(journalPath.Value);
-    }
 }

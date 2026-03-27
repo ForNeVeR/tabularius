@@ -24,38 +24,42 @@ let private CreateTempFile(content: string) = task {
     return { Path = path }
 }
 
-let HledgerMutex = new SemaphoreSlim(1, 1)
+let private HledgerMutex = new SemaphoreSlim(1, 1)
+let mutable private Initialized = false
 let DoWithHledger action = task {
     do! HledgerMutex.WaitAsync()
     try
-        return! Lifetime.UsingAsync(fun lt -> task {
-            Hledger.Initialize lt
-            return! action()
-        })
+        // We only support single-time initialization, as multiple reinitialization is not supported by GHC.
+        if not Initialized then Hledger.Initialize Lifetime.Eternal
     finally
         HledgerMutex.Release() |> ignore
+
+    return! Lifetime.UsingAsync(fun lt -> task {
+        Hledger.Initialize lt
+        return! action()
+    })
 }
 
 
 [<Fact>]
 let ``Journal gets properly verified``(): Task = DoWithHledger(fun() -> task {
     use! journal = CreateTempFile """
-    2026-01-01 Opening balances
-        assets:ing  10000 BTC
-        equity:opening/closing balances
+2026-01-01 Opening balances
+    assets:ing  10000 BTC
+    equity:opening/closing balances
 
-    2026-01-02 Tabularius
-        assets:ing     -100 BTC = 9900 BTC
-        expenses:goods  100 BTC
-    """
-    Hledger.VerifyJournal journal.Path
+2026-01-02 Tabularius
+    assets:ing     -100 BTC = 9900 BTC
+    expenses:goods  100 BTC
+"""
+    Assert.Equal(2, Hledger.VerifyJournal journal.Path)
 })
 
 [<Fact>]
 let ``Interop supports different path encodings``(): Task = task {
     let verify(path: AbsolutePath) = task {
         do! path.WriteAllTextAsync ""
-        Hledger.VerifyJournal path
+        Assert.Equal(0, Hledger.VerifyJournal path)
     }
 
     let folder = Temporary.CreateTempFolder("tabularius")

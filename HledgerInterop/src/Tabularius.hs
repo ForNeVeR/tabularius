@@ -4,10 +4,12 @@
 
 module Tabularius where
 
+import Data.Int (Int32)
+import Hledger.Data.Types (jtxns)
 import Hledger.Read (readJournalFile')
 import Hledger.Read.Common (PrefixedFilePath)
 
-verifyJournal :: PrefixedFilePath -> IO ()
+verifyJournal :: PrefixedFilePath -> IO Int32
 verifyJournal path = do
-    let _ = readJournalFile' path
-    return ()
+    journal <- readJournalFile' path
+    return $ fromIntegral $ length $ jtxns journal

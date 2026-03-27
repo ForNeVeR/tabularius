@@ -15,5 +15,5 @@ internal static partial class HledgerInterop
     public static partial void HsExit();
 
     [LibraryImport("hledger-interop-shared", EntryPoint = "verifyJournal", StringMarshalling = StringMarshalling.Utf8)]
-    public static unsafe partial void VerifyJournal(string journalPath);
+    public static unsafe partial int VerifyJournal(string journalPath);
 }
