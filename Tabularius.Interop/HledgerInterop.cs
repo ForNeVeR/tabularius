@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System.Runtime.InteropServices;
+using Tabularius.Interop.Dto;
 
 namespace Tabularius.Interop;
 

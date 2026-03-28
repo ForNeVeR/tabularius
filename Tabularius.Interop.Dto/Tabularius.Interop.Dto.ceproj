@@ -1,6 +1,9 @@
-<Project Sdk="Cesium.Sdk/0.2.0">
+<Project Sdk="Cesium.Sdk/0.4.0">
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <OutputType>Library</OutputType>
     </PropertyGroup>
+    <ItemGroup>
+        <Header Include="..\HledgerInterop\include\verify_journal_result.h" />
+    </ItemGroup>
 </Project>
