@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
@@ -52,6 +53,17 @@ public class Hledger
             _taskScheduler);
     }
 
-    public Task<int> VerifyJournal(AbsolutePath journalPath, CancellationToken cancellationToken = default) =>
-        RunTask(() => HledgerInterop.VerifyJournal(journalPath.Value), cancellationToken);
+    public unsafe Task<int> VerifyJournal(AbsolutePath journalPath, CancellationToken cancellationToken = default) =>
+        RunTask(() =>
+        {
+            var result = HledgerInterop.VerifyJournal(journalPath.Value);
+            if (result->ErrorMessage != null)
+            {
+                var errorMessage = Marshal.PtrToStringUTF8((IntPtr)result->ErrorMessage);
+                var stackTrace = Marshal.PtrToStringUTF8((IntPtr)result->StackTrace);
+                throw new HledgerException(errorMessage ?? "[NO MESSAGE]", stackTrace ?? "[NO STACK TRACE]");
+            }
+
+            return result->RecordCount;
+        }, cancellationToken);
 }
