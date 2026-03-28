@@ -1,0 +1,6 @@
+<Project Sdk="Cesium.Sdk/0.2.0">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <OutputType>Library</OutputType>
+    </PropertyGroup>
+</Project>
