@@ -13,8 +13,10 @@ SPDX-License-Identifier: MIT
 
     <ItemGroup>
         <HaskellSource Include="src/**/*.hs"/>
+        <HaskellSource Include="src/**/*.hsc"/>
         <HaskellSource Include="test/**/*.hs"/>
-        <HaskellConfig Include="*.cabal;*.def;*.yaml;*.yaml.lock"/>
+        <HaskellSource Include="test/**/*.hsc"/>
+        <HaskellConfig Include="*.cabal;*.def;*.yaml;*.yaml.lock;include/**/*.h"/>
         <None Include="*.license"/>
     </ItemGroup>
 

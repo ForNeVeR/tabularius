@@ -3,6 +3,7 @@ name:               hledger-interop
 version:            0.1.0.0
 build-type:         Simple
 extra-source-files: hledger-interop.def
+                  , include/verify_journal_result.h
 
 -- SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
 --
@@ -12,6 +13,8 @@ library
   exposed-modules:     Interop
                      , Tabularius
   hs-source-dirs:      src
+  include-dirs:        include
+  install-includes:    verify_journal_result.h
   ghc-options:         -Wall
   build-depends:       base >=4.7 && <5
                      , hledger-lib ==1.52
@@ -38,5 +41,6 @@ foreign-library hledger-interop-shared
   if os(linux)
     ghc-options:       -optl-Wl,-rpath,$ORIGIN
   hs-source-dirs:      src
+  include-dirs:        include
   build-depends:       hledger-interop
   default-language:    GHC2021

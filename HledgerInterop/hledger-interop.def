@@ -5,4 +5,5 @@
 EXPORTS
     hs_init
     hs_exit
+    freeVerifyJournalResult
     verifyJournal

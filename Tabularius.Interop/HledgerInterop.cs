@@ -6,6 +6,14 @@ using System.Runtime.InteropServices;
 
 namespace Tabularius.Interop;
 
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
+internal unsafe struct VerifyJournalResult
+{
+    public int RecordCount;
+    public Byte* ErrorMessage;
+    public Byte* StackTrace;
+}
+
 internal static partial class HledgerInterop
 {
     [LibraryImport("hledger-interop-shared", EntryPoint = "hs_init")]
@@ -15,5 +23,5 @@ internal static partial class HledgerInterop
     public static partial void HsExit();
 
     [LibraryImport("hledger-interop-shared", EntryPoint = "verifyJournal", StringMarshalling = StringMarshalling.Utf8)]
-    public static unsafe partial int VerifyJournal(string journalPath);
+    public static unsafe partial VerifyJournalResult* VerifyJournal(string journalPath);
 }

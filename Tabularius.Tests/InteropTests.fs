@@ -69,3 +69,15 @@ type InteropTests(fixture: HledgerFixture) =
         finally
             folder.DeleteDirectoryRecursively()
     }
+
+    [<Fact>]
+    member _.``Interop supports error processing correctly``(): Task = task {
+        use! journal = CreateTempFile """
+    2026-01-01 Opening balances
+    assets:ing  10000 BTC
+    equity:opening/closing balances
+"""
+        let! error = Assert.ThrowsAsync<HledgerException>(fun () -> fixture.Hledger.VerifyJournal journal.Path)
+        Assert.Contains("2026-01-01 Opening balances", error.Message)
+        Assert.False(String.IsNullOrWhiteSpace error.StackTrace)
+    }
