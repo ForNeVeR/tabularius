@@ -7,9 +7,44 @@ let licenseHeader = """
 
 #r "nuget: Generaptor.Library, 1.11.0"
 
+open System
+open TruePath
+open System.Xml.Linq
 open Generaptor
 open Generaptor.GitHubActions
 open type Generaptor.GitHubActions.Commands
+
+let haskellProjectDirectory = LocalPath "HledgerInterop"
+let haskellProjectFile = haskellProjectDirectory / "HledgerInterop.proj"
+
+let getProjectItemIncludes itemName =
+    let project = XDocument.Load haskellProjectFile.Value
+    project.Descendants(XName.Get itemName)
+    |> Seq.choose (fun item ->
+        match item.Attribute(XName.Get "Include") with
+        | null -> None
+        | includeAttribute -> Some includeAttribute.Value
+    )
+    |> Seq.collect (fun value ->
+        value.Split(';', StringSplitOptions.RemoveEmptyEntries ||| StringSplitOptions.TrimEntries)
+    )
+    |> Seq.map (fun pattern -> $"{haskellProjectDirectory.Value}/{pattern.Replace('\\', '/')}")
+    |> Seq.distinct
+    |> Seq.sort
+    |> List.ofSeq
+
+let haskellCacheInputs = [
+    haskellProjectFile.Value
+    yield! getProjectItemIncludes "HaskellSource"
+    yield! getProjectItemIncludes "HaskellConfig"
+]
+
+let haskellCacheInputHash =
+    haskellCacheInputs
+    |> Seq.map(_.Replace("\\", "/"))
+    |> Seq.map (sprintf "'%s'")
+    |> String.concat ", "
+    |> sprintf "${{ hashFiles(%s) }}"
 
 let workflows = [
 
@@ -47,8 +82,29 @@ let workflows = [
             yield! steps
         ]
 
+    let cacheHaskellBuildOutput name =
+        step(
+            id = "hledger-interop-bin",
+            name = "Cache HledgerInterop build output",
+            usesSpec = Auto "actions/cache",
+            options = Map.ofList [
+                "key", name + ".${{ matrix.image }}.hledger-bin." + haskellCacheInputHash
+                "path", "HledgerInterop/bin"
+            ]
+        )
+
+    let refreshHaskellBuildOutputTimestamps =
+        step(
+            name = "Refresh cached HledgerInterop output timestamps",
+            condition = "steps.hledger-interop-bin.outputs.cache-hit == 'true'",
+            shell = "pwsh",
+            run = """Get-ChildItem -Path HledgerInterop/bin -Recurse -File |
+    ForEach-Object { $_.LastWriteTimeUtc = [DateTime]::UtcNow }"""
+        )
+
     let setUpHaskellEnvironment name = [
         step(
+            condition = "${{ steps.hledger-interop-bin.outputs.cache-hit != 'true' }}",
             name = "Set up Haskell Stack",
             usesSpec = Auto "haskell-actions/setup",
             options = Map.ofList [
@@ -58,6 +114,7 @@ let workflows = [
         )
 
         step(
+            condition = "${{ steps.hledger-interop-bin.outputs.cache-hit != 'true' }}",
             name = "Determine the Stack root directory",
             id = "stack",
             shell = "pwsh",
@@ -70,6 +127,7 @@ else {
         )
 
         step(
+            condition = "${{ steps.hledger-interop-bin.outputs.cache-hit != 'true' }}",
             name = "Cache Stack dependencies",
             usesSpec = Auto "actions/cache",
             options = Map.ofList [
@@ -115,9 +173,12 @@ else {
             ])
             runsOn "${{ matrix.image }}"
 
+            cacheHaskellBuildOutput "main"
+            refreshHaskellBuildOutputTimestamps
             yield! setUpHaskellEnvironment "main"
 
             step(
+                condition = "steps.hledger-interop-bin.outputs.cache-hit != 'true'",
                 name = "Test HledgerInterop",
                 shell = "pwsh",
                 workingDirectory = "HledgerInterop",
@@ -184,6 +245,8 @@ else {
             ])
             runsOn "${{ matrix.image }}"
 
+            cacheHaskellBuildOutput "release"
+            refreshHaskellBuildOutputTimestamps
             yield! setUpHaskellEnvironment "release"
 
             step(

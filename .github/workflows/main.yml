@@ -57,12 +57,26 @@ jobs:
       with:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.*proj', '**/*.props') }}
         path: ${{ env.NUGET_PACKAGES }}
-    - name: Set up Haskell Stack
+    - id: hledger-interop-bin
+      name: Cache HledgerInterop build output
+      uses: actions/cache@v5
+      with:
+        key: main.${{ matrix.image }}.hledger-bin.${{ hashFiles('HledgerInterop/HledgerInterop.proj', 'HledgerInterop/include/**/*.h', 'HledgerInterop/src/**/*.hs', 'HledgerInterop/src/**/*.hsc', 'HledgerInterop/test/**/*.hs', 'HledgerInterop/test/**/*.hsc', 'HledgerInterop/*.cabal', 'HledgerInterop/*.def', 'HledgerInterop/*.yaml', 'HledgerInterop/*.yaml.lock') }}
+        path: HledgerInterop/bin
+    - if: steps.hledger-interop-bin.outputs.cache-hit == 'true'
+      name: Refresh cached HledgerInterop output timestamps
+      shell: pwsh
+      run: |-
+        Get-ChildItem -Path HledgerInterop/bin -Recurse -File |
+            ForEach-Object { $_.LastWriteTimeUtc = [DateTime]::UtcNow }
+    - if: ${{ steps.hledger-interop-bin.outputs.cache-hit != 'true' }}
+      name: Set up Haskell Stack
       uses: haskell-actions/setup@v2
       with:
         enable-stack: true
         stack-version: 3.9.1
-    - id: stack
+    - if: ${{ steps.hledger-interop-bin.outputs.cache-hit != 'true' }}
+      id: stack
       name: Determine the Stack root directory
       shell: pwsh
       run: |-
@@ -72,12 +86,14 @@ jobs:
             Write-Host "stack-root=$stackRoot"
             "stack-root=$stackRoot" >> $env:GITHUB_OUTPUT
         }
-    - name: Cache Stack dependencies
+    - if: ${{ steps.hledger-interop-bin.outputs.cache-hit != 'true' }}
+      name: Cache Stack dependencies
       uses: actions/cache@v5
       with:
         key: main.${{ matrix.image }}.stack.${{ hashFiles('HledgerInterop/stack.yaml', 'HledgerInterop/stack.yaml.lock', 'HledgerInterop/*.cabal') }}
         path: ${{ steps.stack.outputs.stack-root }}
-    - name: Test HledgerInterop
+    - if: steps.hledger-interop-bin.outputs.cache-hit != 'true'
+      name: Test HledgerInterop
       shell: pwsh
       run: stack test
       working-directory: HledgerInterop
