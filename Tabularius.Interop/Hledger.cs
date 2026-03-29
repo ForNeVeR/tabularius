@@ -19,7 +19,7 @@ namespace Tabularius.Interop;
 /// </para>
 /// </remarks>
 [PublicAPI]
-public class Hledger
+public class Hledger : IHledgerApi
 {
     private static readonly Lock Lock = new();
     private static bool _initialized;

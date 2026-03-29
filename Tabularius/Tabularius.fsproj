@@ -36,6 +36,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="BackgroundActivityHost.fs"/>
         <Compile Include="Converters\IntGreaterThanZeroConverter.fs"/>
         <Compile Include="Converters\ErrorMessageDisplayConverter.fs"/>
+        <Compile Include="DesignTime\HledgerDesignTimeApi.fs" />
         <Compile Include="ViewModels\StatusViewModel.fs" />
         <Compile Include="ViewModels\ErrorListViewModel.fs"/>
         <Compile Include="ViewModels\MainViewModel.fs" />
@@ -45,8 +46,8 @@ SPDX-License-Identifier: MIT
         <Compile Include="Views\ActivityIndicator.axaml.fs"/>
         <Compile Include="Views\StatusBar.axaml.fs" />
         <Compile Include="WindowService.fs"/>
-        <Compile Include="App.axaml.fs"/>
         <Compile Include="AvaloniaScheduler.fs" />
+        <Compile Include="App.axaml.fs"/>
         <Compile Include="Program.fs"/>
     </ItemGroup>
     <ItemGroup>

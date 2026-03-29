@@ -24,7 +24,7 @@ SPDX-License-Identifier: MIT
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="WindowTitle" xml:space="preserve">
+    <data name="MainWindow_Title" xml:space="preserve">
         <value>Tabularius</value>
     </data>
     <data name="ErrorList_WindowTitle" xml:space="preserve">
@@ -50,5 +50,17 @@ SPDX-License-Identifier: MIT
     </data>
     <data name="StatusBar_Activity" xml:space="preserve">
         <value>Activity</value>
+    </data>
+    <data name="Status_LoadingJournal" xml:space="preserve">
+        <value>Loading jounrnal…</value>
+    </data>
+    <data name="MainWindow_JournalInfo" xml:space="preserve">
+        <value>Journal is valid. Transactions: {0}.</value>
+    </data>
+    <data name="FilePicker_JournalFiles" xml:space="preserve">
+        <value>Hledger .journal files</value>
+    </data>
+    <data name="MainWindow_LoadJournal" xml:space="preserve">
+        <value>Load Journal</value>
     </data>
 </root>

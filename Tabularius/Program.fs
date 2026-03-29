@@ -103,7 +103,6 @@ let main(args: string[]) : int =
         | _ ->
             let appConfig = Configuration.ReadTabulariusConfiguration(config)
             let errorCollector = ErrorCollector(Lifetime.Eternal, AvaloniaScheduler())
-            let activityHost = BackgroundActivityHost(AvaloniaScheduler())
 
             let serilogLogger = Configuration.CreateSerilogLogger(config, Some(errorCollector :> Serilog.Core.ILogEventSink))
             Serilog.Log.Logger <- serilogLogger
@@ -118,7 +117,6 @@ let main(args: string[]) : int =
 
             App.SetErrorCollector(errorCollector)
             App.SetConfiguration(appConfig)
-            App.SetBackgroundActivityHost(activityHost)
 
             logger.LogInformation("Tabularius is starting.")
 

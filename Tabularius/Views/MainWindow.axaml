@@ -15,13 +15,20 @@ SPDX-License-Identifier: MIT
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="250"
         x:Class="Tabularius.Views.MainWindow"
         x:DataType="vm:MainViewModel"
-        Title="{x:Static resources:Localization.WindowTitle}">
+        Title="{x:Static resources:Localization.MainWindow_Title}">
 
     <Design.DataContext>
         <vm:MainViewModel/>
     </Design.DataContext>
 
-    <Grid>
-        <views:StatusBar DataContext="{Binding Status}"/>
+    <Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto">
+
+        <Label Grid.Column="0" Grid.Row="0" Content="{Binding JournalInfo}"/>
+        <Button Grid.Column="1" Grid.Row="0"
+                Content="{x:Static resources:Localization.MainWindow_LoadJournal}"
+                Command="{Binding OpenJournal}"/>
+
+        <views:StatusBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                         DataContext="{Binding Status}"/>
     </Grid>
 </Window>

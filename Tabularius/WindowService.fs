@@ -5,11 +5,15 @@
 namespace Tabularius
 
 open Avalonia
+open Avalonia.Controls
 open Avalonia.Controls.ApplicationLifetimes
+open Avalonia.Platform.Storage
+open Tabularius.Resources
 open Tabularius.ViewModels
 open Tabularius.Views
+open TruePath
 
-type WindowService() =
+type WindowService(mainWindow: Window) =
     interface IWindowService with
         member _.ShowErrorList(collector: ErrorCollector) =
             Application.Current
@@ -23,3 +27,17 @@ type WindowService() =
                 let dialog = ErrorListWindow(DataContext = vm)
                 dialog.ShowDialog(mainWindow) |> ignore
             )
+
+        member this.ChooseJournalFile() = task {
+            let options = FilePickerOpenOptions(FileTypeFilter = [|
+                FilePickerFileType(Localization.FilePicker_JournalFiles, Patterns = [| "*.journal" |])
+            |])
+            let! files = mainWindow.StorageProvider.OpenFilePickerAsync(options)
+            return
+                match files.Count with
+                | 0 -> ValueNone
+                | 1 -> ValueSome(AbsolutePath files[0].Path.LocalPath)
+                | _ -> failwithf $"Expected 0 or 1 file, got %d{files.Count}."
+        }
+
+
