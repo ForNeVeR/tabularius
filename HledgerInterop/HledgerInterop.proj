@@ -31,7 +31,8 @@ SPDX-License-Identifier: MIT
             Outputs="$(OutputPath)$(SharedLibName)">
 
         <Exec Command="stack build"
-              EnvironmentVariables="$(StackEnv)" />
+              EnvironmentVariables="$(StackEnv)"
+              IgnoreStandardErrorWarningFormat="true" />
         <Exec Command="stack path --local-install-root" ConsoleToMsBuild="true">
             <Output TaskParameter="ConsoleOutput" PropertyName="StackInstallRoot" />
         </Exec>
