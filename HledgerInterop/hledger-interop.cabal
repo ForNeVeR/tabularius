@@ -9,22 +9,26 @@ extra-source-files: hledger-interop.def
 --
 -- SPDX-License-Identifier: MIT
 
+common warnings
+  ghc-options:         -Wall
+
 library
+  import:              warnings
   exposed-modules:     Interop
                      , Tabularius
   hs-source-dirs:      src
   include-dirs:        include
   install-includes:    verify_journal_result.h
-  ghc-options:         -Wall
   build-depends:       base >=4.7 && <5
                      , hledger-lib ==1.52
   default-language:    GHC2021
 
 test-suite hledger-interop-test
+  import:              warnings
   type:                exitcode-stdio-1.0
   main-is:             Spec.hs
   hs-source-dirs:      test
-  ghc-options:         -Wall -threaded
+  ghc-options:         -threaded
   build-depends:       base >=4.7 && <5
                      , directory
                      , hledger-interop
@@ -32,6 +36,7 @@ test-suite hledger-interop-test
   default-language:    GHC2021
 
 foreign-library hledger-interop-shared
+  import:              warnings
   type:                native-shared
   if os(windows)
     options:           standalone
