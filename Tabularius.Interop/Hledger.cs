@@ -57,13 +57,20 @@ public class Hledger
         RunTask(() =>
         {
             var result = HledgerInterop.VerifyJournal(journalPath.Value);
-            if (result->error_message != null)
+            try
             {
-                var errorMessage = Marshal.PtrToStringUTF8((IntPtr)result->error_message);
-                var stackTrace = Marshal.PtrToStringUTF8((IntPtr)result->stack_trace);
-                throw new HledgerException(errorMessage ?? "[NO MESSAGE]", stackTrace ?? "[NO STACK TRACE]");
-            }
+                if (result->error_message != null)
+                {
+                    var errorMessage = Marshal.PtrToStringUTF8((IntPtr)result->error_message);
+                    var stackTrace = Marshal.PtrToStringUTF8((IntPtr)result->stack_trace);
+                    throw new HledgerException(errorMessage ?? "[NO MESSAGE]", stackTrace ?? "[NO STACK TRACE]");
+                }
 
-            return result->record_count;
+                return result->record_count;
+            }
+            finally
+            {
+                HledgerInterop.FreeVerifyJournalResult(result);
+            }
         }, cancellationToken);
 }
