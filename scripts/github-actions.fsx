@@ -25,9 +25,7 @@ let getProjectItemIncludes itemName =
         | null -> None
         | includeAttribute -> Some includeAttribute.Value
     )
-    |> Seq.collect (fun value ->
-        value.Split(';', StringSplitOptions.RemoveEmptyEntries ||| StringSplitOptions.TrimEntries)
-    )
+    |> Seq.collect _.Split(';', StringSplitOptions.RemoveEmptyEntries ||| StringSplitOptions.TrimEntries)
     |> Seq.map (fun pattern -> $"{haskellProjectDirectory.Value}/{pattern.Replace('\\', '/')}")
     |> Seq.distinct
     |> Seq.sort
