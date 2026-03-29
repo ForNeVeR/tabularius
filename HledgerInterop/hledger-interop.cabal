@@ -40,7 +40,10 @@ foreign-library hledger-interop-shared
     options:           standalone
   if os(linux)
     ghc-options:       -optl-Wl,-rpath,$ORIGIN
+  other-modules:       Interop
+                     , Tabularius
   hs-source-dirs:      src
   include-dirs:        include
-  build-depends:       hledger-interop
+  build-depends:       base >=4.7 && <5
+                     , hledger-lib ==1.52
   default-language:    GHC2021
