@@ -146,7 +146,7 @@ else {
     ]
 
     let images = [
-        "macos-15"
+        "macos-26"
         "ubuntu-24.04"
         "ubuntu-24.04-arm"
         "windows-2025"
