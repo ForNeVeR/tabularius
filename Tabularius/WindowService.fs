@@ -4,10 +4,13 @@
 
 namespace Tabularius
 
+open System
 open Avalonia
 open Avalonia.Controls
 open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.Platform.Storage
+open MsBox.Avalonia
+open MsBox.Avalonia.Enums
 open Tabularius.Resources
 open Tabularius.ViewModels
 open Tabularius.Views
@@ -15,6 +18,27 @@ open TruePath
 
 type WindowService(mainWindow: Window) =
     interface IWindowService with
+        member _.ShowErrorMessage(message, error, additionalText) =
+            let errorParagraph =
+                error
+                |> Option.ofObj
+                |> Option.map(fun error ->
+                    match error.Message with
+                    | m when not <| String.IsNullOrWhiteSpace m -> m.TrimEnd()
+                    | _ -> Localization.General_UnknownError
+                )
+
+            let parts =
+                seq {
+                    Some message
+                    errorParagraph
+                    Option.ofObj additionalText
+                } |> Seq.choose id
+
+            let content = String.concat "\n\n" parts
+            let box = MessageBoxManager.GetMessageBoxStandard(Localization.General_Error, content, ButtonEnum.Ok, Icon.Error)
+            box.ShowWindowDialogAsync(mainWindow)
+
         member _.ShowErrorList(collector: ErrorCollector) =
             Application.Current
             |> Option.ofObj
@@ -39,5 +63,3 @@ type WindowService(mainWindow: Window) =
                 | 1 -> ValueSome(AbsolutePath files[0].Path.LocalPath)
                 | _ -> failwithf $"Expected 0 or 1 file, got %d{files.Count}."
         }
-
-

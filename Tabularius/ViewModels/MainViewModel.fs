@@ -7,6 +7,7 @@ namespace Tabularius.ViewModels
 open System
 open CommunityToolkit.Mvvm.ComponentModel
 open JetBrains.Threading
+open Serilog
 open Tabularius
 open Tabularius.DesignTime
 open Tabularius.Interop
@@ -39,8 +40,23 @@ type MainViewModel(
             match! windowService.ChooseJournalFile() with
             | ValueNone -> ()
             | ValueSome path ->
-                let! transactions = hledger.VerifyJournal(path, ct)
-                this.JournalInfo <- String.Format(Localization.MainWindow_JournalInfo, transactions)
+                let! ex = task {
+                    try
+                        let! transactions = hledger.VerifyJournal(path, ct)
+                        this.JournalInfo <- String.Format(Localization.MainWindow_JournalInfo, transactions)
+                        return None
+                    with
+                    | e -> return Some e
+                }
+                match ex with
+                | None -> ()
+                | Some ex ->
+                    Log.Logger.Error(ex, $"Cannot load journal from file \"{path.Value}\".")
+                    do! windowService.ShowErrorMessage(
+                        String.Format(Localization.MainWindow_CannotLoadJournal, path.FileName),
+                        ex,
+                        Localization.General_SeeErrorList
+                    )
         }).NoAwait()
 
     member this.JournalInfo

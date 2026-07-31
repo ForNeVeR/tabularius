@@ -15,64 +15,65 @@ SPDX-License-Identifier: MIT
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\HledgerInterop\bin\$(SharedLibName)" CopyToOutputDirectory="PreserveNewest" Link="$(SharedLibName)"/>
+        <None Include="..\HledgerInterop\bin\$(SharedLibName)" CopyToOutputDirectory="PreserveNewest" Link="$(SharedLibName)" />
     </ItemGroup>
 
     <!-- On Linux: also include bundled GHC runtime .so files -->
     <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
-        <None Include="..\HledgerInterop\bin\libHS*.so" CopyToOutputDirectory="PreserveNewest" LinkBase="."/>
+        <None Include="..\HledgerInterop\bin\libHS*.so" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Tabularius.Interop\Tabularius.Interop.csproj"/>
+        <ProjectReference Include="..\Tabularius.Interop\Tabularius.Interop.csproj" />
         <ProjectReference Include="..\Tabularius.Resources\Tabularius.Resources.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="ExitCodes.fs"/>
-        <Compile Include="ErrorCollector.fs"/>
-        <Compile Include="Configuration.fs"/>
-        <Compile Include="IWindowService.fs"/>
-        <Compile Include="BackgroundActivity.fs"/>
-        <Compile Include="BackgroundActivityHost.fs"/>
-        <Compile Include="Converters\IntGreaterThanZeroConverter.fs"/>
-        <Compile Include="Converters\ErrorMessageDisplayConverter.fs"/>
+        <Compile Include="ExitCodes.fs" />
+        <Compile Include="ErrorCollector.fs" />
+        <Compile Include="Configuration.fs" />
+        <Compile Include="IWindowService.fs" />
+        <Compile Include="BackgroundActivity.fs" />
+        <Compile Include="BackgroundActivityHost.fs" />
+        <Compile Include="Converters\IntGreaterThanZeroConverter.fs" />
+        <Compile Include="Converters\ErrorMessageDisplayConverter.fs" />
         <Compile Include="DesignTime\HledgerDesignTimeApi.fs" />
         <Compile Include="ViewModels\StatusViewModel.fs" />
-        <Compile Include="ViewModels\ErrorListViewModel.fs"/>
+        <Compile Include="ViewModels\ErrorListViewModel.fs" />
         <Compile Include="ViewModels\MainViewModel.fs" />
-        <Compile Include="Views\MainWindow.axaml.fs"/>
-        <Compile Include="Views\ErrorListWindow.axaml.fs"/>
-        <Compile Include="Views\ErrorCounterIndicator.axaml.fs"/>
-        <Compile Include="Views\ActivityIndicator.axaml.fs"/>
+        <Compile Include="Views\MainWindow.axaml.fs" />
+        <Compile Include="Views\ErrorListWindow.axaml.fs" />
+        <Compile Include="Views\ErrorCounterIndicator.axaml.fs" />
+        <Compile Include="Views\ActivityIndicator.axaml.fs" />
         <Compile Include="Views\StatusBar.axaml.fs" />
-        <Compile Include="WindowService.fs"/>
+        <Compile Include="WindowService.fs" />
         <Compile Include="AvaloniaScheduler.fs" />
-        <Compile Include="App.axaml.fs"/>
-        <Compile Include="Program.fs"/>
+        <Compile Include="App.axaml.fs" />
+        <Compile Include="Program.fs" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="JetBrains.Lifetimes" Version="2026.2.5" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10"/>
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.10"/>
-        <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0"/>
-        <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1"/>
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1"/>
-        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
-        <PackageReference Include="TruePath" Version="1.12.0"/>
-        <PackageReference Include="TruePath.SystemIo" Version="1.12.0"/>
-        <PackageReference Include="Avalonia" Version="11.3.18"/>
-        <PackageReference Include="Avalonia.Desktop" Version="11.3.18"/>
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.18"/>
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.18"/>
+        <PackageReference Include="MessageBox.Avalonia" Version="3.1.6" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.10" />
+        <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+        <PackageReference Include="TruePath" Version="1.12.0" />
+        <PackageReference Include="TruePath.SystemIo" Version="1.12.0" />
+        <PackageReference Include="Avalonia" Version="11.3.18" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.18" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.18" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.18" />
         <PackageReference Include="Avalonia.Diagnostics" Version="11.3.18">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="Svg.props"/>
-        <Svg Include="..\art\icon.svg"/>
+        <Content Include="Svg.props" />
+        <Svg Include="..\art\icon.svg" />
     </ItemGroup>
 
-    <Import Project="Svg.props"/>
+    <Import Project="Svg.props" />
 </Project>

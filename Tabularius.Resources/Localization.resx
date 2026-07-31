@@ -63,4 +63,16 @@ SPDX-License-Identifier: MIT
     <data name="MainWindow_LoadJournal" xml:space="preserve">
         <value>Load Journal</value>
     </data>
+    <data name="MainWindow_CannotLoadJournal" xml:space="preserve">
+        <value>Cannot load journal from file "{0}".</value>
+    </data>
+    <data name="General_SeeErrorList" xml:space="preserve">
+        <value>See the error list for details.</value>
+    </data>
+    <data name="General_UnknownError" xml:space="preserve">
+        <value>Unknown error</value>
+    </data>
+    <data name="General_Error" xml:space="preserve">
+        <value>Error</value>
+    </data>
 </root>

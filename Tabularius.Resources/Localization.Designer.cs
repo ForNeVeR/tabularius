@@ -123,6 +123,42 @@ namespace Tabularius.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        public static string General_Error {
+            get {
+                return ResourceManager.GetString("General_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to See the error list for details..
+        /// </summary>
+        public static string General_SeeErrorList {
+            get {
+                return ResourceManager.GetString("General_SeeErrorList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown error.
+        /// </summary>
+        public static string General_UnknownError {
+            get {
+                return ResourceManager.GetString("General_UnknownError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot load journal from file &quot;{0}&quot;..
+        /// </summary>
+        public static string MainWindow_CannotLoadJournal {
+            get {
+                return ResourceManager.GetString("MainWindow_CannotLoadJournal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Journal is valid. Transactions: {0}..
         /// </summary>
         public static string MainWindow_JournalInfo {
