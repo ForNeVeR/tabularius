@@ -40,18 +40,12 @@ type MainViewModel(
             match! windowService.ChooseJournalFile() with
             | ValueNone -> ()
             | ValueSome path ->
-                let! ex = task {
-                    try
-                        let! transactions = hledger.VerifyJournal(path, ct)
-                        this.JournalInfo <- String.Format(Localization.MainWindow_JournalInfo, transactions)
-                        return None
-                    with
-                    | e -> return Some e
-                }
-                match ex with
-                | None -> ()
-                | Some ex ->
-                    Log.Logger.Error(ex, $"Cannot load journal from file \"{path.Value}\".")
+                try
+                    let! transactions = hledger.VerifyJournal(path, ct)
+                    this.JournalInfo <- String.Format(Localization.MainWindow_JournalInfo, transactions)
+                with
+                | ex ->
+                    Log.Logger.Error(ex, "Cannot load journal from file {Path}.", path.Value)
                     do! windowService.ShowErrorMessage(
                         String.Format(Localization.MainWindow_CannotLoadJournal, path.FileName),
                         ex,
