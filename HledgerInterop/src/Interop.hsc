@@ -77,8 +77,8 @@ buildVerifyJournalResult path = do
             sections =
                 filter
                     (not . null)
-                    [ if null callStackText then "" else "Call stack:\n" <> callStackText
-                    , if null runtimeBacktraceText then "" else "Runtime backtrace:\n" <> runtimeBacktraceText
+                    [ callStackText
+                    , runtimeBacktraceText
                     ]
         pure $
             if null sections
