@@ -10,11 +10,12 @@ module Interop
     , freeVerifyJournalResult
     ) where
 
-import Control.Exception (SomeException, displayException, try)
-import Control.Exception.Backtrace (collectBacktraces, displayBacktraces)
+import Control.Exception (SomeException(..), displayException, someExceptionContext, try)
+import Control.Exception.Context (displayExceptionContext)
+import Data.Char (isSpace)
 import Data.Int (Int32)
-import Foreign.C.String (CString)
 import Data.List (intercalate)
+import Foreign.C.String (CString)
 import Foreign.Marshal.Alloc (free, malloc)
 import Foreign.Ptr (Ptr, nullPtr)
 import Foreign.Storable (Storable(..))
@@ -64,26 +65,19 @@ buildVerifyJournalResult path = do
     outcome <- (try $ Tabularius.verifyJournal path) :: IO (Either SomeException Int32)
     case outcome of
         Right count -> newVerifyJournalResult count nullPtr nullPtr
-        Left ex -> do
-            messagePtr <- newCString utf8 (displayException ex)
-            stackPtr <- newCString utf8 =<< renderStackTrace
+        Left se@(SomeException e) -> do
+            messagePtr <- newCString utf8 (displayException e)
+            stackPtr <- newCString utf8 (renderStackTrace se)
             newVerifyJournalResult (-1) messagePtr stackPtr
   where
-    renderStackTrace :: HasCallStack => IO String
-    renderStackTrace = do
+    renderStackTrace :: HasCallStack => SomeException -> String
+    renderStackTrace se =
         let callStackText = prettyCallStack callStack
-        backtraces <- collectBacktraces
-        let runtimeBacktraceText = displayBacktraces backtraces
-            sections =
-                filter
-                    (not . null)
-                    [ callStackText
-                    , runtimeBacktraceText
-                    ]
-        pure $
-            if null sections
-                then "No Haskell stack trace is available."
-                else intercalate "\n\n" sections
+            contextText = displayExceptionContext (someExceptionContext se)
+            sections = filter (not . all isSpace) [callStackText, contextText]
+        in if null sections
+            then "No Haskell stack trace is available."
+            else intercalate "\n\n" sections
 
 newVerifyJournalResult :: Int32 -> CString -> CString -> IO (Ptr VerifyJournalResult)
 newVerifyJournalResult recordCount' errorMessage' stackTrace' = do
