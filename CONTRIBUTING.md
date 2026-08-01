@@ -35,6 +35,8 @@ Use the following shell command:
 $ dotnet build
 ```
 
+This will build both the Haskell and the .NET parts of the application, and deploy the Haskell library into the correct folder for it to be picked up by the .NET application.
+
 Test
 ----
 ### HledgerInterop
