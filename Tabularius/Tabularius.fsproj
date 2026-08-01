@@ -51,7 +51,7 @@ SPDX-License-Identifier: MIT
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="JetBrains.Lifetimes" Version="2026.2.5" />
-        <PackageReference Include="MessageBox.Avalonia" Version="3.1.6" />
+        <PackageReference Include="MessageBox.Avalonia" Version="3.3.1.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.10" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
