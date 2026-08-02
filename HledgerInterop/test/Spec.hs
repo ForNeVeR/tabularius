@@ -28,9 +28,21 @@ exampleJournal = unlines
     , "    expenses:goods  100 BTC"
     ]
 
+-- Journal with Russian and Chinese text in transaction names.
+-- No single-byte encoding covers both scripts, so this verifies true UTF-8 reading.
+utf8Journal :: String
+utf8Journal = unlines
+    [ "2026-01-01 \1055\1088\1080\1074\1077\1090"  -- "Привет" (Russian)
+    , "    assets:ing  100 BTC"
+    , "    equity:opening/closing balances"
+    , ""
+    , "2026-01-02 \20320\22909"  -- "你好" (Chinese)
+    , "    assets:ing  -50 BTC"
+    , "    expenses:goods  50 BTC"
+    ]
+
 withTempJournal :: String -> (FilePath -> IO a) -> IO a
-withTempJournal content action =
-    bracket acquire removeFile action
+withTempJournal content = bracket acquire removeFile
   where
     acquire = do
         tmpDir <- getTemporaryDirectory
@@ -66,6 +78,11 @@ main = hspec $ do
     describe "Tabularius.verifyJournal" $ do
         it "returns the correct number of transactions" $
             withTempJournal exampleJournal $ \path -> do
+                count <- Tabularius.verifyJournal path
+                count `shouldBe` (2 :: Int32)
+
+        it "reads a journal with UTF-8 content (Russian and Chinese)" $
+            withTempJournal utf8Journal $ \path -> do
                 count <- Tabularius.verifyJournal path
                 count `shouldBe` (2 :: Int32)
 

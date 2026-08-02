@@ -6,11 +6,13 @@ module Tabularius where
 
 import Data.Int (Int32)
 import Hledger.Data.Types (jtxns)
-import Hledger.Read (readJournalFile')
+import Hledger.Read (definputopts, orDieTrying, readJournal)
 import Hledger.Read.Common (PrefixedFilePath)
-import GHC.Stack (HasCallStack)
+import System.IO (IOMode (ReadMode), hSetEncoding, openFile, utf8)
 
-verifyJournal :: HasCallStack => PrefixedFilePath -> IO Int32
+verifyJournal :: PrefixedFilePath -> IO Int32
 verifyJournal path = do
-    journal <- readJournalFile' path
+    h <- openFile path ReadMode
+    hSetEncoding h utf8
+    journal <- orDieTrying $ readJournal definputopts (Just path) h
     return $ fromIntegral $ length $ jtxns journal
