@@ -99,8 +99,6 @@ Tabularius stores its persistent non-roamable state (such as the last opened fil
 - **macOS**: `~/Library/Application Support/me.fornever.Tabularius/.state/state.json`
 - **Linux**: `$XDG_STATE_HOME/Tabularius/state.json` (fallback `$HOME/.local/state/Tabularius/state.json`)
 
-Note: this state file is not yet used by the application.
-
 Documentation
 -------------
 - [Changelog][docs.changelog]
