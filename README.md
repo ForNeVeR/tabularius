@@ -94,6 +94,13 @@ Tabularius stores its log files in the following location (when using default co
 - **Windows**: `%TEMP%\tabularius\tabularius.log`
 - **Linux/macOS**: `$TMPDIR/tabularius/tabularius.log` (typically `/tmp/tabularius/tabularius.log`)
 
+Tabularius stores its persistent non-roamable state (such as the last opened file) in a per-OS application state directory:
+- **Windows**: `%LOCALAPPDATA%\me.fornever\Tabularius\.state\state.json`
+- **macOS**: `~/Library/Application Support/me.fornever.Tabularius/.state/state.json`
+- **Linux**: `$XDG_STATE_HOME/Tabularius/state.json` (fallback `$HOME/.local/state/Tabularius/state.json`)
+
+Note: this state file is not yet used by the application.
+
 Documentation
 -------------
 - [Changelog][docs.changelog]

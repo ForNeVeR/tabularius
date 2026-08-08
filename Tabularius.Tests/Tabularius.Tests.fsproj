@@ -18,6 +18,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="ErrorListViewModelTests.fs" />
         <Compile Include="BackgroundActivityHostTests.fs" />
         <Compile Include="InteropTests.fs" />
+        <Compile Include="StateTests.fs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -47,6 +48,7 @@ SPDX-License-Identifier: MIT
     <ItemGroup>
       <ProjectReference Include="..\Tabularius\Tabularius.fsproj" />
       <ProjectReference Include="..\Tabularius.Interop\Tabularius.Interop.csproj" />
+      <ProjectReference Include="..\Tabularius.Settings\Tabularius.Settings.fsproj" />
     </ItemGroup>
 
 </Project>
