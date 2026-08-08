@@ -11,7 +11,6 @@ open Tabularius.Settings
 open TruePath
 open Xunit
 
-
 [<Fact>]
 let ``SaveToFile then LoadFromFile round-trips Some``(): Task = task {
     let path = Temporary.CreateTempFile()
@@ -32,7 +31,7 @@ let ``SaveToFile then LoadFromFile round-trips None``(): Task = task {
 
 [<Fact>]
 let ``LoadFromFile returns default state when file is missing``(): Task = task {
-    let path = Temporary.CreateTempFile()
+    let path = Temporary.SystemTempDirectory() / $"nonexistent{Guid.NewGuid()}"
     let! actual = State.LoadFromFile(path)
     Assert.Equal({ LastOpenedFile = None }, actual)
 }
