@@ -8,18 +8,25 @@ open System.IO
 open System.Threading.Tasks
 open Microsoft.Extensions.Configuration
 open Serilog
+open Tabularius.Settings
 open TruePath
 open TruePath.SystemIo
 
-let TryGetConfigPath(args: string[]): Result<AbsolutePath option, string> =
-    match args |> Array.tryFindIndex (fun a -> a = "--config") with
+let private TryGetPathArgument (args: string[]) (name: string): Result<AbsolutePath option, string> =
+    match args |> Array.tryFindIndex (fun a -> a = name) with
     | None -> Ok None
     | Some i ->
         if i + 1 < args.Length then
             let path = AbsolutePath(Path.GetFullPath(args.[i + 1]))
             Ok(Some path)
         else
-            Error "--config requires a file path argument."
+            Error $"%s{name} requires a file path argument."
+
+let TryGetConfigPath(args: string[]): Result<AbsolutePath option, string> =
+    TryGetPathArgument args "--config"
+
+let TryGetStatePath(args: string[]): Result<AbsolutePath option, string> =
+    TryGetPathArgument args "--state"
 
 let ReadConfiguration(configPath: AbsolutePath): Task<IConfigurationRoot> =
     task {
@@ -34,24 +41,30 @@ let ReadConfiguration(configPath: AbsolutePath): Task<IConfigurationRoot> =
 
 type TabulariusConfiguration = {
     DiagnosticMode: bool
+    StatePath: AbsolutePath
 }
 
 module TabulariusConfiguration =
-    let Default = { DiagnosticMode = false }
+    let Default = {
+        DiagnosticMode = false
+        StatePath = State.DefaultStateFilePath
+    }
 
-let ReadTabulariusConfiguration(config: IConfigurationRoot option): TabulariusConfiguration =
-    match config with
-    | Some cfg ->
-        let diagnosticMode =
+let ReadTabulariusConfiguration(config: IConfigurationRoot option, statePath: AbsolutePath option): TabulariusConfiguration =
+    let diagnosticMode =
+        match config with
+        | Some cfg ->
             match cfg.["DiagnosticMode"] with
             | null -> false
             | value ->
                 match System.Boolean.TryParse(value) with
                 | true, v -> v
                 | false, _ -> false
-        { DiagnosticMode = diagnosticMode }
-    | None ->
-        TabulariusConfiguration.Default
+        | None -> TabulariusConfiguration.Default.DiagnosticMode
+    {
+        DiagnosticMode = diagnosticMode
+        StatePath = statePath |> Option.defaultValue State.DefaultStateFilePath
+    }
 
 let CreateSerilogLogger(config: IConfigurationRoot option, sink: Serilog.Core.ILogEventSink option) : Serilog.Core.Logger =
     let addSink (lc: LoggerConfiguration) =

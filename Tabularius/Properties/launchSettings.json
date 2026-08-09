@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Tabularius": {
+      "commandName": "Project",
+      "commandLineArgs": "--state state.json"
+    }
+  }
+}

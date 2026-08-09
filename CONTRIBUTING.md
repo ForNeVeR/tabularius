@@ -37,6 +37,19 @@ $ dotnet build
 
 This will build both the Haskell and the .NET parts of the application, and deploy the Haskell library into the correct folder for it to be picked up by the .NET application.
 
+Run
+---
+Use the following shell command:
+```console
+$ dotnet run --project Tabularius
+```
+
+The repository ships a launch profile (`Tabularius/Properties/launchSettings.json`) that passes `--state state.json` to the application, so a development run keeps its state (such as the last opened file) next to the application binaries instead of the per-OS state directory. This way, running the application in development mode doesn't influence the state of the production installation on the same machine.
+
+The `bin` directory is excluded from the version control, so the development state is never committed. Delete `Tabularius/bin/**/state.json` to reset the development state.
+
+See the [Command Line section of the README][docs.readme.command-line] for the full list of the supported command-line arguments.
+
 Test
 ----
 ### HledgerInterop
@@ -95,6 +108,7 @@ Then run the following shell command:
 $ dotnet fsi scripts/github-actions.fsx
 ```
 
+[docs.readme.command-line]: README.md#command-line
 [dotnet-sdk]: https://dotnet.microsoft.com/en-us/download
 [haskell-stack]: https://docs.haskellstack.org/en/stable/install_and_upgrade/
 [powershell]: https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell

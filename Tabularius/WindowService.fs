@@ -18,7 +18,7 @@ open Tabularius.ViewModels
 open Tabularius.Views
 open TruePath
 
-type WindowService(mainWindow: Window) =
+type WindowService(mainWindow: Window, statePath: AbsolutePath) =
     interface IWindowService with
         member _.ShowErrorMessage(message, error, additionalText) =
             let errorParagraph =
@@ -55,7 +55,7 @@ type WindowService(mainWindow: Window) =
             )
 
         member this.ChooseJournalFile() = task {
-            let! state = State.LoadFromFile()
+            let! state = State.LoadFromFile statePath
             let storageProvider = mainWindow.StorageProvider
             let! suggestedLocation, suggestedFileName =
                 state.LastOpenedFile
@@ -86,6 +86,6 @@ type WindowService(mainWindow: Window) =
             match result with
             | ValueNone -> ()
             | ValueSome path ->
-                do! State.SaveToFile { state with LastOpenedFile = ValueSome path }
+                do! State.SaveToFile({ state with LastOpenedFile = ValueSome path }, statePath)
             return result
         }

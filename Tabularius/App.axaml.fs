@@ -57,7 +57,7 @@ type App() =
                 |> Option.defaultValue Configuration.TabulariusConfiguration.Default
 
             let mainWindow = MainWindow()
-            let windowService = WindowService mainWindow
+            let windowService = WindowService(mainWindow, config.StatePath)
             let activityHost = BackgroundActivityHost(AvaloniaScheduler())
             let applicationLifetime =
                 this.ApplicationLifetime

@@ -73,7 +73,7 @@ type MainViewModel(
 
     member this.ReloadLastOpenedFile(): unit =
         (task {
-            let! state = State.LoadFromFile()
+            let! state = State.LoadFromFile config.StatePath
             do! this.ReloadFromState(state)
         }).NoAwait()
 

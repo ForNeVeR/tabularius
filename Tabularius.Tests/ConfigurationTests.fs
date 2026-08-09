@@ -7,6 +7,7 @@ module Tabularius.Tests.ConfigurationTests
 open System.IO
 open Microsoft.Extensions.Configuration
 open Tabularius.Configuration
+open Tabularius.Settings
 open TruePath
 open Xunit
 
@@ -32,12 +33,32 @@ let ``TryGetConfigPath ignores unrelated args``(): unit =
     Assert.Equal(Ok None, TryGetConfigPath [| "--verbose"; "true" |])
 
 [<Fact>]
+let ``TryGetStatePath returns None when no args``(): unit =
+    Assert.Equal(Ok None, TryGetStatePath [||])
+
+[<Fact>]
+let ``TryGetStatePath returns path when --state is provided``(): unit =
+    match TryGetStatePath [| "--state"; "state.json" |] with
+    | Ok(Some path) -> Assert.EndsWith("state.json", path.Value)
+    | _ -> Assert.Fail "Expected Ok(Some path)"
+
+[<Fact>]
+let ``TryGetStatePath returns Error when --state has no value``(): unit =
+    match TryGetStatePath [| "--state" |] with
+    | Error _ -> ()
+    | _ -> Assert.Fail "Expected Error"
+
+[<Fact>]
+let ``TryGetStatePath ignores unrelated args``(): unit =
+    Assert.Equal(Ok None, TryGetStatePath [| "--config"; "test.json" |])
+
+[<Fact>]
 let ``ReadConfiguration reads valid JSON file``(): unit =
     let testDataDir = AbsolutePath.CurrentWorkingDirectory / "testdata"
     let configPath = testDataDir / "valid-config.json"
     let config = ReadConfiguration(configPath).GetAwaiter().GetResult()
     Assert.True(config.GetSection("Serilog").Exists())
-    Assert.Equal("Warning", config.["Serilog:MinimumLevel"])
+    Assert.Equal("Warning", config["Serilog:MinimumLevel"])
 
 [<Fact>]
 let ``ReadConfiguration throws for missing file``(): unit =
@@ -61,15 +82,16 @@ let ``CreateSerilogLogger returns default logger without config``(): unit =
 
 [<Fact>]
 let ``ReadTabulariusConfiguration returns defaults when config is None``(): unit =
-    let result = ReadTabulariusConfiguration(None)
+    let result = ReadTabulariusConfiguration(None, None)
     Assert.False(result.DiagnosticMode)
+    Assert.Equal(State.DefaultStateFilePath, result.StatePath)
 
 [<Fact>]
 let ``ReadTabulariusConfiguration returns defaults when key is absent``(): unit =
     let testDataDir = AbsolutePath.CurrentWorkingDirectory / "testdata"
     let configPath = testDataDir / "valid-config.json"
     let config = ReadConfiguration(configPath).GetAwaiter().GetResult()
-    let result = ReadTabulariusConfiguration(Some config)
+    let result = ReadTabulariusConfiguration(Some config, None)
     Assert.False(result.DiagnosticMode)
 
 [<Fact>]
@@ -77,5 +99,11 @@ let ``ReadTabulariusConfiguration reads DiagnosticMode when set to true``(): uni
     let testDataDir = AbsolutePath.CurrentWorkingDirectory / "testdata"
     let configPath = testDataDir / "config-with-diagnostic-mode.json"
     let config = ReadConfiguration(configPath).GetAwaiter().GetResult()
-    let result = ReadTabulariusConfiguration(Some config)
+    let result = ReadTabulariusConfiguration(Some config, None)
     Assert.True(result.DiagnosticMode)
+
+[<Fact>]
+let ``ReadTabulariusConfiguration prefers the state path from the command line``(): unit =
+    let statePath = AbsolutePath.CurrentWorkingDirectory / "custom-state.json"
+    let result = ReadTabulariusConfiguration(None, Some statePath)
+    Assert.Equal(statePath, result.StatePath)

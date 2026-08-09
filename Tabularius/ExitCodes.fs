@@ -15,3 +15,6 @@ let ConfigFileInvalid = 2
 
 [<Literal>]
 let ConfigArgMissing = 3
+
+[<Literal>]
+let StateArgMissing = 4

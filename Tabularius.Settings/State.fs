@@ -19,7 +19,7 @@ type InternalState = {
 type State =
     { LastOpenedFile: ValueOption<AbsolutePath> }
 
-    static member internal DefaultStateFilePath: AbsolutePath =
+    static member DefaultStateFilePath: AbsolutePath =
         ApplicationDirectories(applicationName = "Tabularius",
                                vendorName = "me.fornever",
                                allowCompatMode = true).StateDirectory() / "state.json"
@@ -29,7 +29,7 @@ type State =
             WriteIndented = true
         )
 
-    static member internal LoadFromFile(path: AbsolutePath): Task<State> =
+    static member LoadFromFile(path: AbsolutePath): Task<State> =
         task {
             try
                 if not <| path.ExistsFile() then
@@ -50,7 +50,7 @@ type State =
                 return { LastOpenedFile = ValueNone }
         }
 
-    static member internal SaveToFile(state: State, path: AbsolutePath): Task =
+    static member SaveToFile(state: State, path: AbsolutePath): Task =
         task {
             try
                 let dto: InternalState = {
@@ -64,9 +64,3 @@ type State =
             | ex ->
                 Log.Root.Error ex
         }
-
-    static member LoadFromFile(): Task<State> =
-        State.LoadFromFile(State.DefaultStateFilePath)
-
-    static member SaveToFile(state: State): Task =
-        State.SaveToFile(state, State.DefaultStateFilePath)

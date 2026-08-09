@@ -76,11 +76,14 @@ let private SetUpLogger(logger: Microsoft.Extensions.Logging.ILogger) =
 
 [<EntryPoint; STAThread>]
 let main(args: string[]) : int =
-    match Configuration.TryGetConfigPath args with
-    | Error msg ->
+    match Configuration.TryGetConfigPath args, Configuration.TryGetStatePath args with
+    | Error msg, _ ->
         eprintfn $"%s{msg}"
         ExitCodes.ConfigArgMissing
-    | Ok configPath ->
+    | _, Error msg ->
+        eprintfn $"%s{msg}"
+        ExitCodes.StateArgMissing
+    | Ok configPath, Ok statePath ->
         let config =
             match configPath with
             | Some path ->
@@ -101,7 +104,7 @@ let main(args: string[]) : int =
             // Config was requested but failed to load.
             ExitCodes.ConfigFileNotFound
         | _ ->
-            let appConfig = Configuration.ReadTabulariusConfiguration(config)
+            let appConfig = Configuration.ReadTabulariusConfiguration(config, statePath)
             let errorCollector = ErrorCollector(Lifetime.Eternal, AvaloniaScheduler())
 
             let serilogLogger = Configuration.CreateSerilogLogger(config, Some(errorCollector :> Serilog.Core.ILogEventSink))

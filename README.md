@@ -24,11 +24,12 @@ Download the archive for your platform from the [Releases][releases] page and un
 Command Line
 ------------
 ```
-tabularius [--config <config-path>]
+tabularius [--config <config-path>] [--state <state-path>]
 ```
 
 where
 - `config-path` is the path to a JSON configuration file. If omitted, default settings are used. If provided, the file must exist.
+- `state-path` is the path to the state file (see [Files](#files)). If omitted, the per-OS default location is used. The file and its parent directories are created on demand. Relative paths are resolved against the current working directory.
 
 ### Exit Codes
 
@@ -38,6 +39,7 @@ where
 | 1    | Configuration file specified via `--config` was not found. |
 | 2    | Configuration file is invalid (parse error).               |
 | 3    | `--config` was specified without a file path.              |
+| 4    | `--state` was specified without a file path.               |
 
 Configuration
 -------------
@@ -98,6 +100,8 @@ Tabularius stores its persistent non-roamable state (such as the last opened fil
 - **Windows**: `%LOCALAPPDATA%\me.fornever\Tabularius\.state\state.json`
 - **macOS**: `~/Library/Application Support/me.fornever.Tabularius/.state/state.json`
 - **Linux**: `$XDG_STATE_HOME/Tabularius/state.json` (fallback `$HOME/.local/state/Tabularius/state.json`)
+
+The state file location may be overridden with the `--state` command-line option (see [Command Line](#command-line)).
 
 Documentation
 -------------
