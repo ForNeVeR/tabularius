@@ -25,6 +25,7 @@ SPDX-License-Identifier: MIT
     <ItemGroup>
         <ProjectReference Include="..\Tabularius.Interop\Tabularius.Interop.csproj" />
         <ProjectReference Include="..\Tabularius.Resources\Tabularius.Resources.csproj" />
+        <ProjectReference Include="..\Tabularius.Settings\Tabularius.Settings.fsproj" />
     </ItemGroup>
     <ItemGroup>
         <Compile Include="ExitCodes.fs" />

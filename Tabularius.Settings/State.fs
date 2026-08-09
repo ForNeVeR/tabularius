@@ -17,7 +17,7 @@ type InternalState = {
 }
 
 type State =
-    { LastOpenedFile: Option<AbsolutePath> }
+    { LastOpenedFile: ValueOption<AbsolutePath> }
 
     static member internal DefaultStateFilePath: AbsolutePath =
         ApplicationDirectories(applicationName = "Tabularius",
@@ -33,32 +33,36 @@ type State =
         task {
             try
                 if not <| path.ExistsFile() then
-                    return { LastOpenedFile = None }
+                    return { LastOpenedFile = ValueNone }
                 else
                     use stream = path.OpenRead()
                     let! dto = JsonSerializer.DeserializeAsync<InternalState>(stream, State.JsonOptions)
                     let lastOpenedFile =
                         dto
-                        |> Option.ofObj
-                        |> Option.map _.LastOpenedFile
-                        |> Option.bind Option.ofObj
-                        |> Option.map AbsolutePath
+                        |> ValueOption.ofObj
+                        |> ValueOption.map _.LastOpenedFile
+                        |> ValueOption.bind ValueOption.ofObj
+                        |> ValueOption.map AbsolutePath
                     return { LastOpenedFile = lastOpenedFile }
             with
             | ex ->
                 Log.Root.Error ex
-                return { LastOpenedFile = None }
+                return { LastOpenedFile = ValueNone }
         }
 
     static member internal SaveToFile(state: State, path: AbsolutePath): Task =
         task {
-            let dto: InternalState = {
-                LastOpenedFile = state.LastOpenedFile |> Option.map _.Value |> Option.toObj
-            }
+            try
+                let dto: InternalState = {
+                    LastOpenedFile = state.LastOpenedFile |> ValueOption.map _.Value |> ValueOption.toObj
+                }
 
-            path.Parent.Value.CreateDirectory()
-            use stream = path.OpenWrite()
-            do! JsonSerializer.SerializeAsync(stream, dto, State.JsonOptions)
+                path.Parent.Value.CreateDirectory()
+                use stream = path.OpenWrite()
+                do! JsonSerializer.SerializeAsync(stream, dto, State.JsonOptions)
+            with
+            | ex ->
+                Log.Root.Error ex
         }
 
     static member LoadFromFile(): Task<State> =
