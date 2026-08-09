@@ -23,6 +23,9 @@ SPDX-License-Identifier: MIT
         <None Include="..\HledgerInterop\bin\libHS*.so" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
     </ItemGroup>
     <ItemGroup>
+        <InternalsVisibleTo Include="Tabularius.Tests" />
+    </ItemGroup>
+    <ItemGroup>
         <ProjectReference Include="..\Tabularius.Interop\Tabularius.Interop.csproj" />
         <ProjectReference Include="..\Tabularius.Resources\Tabularius.Resources.csproj" />
         <ProjectReference Include="..\Tabularius.Settings\Tabularius.Settings.fsproj" />

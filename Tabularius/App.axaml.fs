@@ -44,6 +44,8 @@ type App() =
         // Without this line you will get duplicate validations from both Avalonia and CT
         BindingPlugins.DataValidators.RemoveAt(0)
 
+        let mutable viewModel: MainViewModel option = None
+
         match this.ApplicationLifetime with
         | :? IClassicDesktopStyleApplicationLifetime as desktop ->
             let collector =
@@ -64,8 +66,12 @@ type App() =
                 |> toLifetime
             let hledger = Hledger.Initialize(applicationLifetime)
 
-            mainWindow.DataContext <- MainViewModel(collector, config, windowService, activityHost, hledger)
+            let mainViewModel = MainViewModel(collector, config, windowService, activityHost, hledger)
+            mainWindow.DataContext <- mainViewModel
             desktop.MainWindow <- mainWindow
+            viewModel <- Some mainViewModel
         | _ -> ()
 
         base.OnFrameworkInitializationCompleted()
+
+        viewModel |> Option.iter _.ReloadLastOpenedFile()
