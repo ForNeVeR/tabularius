@@ -71,22 +71,12 @@ See the [Serilog.Settings.Configuration documentation][serilog.settings.configur
 |------------------|--------|---------|-------------------------------------------------------------------------------------|
 | `DiagnosticMode` | `bool` | `false` | When `true`, shows various test controls in the status bar for diagnostic purposes. |
 
-Example configuration with application settings:
+Example configuration with application settings (Serilog settings, described above, are omitted for brevity):
 
 ```json
 {
   "DiagnosticMode": true,
-  "Serilog": {
-    "Using": ["Serilog.Sinks.Console", "Serilog.Sinks.File"],
-    "MinimumLevel": "Information",
-    "WriteTo": [
-      { "Name": "Console" },
-      {
-        "Name": "File",
-        "Args": { "path": "/tmp/tabularius/tabularius.log" }
-      }
-    ]
-  }
+  "Serilog": {}
 }
 ```
 
