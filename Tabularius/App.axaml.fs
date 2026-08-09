@@ -6,7 +6,6 @@ namespace Tabularius
 
 open Avalonia
 open Avalonia.Controls.ApplicationLifetimes
-open Avalonia.Data.Core.Plugins
 open Avalonia.Markup.Xaml
 open Avalonia.Threading
 open JetBrains.Collections.Viewable
@@ -39,10 +38,6 @@ type App() =
             Log.Logger.Error(e.Exception, "Unhandled exception")
             e.Handled <- true
         ) |> ignore
-
-        // The line below is needed to remove Avalonia data validation.
-        // Without this line you will get duplicate validations from both Avalonia and CT
-        BindingPlugins.DataValidators.RemoveAt(0)
 
         let mutable viewModel: MainViewModel option = None
 
