@@ -19,6 +19,9 @@ let BuildAvaloniaApp() =
         .Configure<App>()
         .UsePlatformDetect()
         .WithInterFont()
+        #if DEBUG
+        .WithDeveloperTools()
+        #endif
         .LogToTrace(areas = Array.empty)
 
 let private SetUpLogger(logger: Microsoft.Extensions.Logging.ILogger) =
