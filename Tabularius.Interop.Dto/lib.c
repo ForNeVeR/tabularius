@@ -2,5 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-// ReSharper disable once CppUnusedIncludeDirective — actually used for metadata generation
+// ReSharper disable CppUnusedIncludeDirective — all used for metadata generation
+#include "../HledgerInterop/include/balance_report_result.h"
 #include "../HledgerInterop/include/verify_journal_result.h"
