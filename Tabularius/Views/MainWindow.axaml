@@ -21,12 +21,12 @@ SPDX-License-Identifier: MIT
         <vm:MainViewModel/>
     </Design.DataContext>
 
-    <Grid RowDefinitions="*, Auto" ColumnDefinitions="*, Auto">
+    <Grid RowDefinitions="Auto, *, Auto" ColumnDefinitions="*">
 
-        <Label Grid.Column="0" Grid.Row="0" Content="{Binding JournalInfo}"/>
-        <Button Grid.Column="1" Grid.Row="0"
+        <Button Grid.Column="0" Grid.Row="0"
                 Content="{x:Static resources:Localization.MainWindow_LoadJournal}"
                 Command="{Binding OpenJournal}"/>
+        <Label Grid.Column="0" Grid.Row="1" Content="{Binding JournalInfo}"/>
 
         <views:StatusBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                          DataContext="{Binding Status}"/>
