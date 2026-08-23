@@ -9,12 +9,13 @@ SPDX-License-Identifier: MIT
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <PublishDir>bin\publish</PublishDir>
+        <PublishTrimmed>true</PublishTrimmed>
         <PublishSingleFile>true</PublishSingleFile>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <ApplicationIcon>obj\$(Configuration)\$(TargetFramework)\Resources\icon.ico</ApplicationIcon>
     </PropertyGroup>
 
-    <!-- 
+    <!--
         `dotnet run` ignores the `workingDirectory` setting of the launch profile, so set the working directory for
          it here: this way, the arguments from the `launchSettings.json` can be set relatively to the output dir
          regardless of the way you starrt the app, from the command line or from the IDE.
