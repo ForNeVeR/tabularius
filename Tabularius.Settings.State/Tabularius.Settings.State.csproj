@@ -1,0 +1,14 @@
+<!--
+SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
+
+SPDX-License-Identifier: MIT
+-->
+
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Description>JSON contract types for the Tabularius application state file, with a source-generated System.Text.Json context so that state persistence works in trimmed and AOT-published builds. Contains serializable types only.</Description>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+</Project>
