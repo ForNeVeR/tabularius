@@ -6,13 +6,16 @@ SPDX-License-Identifier: MIT
 
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <!-- Imported early: $(ApplicationIcon) below is an evaluation-time property defined by this file. -->
+    <Import Project="Svg.props" />
+
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <PublishDir>bin\publish</PublishDir>
         <PublishTrimmed>true</PublishTrimmed>
         <PublishSingleFile>true</PublishSingleFile>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <ApplicationIcon>obj\$(Configuration)\$(TargetFramework)\Resources\icon.ico</ApplicationIcon>
+        <ApplicationIcon>$(TabulariusIconPath)</ApplicationIcon>
     </PropertyGroup>
 
     <!--
@@ -90,6 +93,4 @@ SPDX-License-Identifier: MIT
         <Content Include="Svg.props" />
         <Svg Include="..\art\icon.svg" />
     </ItemGroup>
-
-    <Import Project="Svg.props" />
 </Project>
