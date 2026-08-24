@@ -7,3 +7,5 @@ EXPORTS
     hs_exit
     verifyJournal
     freeVerifyJournalResult
+    balanceReport
+    freeBalanceReportResult
