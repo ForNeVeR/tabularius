@@ -36,9 +36,9 @@ instance Storable VerifyJournalResult where
     alignment _ = #alignment struct VerifyJournalResult
 
     peek ptr = do
-        recordCount' <- (#peek struct VerifyJournalResult, record_count) ptr
-        errorMessage' <- (#peek struct VerifyJournalResult, error_message) ptr
-        stackTrace' <- (#peek struct VerifyJournalResult, stack_trace) ptr
+        recordCount' <- (#peek struct VerifyJournalResult, recordCount) ptr
+        errorMessage' <- (#peek struct VerifyJournalResult, errorMessage) ptr
+        stackTrace' <- (#peek struct VerifyJournalResult, stackTrace) ptr
         pure VerifyJournalResult
             { recordCount = recordCount'
             , errorMessage = errorMessage'
@@ -46,9 +46,9 @@ instance Storable VerifyJournalResult where
             }
 
     poke ptr result = do
-        (#poke struct VerifyJournalResult, record_count) ptr (recordCount result)
-        (#poke struct VerifyJournalResult, error_message) ptr (errorMessage result)
-        (#poke struct VerifyJournalResult, stack_trace) ptr (stackTrace result)
+        (#poke struct VerifyJournalResult, recordCount) ptr (recordCount result)
+        (#poke struct VerifyJournalResult, errorMessage) ptr (errorMessage result)
+        (#poke struct VerifyJournalResult, stackTrace) ptr (stackTrace result)
 
 foreign export ccall verifyJournal :: CString -> IO (Ptr VerifyJournalResult)
 foreign export ccall freeVerifyJournalResult :: Ptr VerifyJournalResult -> IO ()

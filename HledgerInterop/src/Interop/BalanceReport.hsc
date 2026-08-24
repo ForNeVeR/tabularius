@@ -18,7 +18,7 @@ module Interop.BalanceReport
     , freeBalanceReportResult
     ) where
 
-import Control.Exception (SomeException, try)
+import Control.Exception (SomeException, onException, try)
 import Data.Int (Int32)
 import Data.Word (Word32, Word8)
 import Foreign.C.String (CString)
@@ -247,8 +247,8 @@ instance Storable BalanceReportResult where
         itemCount' <- (#peek struct BalanceReportResult, itemCount) ptr
         items' <- (#peek struct BalanceReportResult, items) ptr
         totals' <- (#peek struct BalanceReportResult, totals) ptr
-        errorMessage' <- (#peek struct BalanceReportResult, error_message) ptr
-        stackTrace' <- (#peek struct BalanceReportResult, stack_trace) ptr
+        errorMessage' <- (#peek struct BalanceReportResult, errorMessage) ptr
+        stackTrace' <- (#peek struct BalanceReportResult, stackTrace) ptr
         pure BalanceReportResult
             { itemCount = itemCount'
             , items = items'
@@ -261,8 +261,8 @@ instance Storable BalanceReportResult where
         (#poke struct BalanceReportResult, itemCount) ptr (itemCount result)
         (#poke struct BalanceReportResult, items) ptr (items result)
         (#poke struct BalanceReportResult, totals) ptr (totals result)
-        (#poke struct BalanceReportResult, error_message) ptr (errorMessage result)
-        (#poke struct BalanceReportResult, stack_trace) ptr (stackTrace result)
+        (#poke struct BalanceReportResult, errorMessage) ptr (errorMessage result)
+        (#poke struct BalanceReportResult, stackTrace) ptr (stackTrace result)
 
 foreign export ccall balanceReport :: CString -> IO (Ptr BalanceReportResult)
 foreign export ccall freeBalanceReportResult :: Ptr BalanceReportResult -> IO ()
@@ -291,22 +291,35 @@ buildBalanceReportResult path = do
 emptyMixedAmount :: MixedAmount
 emptyMixedAmount = MixedAmount { entryCount = 0, entries = nullPtr }
 
+-- Every step frees whatever it has already allocated if a later one fails, so that a failed marshalling leaks nothing.
 marshalReport :: BR.BalanceReport -> IO (Ptr BalanceReportResult)
 marshalReport (reportItems, reportTotals) = do
-    (itemsPtr, count) <- mapM marshalItem reportItems >>= newStructArray
+    marshalledItems <- marshalEach marshalItem freeItem reportItems
+    (itemsPtr, count) <- newStructArray marshalledItems
+        `onException` mapM_ freeItem marshalledItems
     marshalledTotals <- marshalMixedAmount reportTotals
+        `onException` freeItems count itemsPtr
     newStruct BalanceReportResult
         { itemCount = count
         , items = itemsPtr
         , totals = marshalledTotals
         , errorMessage = nullPtr
         , stackTrace = nullPtr
-        }
+        } `onException` (freeItems count itemsPtr >> freeMixedAmount marshalledTotals)
+
+-- Marshals every element, freeing the already marshalled ones if any of the elements fails.
+marshalEach :: (a -> IO b) -> (b -> IO ()) -> [a] -> IO [b]
+marshalEach marshal freeValue = go []
+    where
+        go marshalled [] = pure (reverse marshalled)
+        go marshalled (x:xs) = do
+            value <- marshal x `onException` mapM_ freeValue marshalled
+            go (value:marshalled) xs
 
 marshalItem :: BR.BalanceReportItem -> IO BalanceReportItem
 marshalItem (fullName, _elidedName, indentation, amount) = do
     namePtr <- newUtf8CStringT fullName
-    marshalledAmount <- marshalMixedAmount amount
+    marshalledAmount <- marshalMixedAmount amount `onException` freeIfAllocated namePtr
     pure BalanceReportItem
         { accountName = namePtr
         , indentationSteps = fromIntegral indentation
@@ -315,7 +328,9 @@ marshalItem (fullName, _elidedName, indentation, amount) = do
 
 marshalMixedAmount :: H.MixedAmount -> IO MixedAmount
 marshalMixedAmount (H.Mixed amountMap) = do
-    (entriesPtr, count) <- mapM marshalEntry (Map.toList amountMap) >>= newStructArray
+    marshalledEntries <- marshalEach marshalEntry freeEntry (Map.toList amountMap)
+    (entriesPtr, count) <- newStructArray marshalledEntries
+        `onException` mapM_ freeEntry marshalledEntries
     pure MixedAmount
         { entryCount = count
         , entries = entriesPtr
@@ -324,7 +339,7 @@ marshalMixedAmount (H.Mixed amountMap) = do
 marshalEntry :: (H.MixedAmountKey, H.Amount) -> IO MixedAmountEntry
 marshalEntry (key, amount) = do
     commodityPtr <- newUtf8CStringT (keyCommoditySymbol key)
-    marshalledAmount <- marshalAmount amount
+    marshalledAmount <- marshalAmount amount `onException` freeIfAllocated commodityPtr
     pure MixedAmountEntry
         { entryKey = MixedAmountKey { keyCommodity = commodityPtr }
         , entryValue = marshalledAmount
@@ -339,6 +354,7 @@ marshalAmount :: H.Amount -> IO Amount
 marshalAmount amount = do
     commodityPtr <- newUtf8CStringT (H.acommodity amount)
     marshalledQuantity <- marshalQuantity (H.aquantity amount)
+        `onException` freeIfAllocated commodityPtr
     pure Amount
         { amountCommodity = commodityPtr
         , amountQuantity = marshalledQuantity

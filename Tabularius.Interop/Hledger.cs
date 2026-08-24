@@ -54,20 +54,23 @@ public class Hledger : IHledgerApi
             _taskScheduler);
     }
 
+    private static unsafe void ThrowIfFailed(byte* errorMessage, byte* stackTrace)
+    {
+        if (errorMessage == null) return;
+
+        throw new HledgerException(
+            Marshal.PtrToStringUTF8((IntPtr)errorMessage) ?? "[NO MESSAGE]",
+            Marshal.PtrToStringUTF8((IntPtr)stackTrace) ?? "[NO STACK TRACE]");
+    }
+
     public unsafe Task<int> VerifyJournal(AbsolutePath journalPath, CancellationToken cancellationToken = default) =>
         RunTask(() =>
         {
             var result = HledgerInterop.VerifyJournal(journalPath.Value);
             try
             {
-                if (result->error_message != null)
-                {
-                    var errorMessage = Marshal.PtrToStringUTF8((IntPtr)result->error_message);
-                    var stackTrace = Marshal.PtrToStringUTF8((IntPtr)result->stack_trace);
-                    throw new HledgerException(errorMessage ?? "[NO MESSAGE]", stackTrace ?? "[NO STACK TRACE]");
-                }
-
-                return result->record_count;
+                ThrowIfFailed(result->errorMessage, result->stackTrace);
+                return result->recordCount;
             }
             finally
             {
@@ -83,13 +86,7 @@ public class Hledger : IHledgerApi
             var result = HledgerInterop.BalanceReport(journalPath.Value);
             try
             {
-                if (result->error_message != null)
-                {
-                    var errorMessage = Marshal.PtrToStringUTF8((IntPtr)result->error_message);
-                    var stackTrace = Marshal.PtrToStringUTF8((IntPtr)result->stack_trace);
-                    throw new HledgerException(errorMessage ?? "[NO MESSAGE]", stackTrace ?? "[NO STACK TRACE]");
-                }
-
+                ThrowIfFailed(result->errorMessage, result->stackTrace);
                 return BalanceReportMarshaller.Read(result);
             }
             finally

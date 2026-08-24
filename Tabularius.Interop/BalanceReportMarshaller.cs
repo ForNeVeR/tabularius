@@ -77,7 +77,7 @@ internal static unsafe class BalanceReportMarshaller
         return ToDecimal(new BigInteger(bytes, isUnsigned: false, isBigEndian: false), native.places);
     }
 
-    /// <summary>Max mantissa (in bits) for a <see cref="Decimal"/>.</summary>
+    /// <summary>Max mantissa (in bits) for a <see cref="decimal"/>.</summary>
     private static readonly BigInteger MaxMantissa = (BigInteger.One << 96) - BigInteger.One;
 
     /// <remarks>Never rounds: throws if the value is not exactly representable as a <see cref="decimal"/>.</remarks>
