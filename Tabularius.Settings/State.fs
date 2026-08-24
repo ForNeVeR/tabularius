@@ -8,13 +8,9 @@ open System.Text.Json
 open System.Threading.Tasks
 open FVNever.AppDirs
 open JetBrains.Diagnostics
+open Tabularius.Settings.State
 open TruePath
 open TruePath.SystemIo
-
-[<CLIMutable>]
-type InternalState = {
-    LastOpenedFile: string | null
-}
 
 type State =
     { LastOpenedFile: ValueOption<AbsolutePath> }
@@ -24,11 +20,6 @@ type State =
                                vendorName = "me.fornever",
                                allowCompatMode = true).StateDirectory() / "state.json"
 
-    static member val private JsonOptions =
-        JsonSerializerOptions(
-            WriteIndented = true
-        )
-
     static member LoadFromFile(path: AbsolutePath): Task<State> =
         task {
             try
@@ -36,7 +27,7 @@ type State =
                     return { LastOpenedFile = ValueNone }
                 else
                     use stream = path.OpenRead()
-                    let! dto = JsonSerializer.DeserializeAsync<InternalState>(stream, State.JsonOptions)
+                    let! dto = JsonSerializer.DeserializeAsync(stream, StateJsonContext.Default.StateDto)
                     let lastOpenedFile =
                         dto
                         |> ValueOption.ofObj
@@ -53,13 +44,13 @@ type State =
     static member SaveToFile(state: State, path: AbsolutePath): Task =
         task {
             try
-                let dto: InternalState = {
-                    LastOpenedFile = state.LastOpenedFile |> ValueOption.map _.Value |> ValueOption.toObj
-                }
+                let dto = StateDto(
+                    LastOpenedFile = (state.LastOpenedFile |> ValueOption.map _.Value |> ValueOption.toObj)
+                )
 
                 path.Parent.Value.CreateDirectory()
                 use stream = path.OpenWrite()
-                do! JsonSerializer.SerializeAsync(stream, dto, State.JsonOptions)
+                do! JsonSerializer.SerializeAsync(stream, dto, StateJsonContext.Default.StateDto)
             with
             | ex ->
                 Log.Root.Error ex
