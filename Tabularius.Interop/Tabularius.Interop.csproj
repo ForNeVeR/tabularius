@@ -19,7 +19,12 @@ SPDX-License-Identifier: MIT
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Tabularius.Data\Tabularius.Data.fsproj" />
       <ProjectReference Include="..\Tabularius.Interop.Dto\Tabularius.Interop.Dto.ceproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <InternalsVisibleTo Include="Tabularius.Tests" />
     </ItemGroup>
 
 </Project>

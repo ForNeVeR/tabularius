@@ -2,51 +2,21 @@
 //
 // SPDX-License-Identifier: MIT
 
-namespace Tabularius.Tests
+namespace Tabularius.Tests.Interop
 
 open System
 open System.Threading.Tasks
-open JetBrains.Lifetimes
 open Tabularius.Interop
 open TruePath
 open TruePath.SystemIo
 open Xunit
 
-type private TempFile =
-    { Path: AbsolutePath }
-    interface IDisposable with
-        member this.Dispose() = this.Path.Delete()
+[<Collection(HledgerCollection.Name)>]
+type VerifyJournalTests(fixture: HledgerFixture) =
 
-type HledgerFixture() =
-    let definition = new LifetimeDefinition()
-    let hledger = Hledger.Initialize definition.Lifetime
-
-    member _.Hledger = hledger
-
-    interface IDisposable with
-        member _.Dispose() = definition.Terminate()
-
-type InteropTests(fixture: HledgerFixture) =
-    let CreateTempFile(content: string) = task {
-        let path = Temporary.CreateTempFile()
-        do! path.WriteAllTextAsync content
-        return { Path = path }
-    }
-
-
-    interface IClassFixture<HledgerFixture>
-
-     [<Fact>]
+    [<Fact>]
     member _.``Journal gets properly verified``(): Task = task {
-        use! journal = CreateTempFile """
-2026-01-01 Opening balances
-    assets:ing  10000 BTC
-    equity:opening/closing balances
-
-2026-01-02 Tabularius
-    assets:ing     -100 BTC = 9900 BTC
-    expenses:goods  100 BTC
-"""
+        use! journal = fixture.CreateTempFile Journals.Example
         let! transactions = fixture.Hledger.VerifyJournal journal.Path
         Assert.Equal(2, transactions)
     }
@@ -72,11 +42,7 @@ type InteropTests(fixture: HledgerFixture) =
 
     [<Fact>]
     member _.``Interop supports error processing correctly``(): Task = task {
-        use! journal = CreateTempFile """
-    2026-01-01 Opening balances
-    assets:ing  10000 BTC
-    equity:opening/closing balances
-"""
+        use! journal = fixture.CreateTempFile Journals.Invalid
         let! error = Assert.ThrowsAsync<HledgerException>(fun () -> fixture.Hledger.VerifyJournal journal.Path)
         Assert.Contains("2026-01-01 Opening balances", error.Message)
         Assert.False(String.IsNullOrWhiteSpace error.StackTrace)

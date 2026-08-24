@@ -3,6 +3,7 @@ name:               hledger-interop
 version:            0.1.0.0
 build-type:         Simple
 extra-source-files: hledger-interop.def
+                  , include/balance_report_result.h
                   , include/verify_journal_result.h
 
 -- SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
@@ -14,25 +15,38 @@ common warnings
 
 library
   import:              warnings
-  exposed-modules:     Interop
+  exposed-modules:     Interop.BalanceReport
+                     , Interop.Common
+                     , Interop.VerifyJournal
                      , Tabularius
   hs-source-dirs:      src
   include-dirs:        include
-  install-includes:    verify_journal_result.h
+  install-includes:    balance_report_result.h
+                     , verify_journal_result.h
   build-depends:       base >=4.7 && <5
+                     , containers
+                     , Decimal
                      , hledger-lib ==1.52
+                     , text
   default-language:    GHC2021
 
 test-suite hledger-interop-test
   import:              warnings
   type:                exitcode-stdio-1.0
   main-is:             Spec.hs
+  other-modules:       Interop.BalanceReportSpec
+                     , Interop.VerifyJournalSpec
+                     , TestSupport
   hs-source-dirs:      test
   ghc-options:         -threaded
   build-depends:       base >=4.7 && <5
+                     , containers
+                     , Decimal
                      , directory
                      , hledger-interop
+                     , hledger-lib ==1.52
                      , hspec
+                     , text
   default-language:    GHC2021
 
 foreign-library hledger-interop-shared
@@ -45,10 +59,15 @@ foreign-library hledger-interop-shared
     options:           standalone
   if os(linux)
     ghc-options:       -optl-Wl,-rpath,$ORIGIN
-  other-modules:       Interop
+  other-modules:       Interop.BalanceReport
+                     , Interop.Common
+                     , Interop.VerifyJournal
                      , Tabularius
   hs-source-dirs:      src
   include-dirs:        include
   build-depends:       base >=4.7 && <5
+                     , containers
+                     , Decimal
                      , hledger-lib ==1.52
+                     , text
   default-language:    GHC2021

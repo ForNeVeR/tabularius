@@ -4,6 +4,8 @@ SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
 SPDX-License-Identifier: MIT
 */
 
+#pragma once
+
 #include <stdint.h>
 
 // NOTE: Actual MixedAmountKey has MixedAmountKeyTotalCost and MixedAmountKeyUnitCost, for now we ignore those, and this
@@ -16,6 +18,10 @@ typedef struct MixedAmountKey {
 typedef struct Decimal {
     uint8_t places;
     uint32_t mantissaLength;
+
+    // The mantissa is a minimal-length little-endian two's-complement integer (the sign is a part of the encoding, so
+    // the buffer is always at least one byte long). This is the same representation as the one used by
+    // System.Numerics.BigInteger::ToByteArray.
     uint8_t *mantissa;
 } Decimal;
 
@@ -61,6 +67,7 @@ typedef struct BalanceReportItem {
 } BalanceReportItem;
 
 typedef struct BalanceReportResult {
+    // -1 on failure. Do not read this, items or totals if error_message is not null.
     int32_t itemCount;
     BalanceReportItem *items;
     MixedAmount totals;

@@ -4,25 +4,23 @@
 
 {-# LANGUAGE ForeignFunctionInterface #-}
 
-module Interop
+module Interop.VerifyJournal
     ( VerifyJournalResult(..)
     , verifyJournal
     , freeVerifyJournalResult
     ) where
 
-import Control.Exception (SomeException(..), displayException, someExceptionContext, try)
-import Control.Exception.Context (displayExceptionContext)
-import Data.Char (isSpace)
+import Control.Exception (SomeException, try)
 import Data.Int (Int32)
-import Data.List (intercalate)
 import Foreign.C.String (CString)
-import Foreign.Marshal.Alloc (free, malloc)
+import Foreign.Marshal.Alloc (free)
 import Foreign.Ptr (Ptr, nullPtr)
 import Foreign.Storable (Storable(..))
-import GHC.Foreign (newCString, peekCString)
+import GHC.Foreign (peekCString)
 import GHC.IO.Encoding (utf8)
-import GHC.Stack (HasCallStack, callStack, prettyCallStack)
+import GHC.Stack (HasCallStack)
 
+import Interop.Common (describeException, freeIfAllocated, newStruct)
 import qualified Tabularius (verifyJournal)
 
 #include "verify_journal_result.h"
@@ -65,29 +63,17 @@ buildVerifyJournalResult path = do
     outcome <- (try $ Tabularius.verifyJournal path) :: IO (Either SomeException Int32)
     case outcome of
         Right count -> newVerifyJournalResult count nullPtr nullPtr
-        Left se@(SomeException e) -> do
-            messagePtr <- newCString utf8 (displayException e)
-            stackPtr <- newCString utf8 (renderStackTrace se)
+        Left se -> do
+            (messagePtr, stackPtr) <- describeException se
             newVerifyJournalResult (-1) messagePtr stackPtr
-  where
-    renderStackTrace :: HasCallStack => SomeException -> String
-    renderStackTrace se =
-        let callStackText = prettyCallStack callStack
-            contextText = displayExceptionContext (someExceptionContext se)
-            sections = filter (not . all isSpace) [callStackText, contextText]
-        in if null sections
-            then "No Haskell stack trace is available."
-            else intercalate "\n\n" sections
 
 newVerifyJournalResult :: Int32 -> CString -> CString -> IO (Ptr VerifyJournalResult)
-newVerifyJournalResult recordCount' errorMessage' stackTrace' = do
-    resultPtr <- malloc
-    poke resultPtr VerifyJournalResult
+newVerifyJournalResult recordCount' errorMessage' stackTrace' =
+    newStruct VerifyJournalResult
         { recordCount = recordCount'
         , errorMessage = errorMessage'
         , stackTrace = stackTrace'
         }
-    pure resultPtr
 
 freeVerifyJournalResult :: Ptr VerifyJournalResult -> IO ()
 freeVerifyJournalResult resultPtr
@@ -97,8 +83,3 @@ freeVerifyJournalResult resultPtr
         freeIfAllocated (errorMessage result)
         freeIfAllocated (stackTrace result)
         free resultPtr
-
-freeIfAllocated :: CString -> IO ()
-freeIfAllocated ptr
-    | ptr == nullPtr = pure ()
-    | otherwise = free ptr

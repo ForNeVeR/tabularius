@@ -10,6 +10,7 @@ open System.Threading.Tasks
 open JetBrains.Collections.Viewable
 open JetBrains.Lifetimes
 open Tabularius
+open Tabularius.Data
 open Tabularius.Interop
 open Tabularius.Resources
 open Tabularius.Settings
@@ -25,6 +26,9 @@ type private FakeHledgerApi(result: Result<int, exn>) =
             match result with
             | Ok transactions -> Task.FromResult transactions
             | Error ex -> Task.FromException<int>(ex)
+
+        member _.BalanceReport(_journalPath: AbsolutePath, _cancellationToken: CancellationToken) =
+            Task.FromResult { Items = Array.empty; Totals = { Entries = Array.empty } }
 
 type private FakeWindowService() =
     member val ShowErrorMessageCallCount = 0 with get, set

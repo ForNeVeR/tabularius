@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using JetBrains.Collections.Viewable;
 using JetBrains.Lifetimes;
+using Tabularius.Data;
 using TruePath;
 
 namespace Tabularius.Interop;
@@ -71,6 +72,29 @@ public class Hledger : IHledgerApi
             finally
             {
                 HledgerInterop.FreeVerifyJournalResult(result);
+            }
+        }, cancellationToken);
+
+    public unsafe Task<BalanceReport> BalanceReport(
+        AbsolutePath journalPath,
+        CancellationToken cancellationToken = default) =>
+        RunTask(() =>
+        {
+            var result = HledgerInterop.BalanceReport(journalPath.Value);
+            try
+            {
+                if (result->error_message != null)
+                {
+                    var errorMessage = Marshal.PtrToStringUTF8((IntPtr)result->error_message);
+                    var stackTrace = Marshal.PtrToStringUTF8((IntPtr)result->stack_trace);
+                    throw new HledgerException(errorMessage ?? "[NO MESSAGE]", stackTrace ?? "[NO STACK TRACE]");
+                }
+
+                return BalanceReportMarshaller.Read(result);
+            }
+            finally
+            {
+                HledgerInterop.FreeBalanceReportResult(result);
             }
         }, cancellationToken);
 }

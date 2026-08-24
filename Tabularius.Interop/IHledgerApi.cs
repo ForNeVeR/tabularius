@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using JetBrains.Annotations;
+using Tabularius.Data;
 using TruePath;
 
 namespace Tabularius.Interop;
@@ -11,4 +12,5 @@ namespace Tabularius.Interop;
 public interface IHledgerApi
 {
     Task<int> VerifyJournal(AbsolutePath journalPath, CancellationToken cancellationToken = default);
+    Task<BalanceReport> BalanceReport(AbsolutePath journalPath, CancellationToken cancellationToken = default);
 }
