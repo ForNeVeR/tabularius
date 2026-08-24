@@ -52,7 +52,7 @@ let private SetUpLogger(logger: Microsoft.Extensions.Logging.ILogger) =
                     new ILog with
                     member this.IsEnabled(level) = logger.IsEnabled(convertLevel level)
                     member this.Log(level, message, ``exception``) =
-                        logger.Log(convertLevel level, message, ``exception``)
+                        logger.Log(convertLevel level, ``exception`` = ``exception``, message = message)
                     member this.Category = category
                 }
     }
