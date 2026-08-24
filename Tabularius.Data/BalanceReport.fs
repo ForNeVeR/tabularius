@@ -32,6 +32,8 @@ type Amount =
         Quantity: decimal
         Style: AmountStyle
     }
+    // TODO: Honor AmountStyle.CommoditySpaced here: insert a space between the commodity symbol and the
+    // quantity (the current behavior is pinned by Tabularius.Tests/Data/AmountTests.fs).
     override this.ToString() =
         let sb = StringBuilder()
         let append(x: string) = sb.Append x |> ignore

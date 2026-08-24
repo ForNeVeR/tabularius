@@ -39,7 +39,7 @@ type MainViewModel(
 
     member _.Status = StatusViewModel(errorCollector, config, windowService, activityHost)
 
-    member private this.LoadJournal(path: AbsolutePath): Task =
+    member internal this.LoadJournal(path: AbsolutePath): Task =
         let textDescription(report: BalanceReport): string =
             report.Items
             |> Seq.collect (fun item ->
