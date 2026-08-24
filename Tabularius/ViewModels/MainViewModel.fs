@@ -10,6 +10,7 @@ open CommunityToolkit.Mvvm.ComponentModel
 open JetBrains.Threading
 open Serilog
 open Tabularius
+open Tabularius.Data
 open Tabularius.DesignTime
 open Tabularius.Interop
 open Tabularius.Resources
@@ -39,11 +40,23 @@ type MainViewModel(
     member _.Status = StatusViewModel(errorCollector, config, windowService, activityHost)
 
     member private this.LoadJournal(path: AbsolutePath): Task =
+        let textDescription(report: BalanceReport): string =
+            report.Items
+            |> Seq.collect (fun item ->
+                item.Amount.Entries
+                |> Seq.map(fun entry -> item.IndentationSteps, item.AccountName, entry)
+            )
+            |> Seq.map (fun(indent, account, entry) ->
+                let indent = String.replicate indent "  "
+                $"%s{indent} %s{account} %s{entry.Value.ToString()}"
+            )
+            |> String.concat "\n"
+
         activityHost.StartActivity(fun progress ct -> task {
             progress.ReportText(Localization.Status_LoadingJournal)
             try
-                let! transactions = hledger.VerifyJournal(path, ct)
-                this.JournalInfo <- String.Format(Localization.MainWindow_JournalInfo, transactions)
+                let! balanceReport = hledger.BalanceReport(path, ct)
+                this.JournalInfo <- textDescription balanceReport
             with
             | ex ->
                 Log.Logger.Error(ex, "Cannot load journal from file {Path}.", path.Value)
