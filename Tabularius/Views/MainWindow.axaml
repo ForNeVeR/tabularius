@@ -23,10 +23,10 @@ SPDX-License-Identifier: MIT
 
     <Grid RowDefinitions="Auto, *, Auto" ColumnDefinitions="*">
 
-        <Button Grid.Column="0" Grid.Row="0"
+        <Button Grid.Row="0" Grid.Column="0"
                 Content="{x:Static resources:Localization.MainWindow_LoadJournal}"
                 Command="{Binding OpenJournal}"/>
-        <Label Grid.Column="0" Grid.Row="1" Content="{Binding JournalInfo}"/>
+        <Label Grid.Row="1" Grid.Column="0" Content="{Binding JournalInfo}"/>
 
         <views:StatusBar Grid.Row="2" Grid.Column="0"
                          DataContext="{Binding Status}"/>

@@ -159,15 +159,6 @@ namespace Tabularius.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Journal is valid. Transactions: {0}..
-        /// </summary>
-        public static string MainWindow_JournalInfo {
-            get {
-                return ResourceManager.GetString("MainWindow_JournalInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Load Journal.
         /// </summary>
         public static string MainWindow_LoadJournal {
