@@ -5,6 +5,24 @@ SPDX-License-Identifier: MIT
 -->
 
 <Project>
+    <PropertyGroup>
+        <!--
+            The icon only depends on art/icon.svg, so it is generated once per project, outside of the
+            configuration- and RID-specific intermediate directory: $(IntermediateOutputPath) gains a RID segment
+            during publish, while $(ApplicationIcon) has to be a single stable path known at evaluation time.
+        -->
+        <TabulariusIconDir>$([MSBuild]::EnsureTrailingSlash($([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '$(BaseIntermediateOutputPath)', 'Resources'))))</TabulariusIconDir>
+        <TabulariusIconPath>$(TabulariusIconDir)icon.ico</TabulariusIconPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!--
+            Referenced as Icon="/icon.ico" from Views/MainWindow.axaml; declared statically so that it is present
+            even on incremental builds where CreateIcoFile is skipped as up-to-date.
+        -->
+        <AvaloniaResource Include="$(TabulariusIconPath)" Link="icon.ico" />
+    </ItemGroup>
+
     <UsingTask TaskName="CreateIcoFromPngs"
                TaskFactory="RoslynCodeTaskFactory"
                AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
@@ -70,32 +88,31 @@ using (var bw = new System.IO.BinaryWriter(fs))
     <Target Name="DotNetToolRestore"
             BeforeTargets="ProcessSvgFiles"
             Inputs="..\.config\dotnet-tools.json"
-            Outputs="$(IntermediateOutputPath)\dotnet-tool-restore.timestamp">
+            Outputs="$(TabulariusIconDir)dotnet-tool-restore.timestamp">
+        <MakeDir Directories="$(TabulariusIconDir)" />
         <Exec Command="dotnet tool restore" WorkingDirectory=".." />
-        <Touch Files="$(IntermediateOutputPath)\dotnet-tool-restore.timestamp" AlwaysCreate="true" />
+        <Touch Files="$(TabulariusIconDir)dotnet-tool-restore.timestamp" AlwaysCreate="true" />
     </Target>
 
     <Target Name="ProcessSvgFiles" BeforeTargets="CreateIcoFile" DependsOnTargets="DotNetToolRestore"
             Inputs="@(Svg)"
-            Outputs="$(IntermediateOutputPath)Resources\icon.ico">
-        <MakeDir Directories="$(IntermediateOutputPath)Resources"/>
+            Outputs="$(TabulariusIconDir)%(Svg.FileName)-48.png;
+                     $(TabulariusIconDir)%(Svg.FileName)-256.png">
+        <MakeDir Directories="$(TabulariusIconDir)"/>
 
         <!-- Sized PNGs for ICO -->
-        <Exec Command='dotnet tool run Svg.Skia.Converter --inputFiles "@(Svg)" --outputFiles "$(IntermediateOutputPath)Resources/%(Svg.FileName)-48.png" --scale 0.09375' />
-        <Exec Command='dotnet tool run Svg.Skia.Converter --inputFiles "@(Svg)" --outputFiles "$(IntermediateOutputPath)Resources/%(Svg.FileName)-256.png" --scale 0.5' />
+        <Exec Command='dotnet tool run Svg.Skia.Converter --inputFiles "@(Svg)" --outputFiles "$(TabulariusIconDir)%(Svg.FileName)-48.png" --scale 0.09375' />
+        <Exec Command='dotnet tool run Svg.Skia.Converter --inputFiles "@(Svg)" --outputFiles "$(TabulariusIconDir)%(Svg.FileName)-256.png" --scale 0.5' />
     </Target>
 
-    <Target Name="CreateIcoFile" BeforeTargets="AssignTargetPaths"
-            Inputs="$(IntermediateOutputPath)Resources\icon-48.png;
-                    $(IntermediateOutputPath)Resources\icon-256.png"
-            Outputs="$(IntermediateOutputPath)Resources\icon.ico">
+    <Target Name="CreateIcoFile" BeforeTargets="AssignTargetPaths;GenerateAvaloniaResources;CoreCompile"
+            Inputs="$(TabulariusIconDir)icon-48.png;
+                    $(TabulariusIconDir)icon-256.png"
+            Outputs="$(TabulariusIconPath)">
         <ItemGroup>
-            <IcoPngSource Include="$(IntermediateOutputPath)Resources\icon-48.png" />
-            <IcoPngSource Include="$(IntermediateOutputPath)Resources\icon-256.png" />
+            <IcoPngSource Include="$(TabulariusIconDir)icon-48.png" />
+            <IcoPngSource Include="$(TabulariusIconDir)icon-256.png" />
         </ItemGroup>
-        <CreateIcoFromPngs PngFiles="@(IcoPngSource)" OutputFile="$(IntermediateOutputPath)Resources\icon.ico" />
-        <ItemGroup>
-            <AvaloniaResource Include="$(IntermediateOutputPath)Resources\icon.ico" Link="icon.ico"/>
-        </ItemGroup>
+        <CreateIcoFromPngs PngFiles="@(IcoPngSource)" OutputFile="$(TabulariusIconPath)" />
     </Target>
 </Project>
