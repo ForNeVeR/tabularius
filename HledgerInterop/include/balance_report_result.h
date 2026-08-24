@@ -67,12 +67,12 @@ typedef struct BalanceReportItem {
 } BalanceReportItem;
 
 typedef struct BalanceReportResult {
-    // -1 on failure. Do not read this, items or totals if error_message is not null.
+    // -1 on failure. Do not read this, items or totals if errorMessage is not null.
     int32_t itemCount;
     BalanceReportItem *items;
     MixedAmount totals;
 
     // The following fields are always set up together.
-    char *error_message;
-    char *stack_trace;
+    char *errorMessage;
+    char *stackTrace;
 } BalanceReportResult;

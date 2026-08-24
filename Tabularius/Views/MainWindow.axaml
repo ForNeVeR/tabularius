@@ -28,7 +28,7 @@ SPDX-License-Identifier: MIT
                 Command="{Binding OpenJournal}"/>
         <Label Grid.Column="0" Grid.Row="1" Content="{Binding JournalInfo}"/>
 
-        <views:StatusBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+        <views:StatusBar Grid.Row="2" Grid.Column="0"
                          DataContext="{Binding Status}"/>
     </Grid>
 </Window>
