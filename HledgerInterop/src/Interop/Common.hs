@@ -8,9 +8,7 @@ module Interop.Common
     , newByteArray
     , newStruct
     , newStructArray
-    , newUtf8CString
     , newUtf8CStringT
-    , renderStackTrace
     , twosComplementLE
     ) where
 
