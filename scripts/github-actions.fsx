@@ -258,7 +258,7 @@ else {
             step(
                 name = "Publish the project",
                 shell = "pwsh",
-                run = "dotnet publish --configuration Release --self-contained -p:Version=${{ steps.version.outputs.version }} -bl:publish.${{ matrix.image }}.binlog"
+                run = "dotnet publish Tabularius/Tabularius.fsproj --configuration Release -p:Version=${{ steps.version.outputs.version }} -bl:publish.${{ matrix.image }}.binlog"
             )
             step(
                 condition = "always()",

@@ -68,7 +68,7 @@ Publish
 -------
 Use the following shell command:
 ```console
-$ dotnet publish --configuration Release --self-contained
+$ dotnet publish Tabularius --configuration Release
 ```
 
 This will generate the package for the current OS in the `Tabularius/bin/publish` folder.
