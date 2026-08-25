@@ -18,7 +18,7 @@ type AmountPrecision =
     | NaturalPrecision
 
 type AmountStyle = {
-    // TODO: Decimal mark, digit groups from the Hledger.Data.Types.AmountStyle
+    // TODO[#72]: Decimal mark, digit groups from the Hledger.Data.Types.AmountStyle
     /// Show the commodity symbol on the left or the right?
     CommoditySide: Side
     /// Show a space between the commodity symbol and the amount?
@@ -32,7 +32,7 @@ type Amount =
         Quantity: decimal
         Style: AmountStyle
     }
-    // TODO: Honor AmountStyle.CommoditySpaced here: insert a space between the commodity symbol and the
+    // TODO[#73]: Honor AmountStyle.CommoditySpaced here: insert a space between the commodity symbol and the
     // quantity (the current behavior is pinned by Tabularius.Tests/Data/AmountTests.fs).
     override this.ToString() =
         let sb = StringBuilder()
@@ -40,7 +40,7 @@ type Amount =
         if this.Style.CommoditySide = Side.L then
             append this.Commodity
 
-        // TODO: When implementing the formatting, this will need to be properly calculated based on the
+        // TODO[#72]: When implementing the formatting, this will need to be properly calculated based on the
         // hledger-provided number format, possibly combined with the defaults from the current culture.
         let culture = CultureInfo.CurrentCulture
         let quantity =
