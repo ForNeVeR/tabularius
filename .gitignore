@@ -15,5 +15,8 @@
 bin/
 obj/
 
+# MSBuild binary logs:
+*.binlog
+
 # Haskell Stack:
 .stack-work/

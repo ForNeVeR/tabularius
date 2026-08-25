@@ -86,7 +86,13 @@ jobs:
       run: echo "LD_PRELOAD=/lib/aarch64-linux-gnu/libuuid.so.1:/lib/aarch64-linux-gnu/libfreetype.so.6" >> $GITHUB_ENV
     - name: Publish the project
       shell: pwsh
-      run: dotnet publish --configuration Release --self-contained -p:Version=${{ steps.version.outputs.version }}
+      run: dotnet publish --configuration Release --self-contained -p:Version=${{ steps.version.outputs.version }} -bl:publish.${{ matrix.image }}.binlog
+    - if: always()
+      name: Upload the publish binary log
+      uses: actions/upload-artifact@v7
+      with:
+        name: binlog-publish-${{ matrix.image }}
+        path: ./publish.${{ matrix.image }}.binlog
     - name: Pack the publication result
       shell: pwsh
       run: Compress-Archive -Path Tabularius/bin/publish/* -DestinationPath tabularius-${{ steps.version.outputs.version }}-${{ matrix.image }}.zip

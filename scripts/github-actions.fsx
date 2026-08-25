@@ -258,7 +258,16 @@ else {
             step(
                 name = "Publish the project",
                 shell = "pwsh",
-                run = "dotnet publish --configuration Release --self-contained -p:Version=${{ steps.version.outputs.version }}"
+                run = "dotnet publish --configuration Release --self-contained -p:Version=${{ steps.version.outputs.version }} -bl:publish.${{ matrix.image }}.binlog"
+            )
+            step(
+                condition = "always()",
+                name = "Upload the publish binary log",
+                usesSpec = Auto "actions/upload-artifact",
+                options = Map.ofList [
+                    "name", "binlog-publish-${{ matrix.image }}"
+                    "path", "./publish.${{ matrix.image }}.binlog"
+                ]
             )
             step(
                 name = "Pack the publication result",
