@@ -352,6 +352,13 @@ keyCommoditySymbol a@(H.MixedAmountKeyUnitCost _ _ _) = error("Unsupported amoun
 
 marshalAmount :: H.Amount -> IO Amount
 marshalAmount amount = do
+    case H.acost amount of
+        Just cost -> error ("Unsupported amount with acost: " ++ show cost)
+        Nothing -> pure ()
+    case H.acostbasis amount of
+        Just costbasis -> error ("Unsupported amount with acostbasis: " ++ show costbasis)
+        Nothing -> pure ()
+
     commodityPtr <- newUtf8CStringT (H.acommodity amount)
     marshalledQuantity <- marshalQuantity (H.aquantity amount)
         `onException` freeIfAllocated commodityPtr
