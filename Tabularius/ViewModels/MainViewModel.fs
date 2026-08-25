@@ -48,7 +48,7 @@ type MainViewModel(
             )
             |> Seq.map (fun(indent, account, entry) ->
                 let indent = String.replicate indent "  "
-                $"%s{indent} %s{account} %s{entry.Value.ToString()}"
+                $"%s{indent}%s{account} %s{entry.Value.ToString()}"
             )
             |> String.concat "\n"
 
