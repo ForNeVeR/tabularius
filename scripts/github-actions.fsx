@@ -256,11 +256,6 @@ else {
             yield! setUpSkiaSharpWorkarounds
 
             step(
-                name = "Build the project",
-                shell = "pwsh",
-                run = "dotnet build --configuration Release -p:Version=${{ steps.version.outputs.version }}"
-            )
-            step(
                 name = "Publish the project",
                 shell = "pwsh",
                 run = "dotnet publish --configuration Release --self-contained -p:Version=${{ steps.version.outputs.version }}"

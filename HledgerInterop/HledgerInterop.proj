@@ -6,8 +6,15 @@ SPDX-License-Identifier: MIT
 
 <Project Sdk="Microsoft.Build.NoTargets/3.7.0">
     <PropertyGroup>
-        <OutputPath>bin\</OutputPath>
+        <!--
+            Absolute and independent of the configuration and of the runtime identifier: the consumers reference
+            this directory from other projects, including from a `dotnet publish -r <rid>` invocation, where the
+            RID would otherwise move the output into bin\<rid>\ and out of their sight.
+        -->
+        <HledgerInteropBinDir>$([MSBuild]::EnsureTrailingSlash($([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', 'bin'))))</HledgerInteropBinDir>
+        <OutputPath>$(HledgerInteropBinDir)</OutputPath>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
         <IsPublishable>false</IsPublishable>
     </PropertyGroup>
 
@@ -19,6 +26,7 @@ SPDX-License-Identifier: MIT
         <HaskellSource Include="test/**/*.hsc"/>
         <HaskellConfig Include="*.cabal;*.def;*.yaml;*.yaml.lock"/>
         <None Include="*.license"/>
+        <None Include="HledgerInterop.props"/>
     </ItemGroup>
 
     <PropertyGroup>
@@ -45,5 +53,18 @@ SPDX-License-Identifier: MIT
               Command="ldd $(StackInstallRoot.Trim())/lib/$(SharedLibName) | grep -oP '/\S+libHS\S+\.so\S*' | xargs -I{} cp {} $(OutputPath)" />
 
         <Message Importance="high" Text="Haskell shared library compiled successfully."/>
+    </Target>
+
+    <!--
+        Reports the native files produced by StackBuild. The wildcard is expanded when this target runs, i.e. after
+        the Haskell library has been built — unlike an evaluation-time item, which is empty on a cold tree.
+    -->
+    <Target Name="GetHledgerInteropNativeFiles" DependsOnTargets="Build" Returns="@(HledgerInteropNativeFile)">
+        <ItemGroup>
+            <HledgerInteropNativeFile Include="$(HledgerInteropBinDir)$(SharedLibName)" />
+            <!-- On Linux: the GHC runtime libraries bundled next to the shared library. -->
+            <HledgerInteropNativeFile Condition="$([MSBuild]::IsOSPlatform('Linux'))"
+                                      Include="$(HledgerInteropBinDir)libHS*.so" />
+        </ItemGroup>
     </Target>
 </Project>

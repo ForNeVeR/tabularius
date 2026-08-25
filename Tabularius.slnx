@@ -47,11 +47,7 @@
   <Project Path="Tabularius.Resources/Tabularius.Resources.csproj" />
   <Project Path="Tabularius.Settings/Tabularius.Settings.fsproj" />
   <Project Path="Tabularius.Settings.State/Tabularius.Settings.State.csproj" />
-  <Project Path="Tabularius.Tests/Tabularius.Tests.fsproj">
-    <BuildDependency Project="HledgerInterop/HledgerInterop.proj" />
-  </Project>
-  <Project Path="Tabularius/Tabularius.fsproj">
-    <BuildDependency Project="HledgerInterop/HledgerInterop.proj" />
-  </Project>
+  <Project Path="Tabularius.Tests/Tabularius.Tests.fsproj" />
+  <Project Path="Tabularius/Tabularius.fsproj" />
   <Project Path="HledgerInterop/HledgerInterop.proj" Type="00000000-0000-0000-0000-000000000000" />
 </Solution>
