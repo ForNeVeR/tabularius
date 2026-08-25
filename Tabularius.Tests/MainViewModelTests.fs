@@ -81,7 +81,7 @@ let ``Existing valid file sets JournalInfo``(): Task = task {
 
     do! vm.ReloadFromState({ LastOpenedFile = ValueSome path })
 
-    Assert.Equal(" assets:ing 9900BTC", vm.JournalInfo)
+    Assert.Equal("assets:ing 9900BTC", vm.JournalInfo)
     Assert.Equal(1, hledger.BalanceReportCallCount)
     Assert.Equal(0, windowService.ShowErrorMessageCallCount)
 }
@@ -126,7 +126,7 @@ let ``LoadJournal renders the balance report into JournalInfo``(): Task = task {
 
     do! vm.LoadJournal path
 
-    Assert.Equal(" assets:ing 9900BTC\n   expenses:goods 100BTC", vm.JournalInfo)
+    Assert.Equal("assets:ing 9900BTC\n  expenses:goods 100BTC", vm.JournalInfo)
     Assert.Equal(1, hledger.BalanceReportCallCount)
     Assert.Equal(0, windowService.ShowErrorMessageCallCount)
 }
