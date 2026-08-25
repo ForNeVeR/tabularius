@@ -40,10 +40,16 @@ type Amount =
         if this.Style.CommoditySide = Side.L then
             append this.Commodity
 
+        // TODO: When implementing the formatting, this will need to be properly calculated based on the
+        // hledger-provided number format, possibly combined with the defaults from the current culture.
+        let culture = CultureInfo.CurrentCulture
         let quantity =
             match this.Style.Precision with
-            | NaturalPrecision -> this.Quantity.ToString()
-            | Precision digits -> this.Quantity.ToString("F" + digits.ToString(CultureInfo.InvariantCulture))
+            | NaturalPrecision -> this.Quantity.ToString culture
+            | Precision digits ->
+                // The invariant culture applies to the specifier text only, not to the rendered number.
+                let format = "F" + digits.ToString CultureInfo.InvariantCulture
+                this.Quantity.ToString(format, culture)
         append quantity
 
         if this.Style.CommoditySide = Side.R then
