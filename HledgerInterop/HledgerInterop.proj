@@ -7,9 +7,9 @@ SPDX-License-Identifier: MIT
 <Project Sdk="Microsoft.Build.NoTargets/3.7.0">
     <PropertyGroup>
         <!--
-            Absolute and independent of the configuration and of the runtime identifier: the consumers reference
-            this directory from other projects, including from a `dotnet publish -r <rid>` invocation, where the
-            RID would otherwise move the output into bin\<rid>\ and out of their sight.
+            Should be independent of the configuration and of the runtime identifier: the consumers reference this
+            directory from other projects, including during `dotnet publish -r <rid>` invocation, where the RID would
+            otherwise move the output into bin\<rid>\ and out of their sight.
         -->
         <HledgerInteropBinDir>$([MSBuild]::EnsureTrailingSlash($([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', 'bin'))))</HledgerInteropBinDir>
         <OutputPath>$(HledgerInteropBinDir)</OutputPath>
@@ -57,7 +57,7 @@ SPDX-License-Identifier: MIT
 
     <!--
         Reports the native files produced by StackBuild. The wildcard is expanded when this target runs, i.e. after
-        the Haskell library has been built — unlike an evaluation-time item, which is empty on a cold tree.
+        the Haskell library has been built — unlike an evaluation-time item, which is empty before compilation.
     -->
     <Target Name="GetHledgerInteropNativeFiles" DependsOnTargets="Build" Returns="@(HledgerInteropNativeFile)">
         <ItemGroup>
