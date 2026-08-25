@@ -36,7 +36,7 @@ test-suite hledger-interop-test
   main-is:             Spec.hs
   other-modules:       Interop.BalanceReportSpec
                      , Interop.VerifyJournalSpec
-                     , TestSupport
+                     , TestFramework
   hs-source-dirs:      test
   ghc-options:         -threaded
   build-depends:       base >=4.7 && <5

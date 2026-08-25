@@ -2,7 +2,7 @@
 --
 -- SPDX-License-Identifier: MIT
 
-module TestSupport
+module TestFramework
     ( decodeTwosComplementLE
     , exampleJournal
     , peekOptionalUtf8
