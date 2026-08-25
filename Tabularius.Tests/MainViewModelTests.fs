@@ -38,7 +38,6 @@ type private FakeWindowService() =
         member _.ShowErrorList _ = ()
         member _.ChooseJournalFile() = Task.FromResult ValueNone
 
-/// Renders the quantity without a decimal separator, to keep the expectations locale-independent.
 let private reportItem account indentationSteps commodity quantity = {
     AccountName = account
     IndentationSteps = indentationSteps
