@@ -71,8 +71,7 @@ type BalanceReportItem = {
     Amount: MixedAmount
 }
 
-type BalanceReport =
-    {
-        Items: BalanceReportItem[]
-        Totals: MixedAmount
-    }
+type BalanceReport = {
+    Items: BalanceReportItem[]
+    Totals: MixedAmount
+}
