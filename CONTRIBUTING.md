@@ -73,8 +73,6 @@ $ dotnet publish --configuration Release --self-contained
 
 This will generate the package for the current OS in the `Tabularius/bin/publish` folder.
 
-Note that `dotnet publish` only takes care of the .NET part of the application: it will not build the Haskell library, so build it beforehand (see the [Build](#build) section) if it isn't built yet.
-
 License Automation
 ------------------
 If the CI asks you to update the file licenses, follow one of these:

@@ -29,14 +29,9 @@ SPDX-License-Identifier: MIT
         </PropertyGroup>
     </Target>
 
-    <ItemGroup>
-        <None Include="..\HledgerInterop\bin\$(SharedLibName)" CopyToOutputDirectory="PreserveNewest" Link="$(SharedLibName)" />
-    </ItemGroup>
+    <!-- Builds the Haskell library and copies its native output next to the binaries. -->
+    <Import Project="..\HledgerInterop\HledgerInterop.props" />
 
-    <!-- On Linux: also include bundled GHC runtime .so files -->
-    <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
-        <None Include="..\HledgerInterop\bin\libHS*.so" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
-    </ItemGroup>
     <ItemGroup>
         <InternalsVisibleTo Include="Tabularius.Tests" />
     </ItemGroup>

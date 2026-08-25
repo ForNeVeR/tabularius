@@ -1,0 +1,43 @@
+<!--
+SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
+
+SPDX-License-Identifier: MIT
+-->
+
+<Project>
+    <PropertyGroup>
+        <HledgerInteropProjectFile>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', 'HledgerInterop.proj'))</HledgerInteropProjectFile>
+        <!-- Kept in sync with the MSBuild task call below, so that both requests hit the same project instance. -->
+        <HledgerInteropUndefineProperties>RuntimeIdentifier;SelfContained;PublishSingleFile;PublishTrimmed</HledgerInteropUndefineProperties>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!--
+            Build ordering only: the project produces a native library, not a managed assembly. Undefining the
+            publish-related properties keeps its output in HledgerInterop/bin even for `dotnet publish -r <rid>`.
+        -->
+        <ProjectReference Include="$(HledgerInteropProjectFile)"
+                          ReferenceOutputAssembly="false"
+                          Private="false"
+                          UndefineProperties="$(HledgerInteropUndefineProperties)" />
+    </ItemGroup>
+
+    <!--
+        AssignTargetPaths is where the None items have to exist to be copied both to the output directory (build)
+        and to the publish directory (publish). GetHledgerInteropNativeFiles depends on Build, so by the time it
+        returns, the files are there — which also means the Linux wildcard is expanded on a warm directory.
+    -->
+    <Target Name="CollectHledgerInteropNativeFiles" BeforeTargets="AssignTargetPaths">
+        <MSBuild Projects="$(HledgerInteropProjectFile)"
+                 Targets="GetHledgerInteropNativeFiles"
+                 RemoveProperties="$(HledgerInteropUndefineProperties)">
+            <Output TaskParameter="TargetOutputs" ItemName="HledgerInteropNativeFile" />
+        </MSBuild>
+
+        <ItemGroup>
+            <None Include="@(HledgerInteropNativeFile)"
+                  CopyToOutputDirectory="PreserveNewest"
+                  Link="%(Filename)%(Extension)" />
+        </ItemGroup>
+    </Target>
+</Project>
