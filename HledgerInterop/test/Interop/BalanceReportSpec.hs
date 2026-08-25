@@ -18,7 +18,7 @@ import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
 import qualified Hledger.Data.Types as H
 
-import TestSupport (decodeTwosComplementLE, exampleJournal, peekOptionalUtf8, withMissingJournalPath, withTempJournal)
+import TestFramework (decodeTwosComplementLE, exampleJournal, peekOptionalUtf8, withMissingJournalPath, withTempJournal)
 import qualified Interop.BalanceReport as Interop
 import qualified Tabularius
 

@@ -12,7 +12,7 @@ import GHC.Foreign (withCString)
 import GHC.IO.Encoding (utf8)
 import Test.Hspec
 
-import TestSupport (exampleJournal, peekOptionalUtf8, utf8Journal, withMissingJournalPath, withTempJournal)
+import TestFramework (exampleJournal, peekOptionalUtf8, utf8Journal, withMissingJournalPath, withTempJournal)
 import qualified Interop.VerifyJournal as Interop
 import qualified Tabularius
 
