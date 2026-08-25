@@ -25,7 +25,7 @@ SPDX-License-Identifier: MIT
     <!--
         AssignTargetPaths is where the None items have to exist to be copied both to the output directory (build)
         and to the publish directory (publish). GetHledgerInteropNativeFiles depends on Build, so by the time it
-        returns, the files are there — which also means the Linux wildcard is expanded on a warm directory.
+        returns, the files are there — which also means the Linux wildcard is expanded on the ready build results.
     -->
     <Target Name="CollectHledgerInteropNativeFiles" BeforeTargets="AssignTargetPaths">
         <MSBuild Projects="$(HledgerInteropProjectFile)"
