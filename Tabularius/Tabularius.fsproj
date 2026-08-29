@@ -53,10 +53,12 @@ SPDX-License-Identifier: MIT
         <Compile Include="DesignTime\HledgerDesignTimeApi.fs" />
         <Compile Include="ViewModels\StatusViewModel.fs" />
         <Compile Include="ViewModels\ErrorListViewModel.fs" />
+        <Compile Include="ViewModels\BalanceReportViewModel.fs" />
         <Compile Include="ViewModels\MainViewModel.fs" />
         <Compile Include="Views\MainWindow.axaml.fs" />
         <Compile Include="Views\ErrorListWindow.axaml.fs" />
         <Compile Include="Views\ErrorCounterIndicator.axaml.fs" />
+        <Compile Include="Views\BalanceReportView.axaml.fs" />
         <Compile Include="Views\ActivityIndicator.axaml.fs" />
         <Compile Include="Views\StatusBar.axaml.fs" />
         <Compile Include="WindowService.fs" />

@@ -73,7 +73,7 @@ let private createViewModel (windowService: IWindowService) (hledger: IHledgerAp
     MainViewModel(errorCollector, config, windowService, activityHost, hledger)
 
 [<Fact>]
-let ``Existing valid file sets JournalInfo``(): Task = task {
+let ``Existing valid file sets BalanceReport``(): Task = task {
     let path = Temporary.CreateTempFile()
     let windowService = FakeWindowService()
     let hledger = FakeHledgerApi(Ok(reportOf [| reportItem "assets:ing" 0 "BTC" 9900m |]))
@@ -81,7 +81,8 @@ let ``Existing valid file sets JournalInfo``(): Task = task {
 
     do! vm.ReloadFromState({ LastOpenedFile = ValueSome path })
 
-    Assert.Equal("assets:ing 9900BTC", vm.JournalInfo)
+    Assert.NotNull vm.BalanceReport
+    Assert.NotEmpty (nonNull vm.BalanceReport).Entries
     Assert.Equal(1, hledger.BalanceReportCallCount)
     Assert.Equal(0, windowService.ShowErrorMessageCallCount)
 }
@@ -94,7 +95,7 @@ let ``No stored path does nothing``(): Task = task {
 
     do! vm.ReloadFromState({ LastOpenedFile = ValueNone })
 
-    Assert.Null(vm.JournalInfo)
+    Assert.Null(vm.BalanceReport)
     Assert.Equal(0, hledger.BalanceReportCallCount)
     Assert.Equal(0, windowService.ShowErrorMessageCallCount)
 }
@@ -108,31 +109,13 @@ let ``Missing file on disk is silently skipped``(): Task = task {
 
     do! vm.ReloadFromState({ LastOpenedFile = ValueSome path })
 
-    Assert.Null(vm.JournalInfo)
+    Assert.Null(vm.BalanceReport)
     Assert.Equal(0, hledger.BalanceReportCallCount)
     Assert.Equal(0, windowService.ShowErrorMessageCallCount)
 }
 
 [<Fact>]
-let ``LoadJournal renders the balance report into JournalInfo``(): Task = task {
-    let path = Temporary.CreateTempFile()
-    let windowService = FakeWindowService()
-    let report = reportOf [|
-        reportItem "assets:ing" 0 "BTC" 9900m
-        reportItem "expenses:goods" 1 "BTC" 100m
-    |]
-    let hledger = FakeHledgerApi(Ok report)
-    let vm = createViewModel windowService hledger
-
-    do! vm.LoadJournal path
-
-    Assert.Equal("assets:ing 9900BTC\n  expenses:goods 100BTC", vm.JournalInfo)
-    Assert.Equal(1, hledger.BalanceReportCallCount)
-    Assert.Equal(0, windowService.ShowErrorMessageCallCount)
-}
-
-[<Fact>]
-let ``LoadJournal on an empty report yields an empty JournalInfo``(): Task = task {
+let ``LoadJournal on an empty file yields an empty BalanceReport``(): Task = task {
     let path = Temporary.CreateTempFile()
     let windowService = FakeWindowService()
     let hledger = FakeHledgerApi(Ok emptyReport)
@@ -140,13 +123,14 @@ let ``LoadJournal on an empty report yields an empty JournalInfo``(): Task = tas
 
     do! vm.LoadJournal path
 
-    Assert.Equal("", vm.JournalInfo)
+    Assert.NotNull vm.BalanceReport
+    Assert.Empty (nonNull vm.BalanceReport).Entries
     Assert.Equal(1, hledger.BalanceReportCallCount)
     Assert.Equal(0, windowService.ShowErrorMessageCallCount)
 }
 
 [<Fact>]
-let ``LoadJournal failure keeps JournalInfo empty and reports an error``(): Task = task {
+let ``LoadJournal failure keeps BalanceReport unloaded and reports an error``(): Task = task {
     let path = Temporary.CreateTempFile()
     let windowService = FakeWindowService()
     let hledger = FakeHledgerApi(Error(Exception("cannot read the journal")))
@@ -154,7 +138,7 @@ let ``LoadJournal failure keeps JournalInfo empty and reports an error``(): Task
 
     do! vm.LoadJournal path
 
-    Assert.Null vm.JournalInfo
+    Assert.Null vm.BalanceReport
     Assert.Equal(1, hledger.BalanceReportCallCount)
     Assert.Equal(1, windowService.ShowErrorMessageCallCount)
 }
@@ -168,7 +152,7 @@ let ``Existing invalid journal shows error message``(): Task = task {
 
     do! vm.ReloadFromState({ LastOpenedFile = ValueSome path })
 
-    Assert.Null(vm.JournalInfo)
+    Assert.Null(vm.BalanceReport)
     Assert.Equal(1, hledger.BalanceReportCallCount)
     Assert.Equal(1, windowService.ShowErrorMessageCallCount)
 }

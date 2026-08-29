@@ -10,7 +10,6 @@ open CommunityToolkit.Mvvm.ComponentModel
 open JetBrains.Threading
 open Serilog
 open Tabularius
-open Tabularius.Data
 open Tabularius.DesignTime
 open Tabularius.Interop
 open Tabularius.Resources
@@ -27,7 +26,7 @@ type MainViewModel(
 ) =
     inherit ObservableObject()
 
-    let mutable journalInfo: string | null = null
+    let mutable balanceReport: BalanceReportViewModel | null = null
 
     new() = MainViewModel(
         ErrorCollector.DesignTime,
@@ -40,23 +39,11 @@ type MainViewModel(
     member _.Status = StatusViewModel(errorCollector, config, windowService, activityHost)
 
     member internal this.LoadJournal(path: AbsolutePath): Task =
-        let textDescription(report: BalanceReport): string =
-            report.Items
-            |> Seq.collect (fun item ->
-                item.Amount.Entries
-                |> Seq.map(fun entry -> item.IndentationSteps, item.AccountName, entry)
-            )
-            |> Seq.map (fun(indent, account, entry) ->
-                let indent = String.replicate indent "  "
-                $"%s{indent}%s{account} %s{entry.Value.ToString()}"
-            )
-            |> String.concat "\n"
-
         activityHost.StartActivity(fun progress ct -> task {
             progress.ReportText(Localization.Status_LoadingJournal)
             try
                 let! balanceReport = hledger.BalanceReport(path, ct)
-                this.JournalInfo <- textDescription balanceReport
+                this.BalanceReport <- BalanceReportViewModel balanceReport
             with
             | ex ->
                 Log.Logger.Error(ex, "Cannot load journal from file {Path}.", path.Value)
@@ -90,6 +77,6 @@ type MainViewModel(
             do! this.ReloadFromState(state)
         }).NoAwait()
 
-    member this.JournalInfo
-        with get(): string | null = journalInfo
-        and set value = this.SetProperty(&journalInfo, value, nameof this.JournalInfo) |> ignore
+    member this.BalanceReport
+        with get(): BalanceReportViewModel | null = balanceReport
+        and set value = this.SetProperty(&balanceReport, value, nameof this.BalanceReport) |> ignore

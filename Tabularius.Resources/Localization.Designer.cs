@@ -60,6 +60,24 @@ namespace Tabularius.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Account.
+        /// </summary>
+        public static string BalanceReport_Account {
+            get {
+                return ResourceManager.GetString("BalanceReport_Account", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amount.
+        /// </summary>
+        public static string BalanceReport_Amount {
+            get {
+                return ResourceManager.GetString("BalanceReport_Amount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clear.
         /// </summary>
         public static string ErrorList_Clear {
