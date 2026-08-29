@@ -10,6 +10,5 @@ SPDX-License-Identifier: MIT
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="..\HledgerInterop\include\balance_report_result.h" LinkBase="include" />
-        <Compile Include="..\HledgerInterop\include\verify_journal_result.h" LinkBase="include" />
     </ItemGroup>
 </Project>

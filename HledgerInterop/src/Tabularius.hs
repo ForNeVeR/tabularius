@@ -2,10 +2,9 @@
 --
 -- SPDX-License-Identifier: MIT
 
-module Tabularius (balanceReport, verifyJournal) where
+module Tabularius (balanceReport) where
 
-import Data.Int (Int32)
-import Hledger.Data.Types (Journal, jtxns)
+import Hledger.Data.Types (Journal)
 import Hledger.Read (definputopts, orDieTrying, readJournal)
 import Hledger.Read.Common (PrefixedFilePath)
 import Hledger.Reports.ReportOptions (defreportspec)
@@ -18,11 +17,6 @@ withJournal path action =
         hSetEncoding h utf8
         journal <- orDieTrying $ readJournal definputopts (Just path) h
         return $ action journal
-
-verifyJournal :: PrefixedFilePath -> IO Int32
-verifyJournal path =
-    withJournal path $ \j ->
-        fromIntegral $ length $ jtxns j
 
 balanceReport :: PrefixedFilePath -> IO BR.BalanceReport
 balanceReport path =

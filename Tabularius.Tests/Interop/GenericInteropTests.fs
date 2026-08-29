@@ -12,21 +12,14 @@ open TruePath.SystemIo
 open Xunit
 
 [<Collection(HledgerCollection.Name)>]
-type VerifyJournalTests(fixture: HledgerFixture) =
-
-    [<Fact>]
-    member _.``Journal gets properly verified``(): Task = task {
-        use! journal = fixture.CreateTempFile Journals.Example
-        let! transactions = fixture.Hledger.VerifyJournal journal.Path
-        Assert.Equal(2, transactions)
-    }
+type GenericInteropTests(fixture: HledgerFixture) =
 
     [<Fact>]
     member _.``Interop supports different path encodings``(): Task = task {
         let verify(path: AbsolutePath) = task {
             do! path.WriteAllTextAsync ""
-            let! transactions = fixture.Hledger.VerifyJournal path
-            Assert.Equal(0, transactions)
+            let! report = fixture.Hledger.BalanceReport path
+            Assert.Equal(0, report.Items.Length)
         }
 
         let folder = Temporary.CreateTempFolder("tabularius")
@@ -43,7 +36,7 @@ type VerifyJournalTests(fixture: HledgerFixture) =
     [<Fact>]
     member _.``Interop supports error processing correctly``(): Task = task {
         use! journal = fixture.CreateTempFile Journals.Invalid
-        let! error = Assert.ThrowsAsync<HledgerException>(fun () -> fixture.Hledger.VerifyJournal journal.Path)
+        let! error = Assert.ThrowsAsync<HledgerException>(fun () -> fixture.Hledger.BalanceReport journal.Path)
         Assert.Contains("2026-01-01 Opening balances", error.Message)
         Assert.False(String.IsNullOrWhiteSpace error.StackTrace)
     }

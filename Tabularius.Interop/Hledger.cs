@@ -63,21 +63,6 @@ public class Hledger : IHledgerApi
             Marshal.PtrToStringUTF8((IntPtr)stackTrace) ?? "[NO STACK TRACE]");
     }
 
-    public unsafe Task<int> VerifyJournal(AbsolutePath journalPath, CancellationToken cancellationToken = default) =>
-        RunTask(() =>
-        {
-            var result = HledgerInterop.VerifyJournal(journalPath.Value);
-            try
-            {
-                ThrowIfFailed(result->errorMessage, result->stackTrace);
-                return result->recordCount;
-            }
-            finally
-            {
-                HledgerInterop.FreeVerifyJournalResult(result);
-            }
-        }, cancellationToken);
-
     public unsafe Task<BalanceReport> BalanceReport(
         AbsolutePath journalPath,
         CancellationToken cancellationToken = default) =>

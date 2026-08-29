@@ -8,8 +8,5 @@ open Tabularius.Interop
 
 type HledgerDesignTimeApi() =
     interface IHledgerApi with
-        member this.VerifyJournal(_, _) =
-            raise(System.NotImplementedException())
-
         member this.BalanceReport(_, _) =
             raise(System.NotImplementedException())

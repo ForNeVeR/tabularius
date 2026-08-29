@@ -11,6 +11,5 @@ namespace Tabularius.Interop;
 [PublicAPI]
 public interface IHledgerApi
 {
-    Task<int> VerifyJournal(AbsolutePath journalPath, CancellationToken cancellationToken = default);
     Task<BalanceReport> BalanceReport(AbsolutePath journalPath, CancellationToken cancellationToken = default);
 }

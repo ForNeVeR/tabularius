@@ -13,6 +13,7 @@ open Tabularius
 open Tabularius.Data
 open Tabularius.Interop
 open Tabularius.Settings
+open Tabularius.Tests.BalanceReportBuilders
 open Tabularius.ViewModels
 open TruePath
 open Xunit
@@ -20,9 +21,6 @@ open Xunit
 type private FakeHledgerApi(result: Result<BalanceReport, exn>) =
     member val BalanceReportCallCount = 0 with get, set
     interface IHledgerApi with
-        member _.VerifyJournal(_journalPath: AbsolutePath, _cancellationToken: CancellationToken) =
-            Task.FromResult 0
-
         member this.BalanceReport(_journalPath: AbsolutePath, _cancellationToken: CancellationToken) =
             this.BalanceReportCallCount <- this.BalanceReportCallCount + 1
             match result with
@@ -38,34 +36,6 @@ type private FakeWindowService() =
         member _.ShowErrorList _ = ()
         member _.ChooseJournalFile() = Task.FromResult ValueNone
 
-let private reportItem account indentationSteps commodity quantity = {
-    AccountName = account
-    IndentationSteps = indentationSteps
-    Amount = {
-        Entries = [|
-            {
-                Commodity = commodity
-                Value = {
-                    Commodity = commodity
-                    Quantity = quantity
-                    Style = {
-                        CommoditySide = Side.R
-                        CommoditySpaced = true
-                        Precision = Precision 0uy
-                    }
-                }
-            }
-        |]
-    }
-}
-
-let private reportOf items: BalanceReport = {
-    Items = items
-    Totals = { Entries = Array.empty }
-}
-
-let private emptyReport = reportOf Array.empty
-
 let private createViewModel (windowService: IWindowService) (hledger: IHledgerApi) =
     let errorCollector = ErrorCollector(Lifetime.Eternal, SynchronousScheduler.Instance)
     let config = Configuration.TabulariusConfiguration.Default
@@ -76,7 +46,7 @@ let private createViewModel (windowService: IWindowService) (hledger: IHledgerAp
 let ``Existing valid file sets BalanceReport``(): Task = task {
     let path = Temporary.CreateTempFile()
     let windowService = FakeWindowService()
-    let hledger = FakeHledgerApi(Ok(reportOf [| reportItem "assets:ing" 0 "BTC" 9900m |]))
+    let hledger = FakeHledgerApi(Ok(reportOf [| reportItem "assets:ing" 0 [| amount "BTC" 9900m |] |]))
     let vm = createViewModel windowService hledger
 
     do! vm.ReloadFromState({ LastOpenedFile = ValueSome path })

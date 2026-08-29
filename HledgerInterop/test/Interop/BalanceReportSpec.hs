@@ -18,7 +18,7 @@ import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
 import qualified Hledger.Data.Types as H
 
-import TestFramework (decodeTwosComplementLE, exampleJournal, peekOptionalUtf8, withMissingJournalPath, withTempJournal)
+import TestFramework (decodeTwosComplementLE, exampleJournal, peekOptionalUtf8, utf8Journal, withMissingJournalPath, withTempJournal)
 import qualified Interop.BalanceReport as Interop
 import qualified Tabularius
 
@@ -71,6 +71,18 @@ spec = do
                 (reportItems, reportTotals) <- Tabularius.balanceReport path
                 map (\(_, _, _, amount) -> quantities amount) reportItems `shouldBe`
                     [[9900], [-10000], [100]]
+                quantities reportTotals `shouldSatisfy` all (== 0)
+
+        it "reads a journal with UTF-8 content" $
+            withTempJournal utf8Journal $ \path -> do
+                (reportItems, reportTotals) <- Tabularius.balanceReport path
+                map (\(name, _, _, _) -> T.unpack name) reportItems `shouldBe`
+                    [ "assets:ing"
+                    , "equity:opening/closing balances"
+                    , "expenses:goods"
+                    ]
+                map (\(_, _, _, amount) -> quantities amount) reportItems `shouldBe`
+                    [[50], [-100], [50]]
                 quantities reportTotals `shouldSatisfy` all (== 0)
 
     describe "Interop.balanceReport" $ do
