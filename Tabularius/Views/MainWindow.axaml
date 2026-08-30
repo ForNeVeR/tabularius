@@ -21,15 +21,18 @@ SPDX-License-Identifier: MIT
         <vm:MainViewModel/>
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto, *, Auto" ColumnDefinitions="*">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="{x:Static resources:Localization.MainMenu_File}">
+                <MenuItem Header="{x:Static resources:Localization.MainMenu_LoadJournal}"
+                          Command="{Binding OpenJournal}"/>
+                <Separator/>
+            </MenuItem>
+        </Menu>
 
-        <Button Grid.Row="0" Grid.Column="0"
-                Content="{x:Static resources:Localization.MainWindow_LoadJournal}"
-                Command="{Binding OpenJournal}"/>
+        <views:BalanceReportView DataContext="{Binding BalanceReport}"/>
 
-        <views:BalanceReportView Grid.Row="1" Grid.Column="0" DataContext="{Binding BalanceReport}"/>
-
-        <views:StatusBar Grid.Row="2" Grid.Column="0"
+        <views:StatusBar DockPanel.Dock="Bottom"
                          DataContext="{Binding Status}"/>
-    </Grid>
+    </DockPanel>
 </Window>

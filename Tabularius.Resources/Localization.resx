@@ -57,8 +57,8 @@ SPDX-License-Identifier: MIT
     <data name="FilePicker_JournalFiles" xml:space="preserve">
         <value>Hledger .journal files</value>
     </data>
-    <data name="MainWindow_LoadJournal" xml:space="preserve">
-        <value>Load Journal</value>
+    <data name="MainMenu_LoadJournal" xml:space="preserve">
+        <value>L_oad Journal</value>
     </data>
     <data name="MainWindow_CannotLoadJournal" xml:space="preserve">
         <value>Cannot load journal from file "{0}".</value>
@@ -77,5 +77,11 @@ SPDX-License-Identifier: MIT
     </data>
     <data name="BalanceReport_Amount" xml:space="preserve">
         <value>Amount</value>
+    </data>
+    <data name="MainMenu_File" xml:space="preserve">
+        <value>_File</value>
+    </data>
+    <data name="MainMenu_Exit" xml:space="preserve">
+        <value>E_xit</value>
     </data>
 </root>

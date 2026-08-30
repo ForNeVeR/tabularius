@@ -168,20 +168,38 @@ namespace Tabularius.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to E_xit.
+        /// </summary>
+        public static string MainMenu_Exit {
+            get {
+                return ResourceManager.GetString("MainMenu_Exit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _File.
+        /// </summary>
+        public static string MainMenu_File {
+            get {
+                return ResourceManager.GetString("MainMenu_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to L_oad Journal.
+        /// </summary>
+        public static string MainMenu_LoadJournal {
+            get {
+                return ResourceManager.GetString("MainMenu_LoadJournal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot load journal from file &quot;{0}&quot;..
         /// </summary>
         public static string MainWindow_CannotLoadJournal {
             get {
                 return ResourceManager.GetString("MainWindow_CannotLoadJournal", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Load Journal.
-        /// </summary>
-        public static string MainWindow_LoadJournal {
-            get {
-                return ResourceManager.GetString("MainWindow_LoadJournal", resourceCulture);
             }
         }
         
