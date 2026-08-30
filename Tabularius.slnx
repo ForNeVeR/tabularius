@@ -21,6 +21,9 @@
   <Folder Name="/LICENSES/">
     <File Path="LICENSES\MIT.txt" />
   </Folder>
+  <Folder Name="/samples/">
+    <File Path="samples/sample.journal" />
+  </Folder>
   <Folder Name="/scripts/">
     <File Path="scripts\Get-Version.ps1" />
     <File Path="scripts\github-actions.fsx" />

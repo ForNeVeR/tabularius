@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
+#
+# SPDX-License-Identifier: MIT
+
+2012-09-25 Phone
+    assets:bank:card  -150 XTS
+    expenses:communication:mobile
+
+2012-09-25 Phone
+    assets:bank:card  -100 XTS
+    expenses:communication:mobile
+
+2012-09-29 Testing
+    assets:bank:card  -150 XTS
+    expenses:test
+
+2012-10-21 Transfer
+    assets:bank:card  -9650 XTS
+    equity:unknown
+
+2012-10-21 Transfer
+    assets:bank:card  -100 XTS
+    equity:unknown
+
+2012-10-24 Phone
+    assets:bank:card  -400 XTS
+    expenses:communication:mobile
+
+2012-11-15 Internet
+    assets:bank:card  -1000 XTS
+    expenses:communication:internet
+
+2012-12-01 Banking
+    assets:bank:card  -1500 XTS
+    expenses:banking
+
+2012-12-31 Closing balances ; clopen:2012
+    assets:bank:card                      13050 XTS = 0 XTS
+    equity:unknown                        -9750 XTS = 0 XTS
+    equity:opening/closing balances
