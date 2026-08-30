@@ -63,6 +63,8 @@ type MainViewModel(
 
     member _.Exit(): unit = windowService.Shutdown()
 
+    member _.ShowAbout(): unit = windowService.ShowAbout()
+
     member internal this.ReloadFromState(state: State): Task =
         task {
             match state.LastOpenedFile with

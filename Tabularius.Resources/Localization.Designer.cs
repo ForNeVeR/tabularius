@@ -60,6 +60,42 @@ namespace Tabularius.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Build {0}.
+        /// </summary>
+        public static string About_Build {
+            get {
+                return ResourceManager.GetString("About_Build", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copyright {0}.
+        /// </summary>
+        public static string About_Copyright {
+            get {
+                return ResourceManager.GetString("About_Copyright", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version {0}.
+        /// </summary>
+        public static string About_Version {
+            get {
+                return ResourceManager.GetString("About_Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to About {0}.
+        /// </summary>
+        public static string About_WindowTitle {
+            get {
+                return ResourceManager.GetString("About_WindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Account.
         /// </summary>
         public static string BalanceReport_Account {
@@ -186,6 +222,15 @@ namespace Tabularius.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _About….
+        /// </summary>
+        public static string MainMenu_About {
+            get {
+                return ResourceManager.GetString("MainMenu_About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to E_xit.
         /// </summary>
         public static string MainMenu_Exit {
@@ -200,6 +245,15 @@ namespace Tabularius.Resources {
         public static string MainMenu_File {
             get {
                 return ResourceManager.GetString("MainMenu_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Help.
+        /// </summary>
+        public static string MainMenu_Help {
+            get {
+                return ResourceManager.GetString("MainMenu_Help", resourceCulture);
             }
         }
         

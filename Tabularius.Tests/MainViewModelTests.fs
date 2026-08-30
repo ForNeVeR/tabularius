@@ -30,12 +30,15 @@ type private FakeHledgerApi(result: Result<BalanceReport, exn>) =
 
 type private FakeWindowService() =
     member val ShowErrorMessageCallCount = 0 with get, set
+    member val ShowAboutCallCount = 0 with get, set
     member val ShutdownCallCount = 0 with get, set
     interface IWindowService with
         member this.ShowErrorMessage(_, _, _) =
             this.ShowErrorMessageCallCount <- this.ShowErrorMessageCallCount + 1
             Task.CompletedTask
         member _.ShowErrorList _ = ()
+        member this.ShowAbout() =
+            this.ShowAboutCallCount <- this.ShowAboutCallCount + 1
         member _.ChooseJournalFile() = Task.FromResult ValueNone
         member this.Shutdown() =
             this.ShutdownCallCount <- this.ShutdownCallCount + 1
@@ -128,6 +131,16 @@ let ``Exit requests a shutdown from the window service``() =
     vm.Exit()
 
     Assert.Equal(1, windowService.ShutdownCallCount)
+
+[<Fact>]
+let ``ShowAbout requests the About window from the window service``() =
+    let windowService = FakeWindowService()
+    let hledger = FakeHledgerApi(Ok emptyReport)
+    let vm = createViewModel windowService hledger
+
+    vm.ShowAbout()
+
+    Assert.Equal(1, windowService.ShowAboutCallCount)
 
 [<Fact>]
 let ``IsJournalLoaded is false before any journal is loaded``() =

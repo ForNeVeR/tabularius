@@ -27,6 +27,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="Interop\BalanceReportTests.fs" />
         <Compile Include="StateTests.fs" />
         <Compile Include="MainViewModelTests.fs" />
+        <Compile Include="AboutViewModelTests.fs" />
     </ItemGroup>
 
     <ItemGroup>

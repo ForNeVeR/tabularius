@@ -63,6 +63,9 @@ SPDX-License-Identifier: MIT
         <Compile Include="Views\BalanceReportView.axaml.fs" />
         <Compile Include="Views\ActivityIndicator.axaml.fs" />
         <Compile Include="Views\StatusBar.axaml.fs" />
+        <Compile Include="About\ApplicationInfo.fs" />
+        <Compile Include="About\AboutViewModel.fs" />
+        <Compile Include="About\AboutWindow.axaml.fs" />
         <Compile Include="WindowService.fs" />
         <Compile Include="AvaloniaScheduler.fs" />
         <Compile Include="App.axaml.fs" />

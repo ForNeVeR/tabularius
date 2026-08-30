@@ -21,6 +21,11 @@ SPDX-License-Identifier: MIT
             even on incremental builds where CreateIcoFile is skipped as up-to-date.
         -->
         <AvaloniaResource Include="$(TabulariusIconPath)" Link="icon.ico" />
+
+        <!--
+            TODO[#80]: Referenced from About/AboutWindow.axaml. In the future, hopefully we'll rely on SVG instead.
+        -->
+        <AvaloniaResource Include="$(TabulariusIconDir)icon-256.png" Link="icon-256.png" />
     </ItemGroup>
 
     <UsingTask TaskName="CreateIcoFromPngs"

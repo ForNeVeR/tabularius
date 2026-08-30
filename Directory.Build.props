@@ -7,6 +7,8 @@ SPDX-License-Identifier: MIT
 <Project>
     <PropertyGroup Label="Packaging">
         <Version>0.0.0</Version>
+        <Product>Tabularius</Product>
+        <Copyright>2024-2026 Friedrich von Never</Copyright>
     </PropertyGroup>
 
     <PropertyGroup Label="Build">

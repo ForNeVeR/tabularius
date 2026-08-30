@@ -1,0 +1,46 @@
+<!--
+SPDX-FileCopyrightText: 2026 Friedrich von Never <friedrich@fornever.me>
+
+SPDX-License-Identifier: MIT
+-->
+
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:about="clr-namespace:Tabularius.About"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
+        x:Class="Tabularius.About.AboutWindow"
+        x:DataType="about:AboutViewModel"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Icon="/icon.ico"
+        Title="{Binding Title}">
+    <Design.DataContext>
+        <about:AboutViewModel/>
+    </Design.DataContext>
+
+    <StackPanel Margin="16" Spacing="16">
+        <StackPanel Orientation="Horizontal" Spacing="16">
+            <!--
+                TODO[#80]: Render art/icon.svg directly via the Svg.Controls.Skia.Avalonia package instead of the
+                pre-rendered PNG, once its behavior under PublishTrimmed + PublishSingleFile has been verified.
+            -->
+            <Image Source="/icon-256.png" Width="64" Height="64" VerticalAlignment="Top"/>
+
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{Binding ApplicationName}" FontSize="20" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Version}"/>
+                <TextBlock Text="{Binding BuildMetadata}"
+                           IsVisible="{Binding HasBuildMetadata}"
+                           MaxWidth="300"
+                           TextWrapping="Wrap"
+                           FontSize="11"
+                           Opacity="0.7"/>
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock Text="{Binding Copyright}" HorizontalAlignment="Center"/>
+    </StackPanel>
+</Window>

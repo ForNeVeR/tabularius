@@ -90,4 +90,22 @@ SPDX-License-Identifier: MIT
     <data name="EmptyState_LoadJournal" xml:space="preserve">
         <value>Load Journal</value>
     </data>
+    <data name="About_WindowTitle" xml:space="preserve">
+        <value>About {0}</value>
+    </data>
+    <data name="About_Version" xml:space="preserve">
+        <value>Version {0}</value>
+    </data>
+    <data name="About_Build" xml:space="preserve">
+        <value>Build {0}</value>
+    </data>
+    <data name="About_Copyright" xml:space="preserve">
+        <value>Copyright {0}</value>
+    </data>
+    <data name="MainMenu_Help" xml:space="preserve">
+        <value>_Help</value>
+    </data>
+    <data name="MainMenu_About" xml:space="preserve">
+        <value>_About…</value>
+    </data>
 </root>

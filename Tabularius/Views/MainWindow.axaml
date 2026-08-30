@@ -30,6 +30,10 @@ SPDX-License-Identifier: MIT
                 <MenuItem Header="{x:Static resources:Localization.MainMenu_Exit}"
                           Command="{Binding Exit}"/>
             </MenuItem>
+            <MenuItem Header="{x:Static resources:Localization.MainMenu_Help}">
+                <MenuItem Header="{x:Static resources:Localization.MainMenu_About}"
+                          Command="{Binding ShowAbout}"/>
+            </MenuItem>
         </Menu>
 
         <views:StatusBar DockPanel.Dock="Bottom"

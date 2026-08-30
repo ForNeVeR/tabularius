@@ -10,6 +10,7 @@ open Avalonia.Controls
 open Avalonia.Platform.Storage
 open MsBox.Avalonia
 open MsBox.Avalonia.Enums
+open Tabularius.About
 open Tabularius.Resources
 open Tabularius.Settings
 open Tabularius.ViewModels
@@ -47,6 +48,10 @@ type WindowService(mainWindow: Window, statePath: AbsolutePath) =
                 let dialog = ErrorListWindow(DataContext = vm)
                 dialog.ShowDialog(mainWindow) |> ignore
             )
+
+        member _.ShowAbout() =
+            let dialog = AboutWindow(DataContext = AboutViewModel())
+            dialog.ShowDialog(mainWindow) |> ignore
 
         member this.ChooseJournalFile() = task {
             let! state = State.LoadFromFile statePath
