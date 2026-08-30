@@ -61,10 +61,7 @@ type MainViewModel(
             | ValueSome path -> do! this.LoadJournal(path)
         }).NoAwait()
 
-    member _.Exit(): unit =
-        match ApplicationLifetime.Desktop() with
-        | None -> Environment.Exit 0
-        | Some lifetime -> lifetime.Shutdown()
+    member _.Exit(): unit = windowService.Shutdown()
 
     member internal this.ReloadFromState(state: State): Task =
         task {

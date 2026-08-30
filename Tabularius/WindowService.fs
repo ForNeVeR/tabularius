@@ -6,9 +6,7 @@ namespace Tabularius
 
 open System
 open System.Threading.Tasks
-open Avalonia
 open Avalonia.Controls
-open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.Platform.Storage
 open MsBox.Avalonia
 open MsBox.Avalonia.Enums
@@ -42,11 +40,7 @@ type WindowService(mainWindow: Window, statePath: AbsolutePath) =
             box.ShowWindowDialogAsync(mainWindow)
 
         member _.ShowErrorList(collector: ErrorCollector) =
-            Application.Current
-            |> Option.ofObj
-            |> Option.bind(fun x -> x.ApplicationLifetime |> Option.ofObj)
-            |> Option.filter (fun x -> x :? IClassicDesktopStyleApplicationLifetime)
-            |> Option.map(fun x -> x :?> IClassicDesktopStyleApplicationLifetime)
+            ApplicationLifetime.Desktop()
             |> Option.bind(fun x -> x.MainWindow |> Option.ofObj)
             |> Option.iter(fun mainWindow ->
                 let vm = ErrorListViewModel collector
@@ -89,3 +83,8 @@ type WindowService(mainWindow: Window, statePath: AbsolutePath) =
                 do! State.SaveToFile({ state with LastOpenedFile = ValueSome path }, statePath)
             return result
         }
+
+        member _.Shutdown() =
+            match ApplicationLifetime.Desktop() with
+            | Some lifetime -> lifetime.Shutdown()
+            | None -> Environment.Exit ExitCodes.Success

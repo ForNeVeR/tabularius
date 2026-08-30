@@ -29,12 +29,15 @@ type private FakeHledgerApi(result: Result<BalanceReport, exn>) =
 
 type private FakeWindowService() =
     member val ShowErrorMessageCallCount = 0 with get, set
+    member val ShutdownCallCount = 0 with get, set
     interface IWindowService with
         member this.ShowErrorMessage(_, _, _) =
             this.ShowErrorMessageCallCount <- this.ShowErrorMessageCallCount + 1
             Task.CompletedTask
         member _.ShowErrorList _ = ()
         member _.ChooseJournalFile() = Task.FromResult ValueNone
+        member this.Shutdown() =
+            this.ShutdownCallCount <- this.ShutdownCallCount + 1
 
 let private createViewModel (windowService: IWindowService) (hledger: IHledgerApi) =
     let errorCollector = ErrorCollector(Lifetime.Eternal, SynchronousScheduler.Instance)
@@ -112,6 +115,16 @@ let ``LoadJournal failure keeps BalanceReport unloaded and reports an error``():
     Assert.Equal(1, hledger.BalanceReportCallCount)
     Assert.Equal(1, windowService.ShowErrorMessageCallCount)
 }
+
+[<Fact>]
+let ``Exit requests a shutdown from the window service``() =
+    let windowService = FakeWindowService()
+    let hledger = FakeHledgerApi(Ok emptyReport)
+    let vm = createViewModel windowService hledger
+
+    vm.Exit()
+
+    Assert.Equal(1, windowService.ShutdownCallCount)
 
 [<Fact>]
 let ``Existing invalid journal shows error message``(): Task = task {

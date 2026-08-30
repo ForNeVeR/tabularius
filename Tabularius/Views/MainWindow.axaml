@@ -32,9 +32,9 @@ SPDX-License-Identifier: MIT
             </MenuItem>
         </Menu>
 
-        <views:BalanceReportView DataContext="{Binding BalanceReport}"/>
-
         <views:StatusBar DockPanel.Dock="Bottom"
                          DataContext="{Binding Status}"/>
+
+        <views:BalanceReportView DataContext="{Binding BalanceReport}"/>
     </DockPanel>
 </Window>

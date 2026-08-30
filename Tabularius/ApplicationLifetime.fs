@@ -11,5 +11,6 @@ let Desktop(): Option<IClassicDesktopStyleApplicationLifetime> =
     Application.Current
     |> Option.ofObj
     |> Option.bind(fun x -> x.ApplicationLifetime |> Option.ofObj)
-    |> Option.filter(fun x -> x :? IClassicDesktopStyleApplicationLifetime)
-    |> Option.map(fun x -> x :?> IClassicDesktopStyleApplicationLifetime)
+    |> Option.bind(function
+        | :? IClassicDesktopStyleApplicationLifetime as desktop -> Some desktop
+        | _ -> None)
