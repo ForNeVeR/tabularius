@@ -5,6 +5,7 @@
 module Tabularius.Tests.MainViewModelTests
 
 open System
+open System.ComponentModel
 open System.Threading
 open System.Threading.Tasks
 open JetBrains.Collections.Viewable
@@ -98,6 +99,7 @@ let ``LoadJournal on an empty file yields an empty BalanceReport``(): Task = tas
 
     Assert.NotNull vm.BalanceReport
     Assert.Empty (nonNull vm.BalanceReport).Entries
+    Assert.True vm.IsJournalLoaded
     Assert.Equal(1, hledger.BalanceReportCallCount)
     Assert.Equal(0, windowService.ShowErrorMessageCallCount)
 }
@@ -112,6 +114,7 @@ let ``LoadJournal failure keeps BalanceReport unloaded and reports an error``():
     do! vm.LoadJournal path
 
     Assert.Null vm.BalanceReport
+    Assert.False vm.IsJournalLoaded
     Assert.Equal(1, hledger.BalanceReportCallCount)
     Assert.Equal(1, windowService.ShowErrorMessageCallCount)
 }
@@ -125,6 +128,30 @@ let ``Exit requests a shutdown from the window service``() =
     vm.Exit()
 
     Assert.Equal(1, windowService.ShutdownCallCount)
+
+[<Fact>]
+let ``IsJournalLoaded is false before any journal is loaded``() =
+    let windowService = FakeWindowService()
+    let hledger = FakeHledgerApi(Ok emptyReport)
+    let vm = createViewModel windowService hledger
+
+    Assert.False vm.IsJournalLoaded
+
+[<Fact>]
+let ``Setting BalanceReport notifies IsJournalLoaded``(): unit =
+    let windowService = FakeWindowService()
+    let hledger = FakeHledgerApi(Ok emptyReport)
+    let vm = createViewModel windowService hledger
+    let changedProperties = ResizeArray<string>()
+    (vm :> INotifyPropertyChanged).PropertyChanged.Add(fun args ->
+        match args.PropertyName with
+        | null -> ()
+        | name -> changedProperties.Add name)
+
+    vm.BalanceReport <- BalanceReportViewModel emptyReport
+
+    Assert.Contains(nameof vm.BalanceReport, changedProperties)
+    Assert.Contains(nameof vm.IsJournalLoaded, changedProperties)
 
 [<Fact>]
 let ``Existing invalid journal shows error message``(): Task = task {

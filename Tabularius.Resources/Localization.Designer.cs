@@ -78,6 +78,24 @@ namespace Tabularius.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Load Journal.
+        /// </summary>
+        public static string EmptyState_LoadJournal {
+            get {
+                return ResourceManager.GetString("EmptyState_LoadJournal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No journal is loaded..
+        /// </summary>
+        public static string EmptyState_NoJournalLoaded {
+            get {
+                return ResourceManager.GetString("EmptyState_NoJournalLoaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clear.
         /// </summary>
         public static string ErrorList_Clear {

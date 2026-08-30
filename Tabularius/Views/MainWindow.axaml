@@ -35,6 +35,9 @@ SPDX-License-Identifier: MIT
         <views:StatusBar DockPanel.Dock="Bottom"
                          DataContext="{Binding Status}"/>
 
-        <views:BalanceReportView DataContext="{Binding BalanceReport}"/>
+        <views:JournalEmptyStatePresenter IsEmpty="{Binding !IsJournalLoaded}"
+                                          LoadJournalCommand="{Binding OpenJournal}">
+            <views:BalanceReportView DataContext="{Binding BalanceReport}"/>
+        </views:JournalEmptyStatePresenter>
     </DockPanel>
 </Window>

@@ -56,6 +56,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="ViewModels\ErrorListViewModel.fs" />
         <Compile Include="ViewModels\BalanceReportViewModel.fs" />
         <Compile Include="ViewModels\MainViewModel.fs" />
+        <Compile Include="Views\JournalEmptyStatePresenter.fs" />
         <Compile Include="Views\MainWindow.axaml.fs" />
         <Compile Include="Views\ErrorListWindow.axaml.fs" />
         <Compile Include="Views\ErrorCounterIndicator.axaml.fs" />

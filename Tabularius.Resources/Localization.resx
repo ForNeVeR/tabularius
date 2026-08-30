@@ -84,4 +84,10 @@ SPDX-License-Identifier: MIT
     <data name="MainMenu_Exit" xml:space="preserve">
         <value>E_xit</value>
     </data>
+    <data name="EmptyState_NoJournalLoaded" xml:space="preserve">
+        <value>No journal is loaded.</value>
+    </data>
+    <data name="EmptyState_LoadJournal" xml:space="preserve">
+        <value>Load Journal</value>
+    </data>
 </root>

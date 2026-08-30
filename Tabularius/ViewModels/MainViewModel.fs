@@ -81,4 +81,8 @@ type MainViewModel(
 
     member this.BalanceReport
         with get(): BalanceReportViewModel | null = balanceReport
-        and set value = this.SetProperty(&balanceReport, value, nameof this.BalanceReport) |> ignore
+        and set value =
+            if this.SetProperty(&balanceReport, value, nameof this.BalanceReport) then
+                this.OnPropertyChanged(nameof this.IsJournalLoaded)
+
+    member _.IsJournalLoaded: bool = not (isNull balanceReport)
