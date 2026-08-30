@@ -27,6 +27,8 @@ SPDX-License-Identifier: MIT
                 <MenuItem Header="{x:Static resources:Localization.MainMenu_LoadJournal}"
                           Command="{Binding OpenJournal}"/>
                 <Separator/>
+                <MenuItem Header="{x:Static resources:Localization.MainMenu_Exit}"
+                          Command="{Binding Exit}"/>
             </MenuItem>
         </Menu>
 

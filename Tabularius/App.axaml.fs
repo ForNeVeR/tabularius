@@ -21,9 +21,9 @@ type App() =
     static let mutable errorCollector: ErrorCollector option = None
     static let mutable configuration: Configuration.TabulariusConfiguration option = None
 
-    let toLifetime(lifetime: IClassicDesktopStyleApplicationLifetime) =
+    let toLifetime(lifetime: IControlledApplicationLifetime) =
         let ld = new LifetimeDefinition()
-        lifetime.ShutdownRequested.Subscribe(fun _ -> ld.Terminate()) |> ignore
+        lifetime.Exit.Subscribe(fun _ -> ld.Terminate()) |> ignore
         ld.Lifetime
 
     static member SetErrorCollector(collector: ErrorCollector) = errorCollector <- Some collector
@@ -41,8 +41,7 @@ type App() =
 
         let mutable viewModel: MainViewModel option = None
 
-        match this.ApplicationLifetime with
-        | :? IClassicDesktopStyleApplicationLifetime as desktop ->
+        ApplicationLifetime.Desktop() |> Option.iter(fun desktop ->
             let collector =
                 errorCollector
                 |> Option.defaultWith(fun () -> ErrorCollector(Lifetime.Eternal, SynchronousScheduler.Instance))
@@ -54,18 +53,14 @@ type App() =
             let mainWindow = MainWindow()
             let windowService = WindowService(mainWindow, config.StatePath)
             let activityHost = BackgroundActivityHost(AvaloniaScheduler())
-            let applicationLifetime =
-                this.ApplicationLifetime
-                |> nonNull
-                :?> IClassicDesktopStyleApplicationLifetime
-                |> toLifetime
+            let applicationLifetime = desktop |> toLifetime
             let hledger = Hledger.Initialize(applicationLifetime)
 
             let mainViewModel = MainViewModel(collector, config, windowService, activityHost, hledger)
             mainWindow.DataContext <- mainViewModel
             desktop.MainWindow <- mainWindow
             viewModel <- Some mainViewModel
-        | _ -> ()
+        )
 
         base.OnFrameworkInitializationCompleted()
 
