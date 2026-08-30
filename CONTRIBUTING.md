@@ -10,7 +10,7 @@ Contributor Guide
 Prerequisites
 -------------
 To work with the project, you'll need:
-- [.NET SDK 9][dotnet-sdk] or later,
+- [.NET SDK 10][dotnet-sdk] or later,
 - [Haskell Stack][haskell-stack] 3.x or later,
 - **(Linux only)** Clang — install via your package manager (e.g. `sudo apt install clang`).
 
