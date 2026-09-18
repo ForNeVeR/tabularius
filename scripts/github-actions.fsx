@@ -147,8 +147,8 @@ else {
 
     let images = [
         "macos-26"
-        "ubuntu-24.04"
-        "ubuntu-24.04-arm"
+        "ubuntu-26.04"
+        "ubuntu-26.04-arm"
         "windows-2025"
     ]
 
@@ -161,7 +161,7 @@ else {
         onWorkflowDispatch
 
         dotNetJob "verify-workflows" [
-            runsOn "ubuntu-24.04"
+            runsOn "ubuntu-26.04"
             step(run = "dotnet fsi ./scripts/github-actions.fsx verify")
         ]
 
@@ -197,7 +197,7 @@ else {
         ]
 
         job "licenses" [
-            runsOn "ubuntu-24.04"
+            runsOn "ubuntu-26.04"
             checkOut
             step(
                 name = "REUSE license check",
@@ -206,7 +206,7 @@ else {
         ]
 
         job "encoding" [
-            runsOn "ubuntu-24.04"
+            runsOn "ubuntu-26.04"
             checkOut
             step(
                 name = "Verify encoding",
@@ -216,7 +216,7 @@ else {
         ]
 
         job "todos" [
-            runsOn "ubuntu-24.04"
+            runsOn "ubuntu-26.04"
             checkOut
             step(
                 name = "Check TODOs",
@@ -287,7 +287,7 @@ else {
         dotNetJob "release" [
             needs "publish"
             jobPermission(PermissionKind.Contents, AccessKind.Write)
-            runsOn "ubuntu-24.04"
+            runsOn "ubuntu-26.04"
             step(
                 id = "version",
                 name = "Get version",

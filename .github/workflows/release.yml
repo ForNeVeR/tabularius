@@ -23,8 +23,8 @@ jobs:
       matrix:
         image:
         - macos-26
-        - ubuntu-24.04
-        - ubuntu-24.04-arm
+        - ubuntu-26.04
+        - ubuntu-26.04-arm
         - windows-2025
       fail-fast: false
     runs-on: ${{ matrix.image }}
@@ -106,7 +106,7 @@ jobs:
       contents: write
     needs:
     - publish
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
       DOTNET_NOLOGO: 1
